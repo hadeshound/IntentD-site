@@ -1,0 +1,107 @@
+---
+import AmbientGlow from '@/components/ui/AmbientGlow.astro';
+
+export interface LegalSection {
+  id: string;
+  title: string;
+}
+
+interface Props {
+  title: string;
+  /** Human-readable date of the last substantive change. */
+  updatedAt: string;
+  sections: LegalSection[];
+}
+
+const { title, updatedAt, sections } = Astro.props;
+
+// Slot names have to be static in the template, so each body is rendered here
+// and injected below. The markup is authored in the page next door, not supplied
+// by a visitor, so set:html carries nothing a reader could inject.
+const rendered = await Promise.all(
+  sections.map(async (section) => ({
+    ...section,
+    body: await Astro.slots.render(`section-${section.id}`),
+  })),
+);
+---
+
+{/* Shared shell for /terms and /privacy: numbered sections, a sticky contents
+    list and a readable measure. Legal text still follows the site typography
+    rather than dropping into an unstyled document.
+
+    The prose used to arrive as React nodes inside the `sections` array. Astro
+    cannot carry markup in a prop, so each body comes in through a named slot --
+    `slot="section-<id>"` -- while the array keeps the order, numbering and the
+    contents list. The `intro` and `notice` slots work the same way. */}
+<section class="relative overflow-hidden pb-12 pt-16 lg:pt-24">
+  <div class="hairline-grid-overlay"></div>
+  <AmbientGlow class="-left-28 top-0 h-80 w-80" />
+
+  <div class="shell max-w-4xl">
+    <p class="flex items-center gap-3">
+      <span class="eyebrow">Legal</span>
+      <span class="h-px w-12 bg-hairline-strong"></span>
+    </p>
+
+    <h1 class="mt-7 text-section-title">{title}</h1>
+
+    <p class="mt-6 font-mono text-xs uppercase tracking-[0.16em] text-ink-faint">
+      Последнее обновление: {updatedAt}
+    </p>
+
+    <div class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted text-pretty">
+      <slot name="intro" />
+    </div>
+
+    {
+      Astro.slots.has('notice') ? (
+        <div class="mt-8 rounded-card border border-violet-500/30 bg-violet-500/[0.06] p-5 text-sm leading-relaxed text-ink-muted">
+          <slot name="notice" />
+        </div>
+      ) : null
+    }
+  </div>
+</section>
+
+<div class="shell grid gap-12 pb-24 lg:grid-cols-12 lg:gap-10 lg:pb-32">
+  <nav aria-label="Разделы документа" class="lg:col-span-3">
+    <div class="lg:sticky lg:top-28">
+      <p class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">Разделы</p>
+
+      <ol class="mt-5 space-y-1">
+        {
+          sections.map((section, index) => (
+            <li>
+              <a
+                href={`#${section.id}`}
+                class="flex gap-3 rounded-control px-2.5 py-2 text-sm text-ink-muted transition-colors duration-200 hover:bg-white/5 hover:text-ink"
+              >
+                <span class="font-mono text-xs text-ink-faint">{String(index + 1).padStart(2, '0')}</span>
+                <span>{section.title}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </nav>
+
+  <article class="space-y-14 lg:col-span-8 lg:col-start-5">
+    {
+      rendered.map((section, index) => (
+        <section id={section.id} class="scroll-mt-28">
+          <p class="font-mono text-xs uppercase tracking-[0.16em] text-mint-400">
+            {String(index + 1).padStart(2, '0')}
+          </p>
+
+          <h2 class="mt-3 font-display text-2xl text-ink sm:text-3xl">{section.title}</h2>
+
+          <div class="mt-5 space-y-4 text-[0.9375rem] leading-relaxed text-ink-muted [&_a]:text-mint-400 [&_a]:underline [&_a]:underline-offset-4 [&_li]:ml-5 [&_li]:list-disc [&_strong]:text-ink [&_ul]:space-y-2">
+            <Fragment set:html={section.body} />
+          </div>
+        </section>
+      ))
+    }
+  </article>
+</div>

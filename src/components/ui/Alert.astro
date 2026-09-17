@@ -1,0 +1,30 @@
+---
+import { AlertTriangle, CheckCircle2, Info } from 'lucide-react';
+
+import { alertStyles, type AlertTone } from './styles';
+
+interface Props {
+  tone?: AlertTone;
+  title?: string;
+  class?: string;
+}
+
+const { tone = 'info', title, class: className } = Astro.props;
+
+const ICONS = { error: AlertTriangle, success: CheckCircle2, info: Info } as const;
+const Icon = ICONS[tone];
+---
+
+{/* Form-level feedback. Errors are announced assertively because they usually
+    follow a failed submit the user is waiting on; the rest stay polite. */}
+<div
+  role={tone === 'error' ? 'alert' : 'status'}
+  aria-live={tone === 'error' ? 'assertive' : 'polite'}
+  class={alertStyles(tone, className)}
+>
+  <Icon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+  <div class="space-y-1">
+    {title ? <p class="font-medium">{title}</p> : null}
+    <div class="[&_a]:underline [&_a]:underline-offset-2"><slot /></div>
+  </div>
+</div>

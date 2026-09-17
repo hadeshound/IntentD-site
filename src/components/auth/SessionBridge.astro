@@ -1,0 +1,74 @@
+---
+/**
+ * Applies the session to the parts of the page that stayed static.
+ *
+ * The navbar and the pricing cards needed useAuth() in the Next version, which
+ * would have meant hydrating React on the landing page, /pricing and every docs
+ * page just to decide between two labels. Instead those components render their
+ * anonymous state on the server and mark up the alternative, and this script --
+ * the only client code on an otherwise zero-JS page -- swaps them once the
+ * silent refresh has answered.
+ *
+ * Contract, all optional:
+ *   [data-auth-when="authenticated"|"anonymous"]  shown only in that state
+ *   [data-auth-email]                             receives the account email
+ *   [data-auth-href]                              href used when signed in
+ *   [data-auth-logout]                            signs out on click
+ */
+---
+
+<script>
+  import { logout, subscribeAuth } from '@/lib/auth/session';
+
+  const slots = document.querySelectorAll<HTMLElement>('[data-auth-when]');
+  const emails = document.querySelectorAll<HTMLElement>('[data-auth-email]');
+  const swaps = document.querySelectorAll<HTMLAnchorElement>('a[data-auth-href]');
+
+  // Both branches are in the DOM, so the authenticated one starts hidden and
+  // the anonymous one is only hidden once we know there is a session.
+  slots.forEach((slot) => {
+    if (slot.dataset.authWhen === 'authenticated') {
+      slot.hidden = true;
+    }
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-auth-logout]').forEach((button) => {
+    button.addEventListener('click', () => {
+      void logout();
+    });
+  });
+
+  subscribeAuth((state) => {
+    // 'loading' keeps the server-rendered anonymous view: flashing a signed-in
+    // navbar and then taking it away would be worse than waiting one round trip.
+    const isAuthenticated = state.status === 'authenticated';
+
+    slots.forEach((slot) => {
+      slot.hidden = (slot.dataset.authWhen === 'authenticated') !== isAuthenticated;
+    });
+
+    emails.forEach((element) => {
+      const email = state.user?.email ?? '';
+      element.textContent = email;
+      if (element.hasAttribute('title')) {
+        element.title = email;
+      }
+    });
+
+    swaps.forEach((link) => {
+      const authenticatedHref = link.dataset.authHref;
+      if (!authenticatedHref) {
+        return;
+      }
+
+      if (isAuthenticated) {
+        if (!link.dataset.anonHref) {
+          link.dataset.anonHref = link.getAttribute('href') ?? '';
+        }
+        link.setAttribute('href', authenticatedHref);
+      } else if (link.dataset.anonHref) {
+        link.setAttribute('href', link.dataset.anonHref);
+      }
+    });
+  });
+</script>

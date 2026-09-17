@@ -1,0 +1,46 @@
+---
+import { cn } from '@/lib/utils/cn';
+
+interface Props {
+  head: string[];
+  rows: string[][];
+  /** Sets every cell but the last in monospace, for fields and API methods. */
+  mono?: boolean;
+  class?: string;
+}
+
+const { head, rows, mono = false, class: className } = Astro.props;
+---
+
+{/* Reference table used by /docs/sdk and /docs/bucket-format-v1. Both pages
+    declared their own local <Table> in the Next version; one component keeps the
+    header treatment and the hairlines in a single place. */}
+<div class={cn('mt-5 overflow-x-auto rounded-card border border-hairline', className)}>
+  <table class="w-full min-w-[34rem] border-collapse text-left text-sm">
+    <thead>
+      <tr class="border-b border-hairline bg-white/[0.02]">
+        {head.map((heading) => <th scope="col" class="px-5 py-3.5 font-medium text-ink-faint">{heading}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr class="border-b border-hairline last:border-b-0">
+            {
+              row.map((cell, index) => (
+                <td
+                  class={cn(
+                    'px-5 py-3.5',
+                    index === row.length - 1 ? 'text-ink-muted' : mono ? 'font-mono text-ink' : 'text-ink',
+                  )}
+                >
+                  {cell}
+                </td>
+              ))
+            }
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

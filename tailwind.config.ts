@@ -11,11 +11,7 @@ import type { Config } from 'tailwindcss';
  * violet    — used only for ambient glow, never as a button fill
  */
 const config: Config = {
-  content: [
-    './app/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './lib/**/*.{ts,tsx}',
-  ],
+  content: ['./src/**/*.{astro,html,ts,tsx,js,jsx,md,mdx}'],
   theme: {
     extend: {
       colors: {

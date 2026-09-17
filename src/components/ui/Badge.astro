@@ -1,0 +1,13 @@
+---
+import { badgeStyles, type BadgeTone } from './styles';
+
+interface Props {
+  tone?: BadgeTone;
+  class?: string;
+}
+
+const { tone = 'neutral', class: className } = Astro.props;
+---
+
+{/* Small monospaced label used for plan highlights and inline tags. */}
+<span class={badgeStyles(tone, className)}><slot /></span>

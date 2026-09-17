@@ -1,0 +1,80 @@
+---
+import { Check, Copy } from 'lucide-react';
+
+import { cn } from '@/lib/utils/cn';
+
+interface Props {
+  code: string;
+  /** Shown in the header strip, e.g. "bash" or "background.js". */
+  label?: string;
+  class?: string;
+}
+
+const { code, label, class: className } = Astro.props;
+---
+
+{/* Monospaced snippet with a copy control. Wide lines scroll inside the block
+    rather than widening the page. */}
+<figure
+  data-code-block
+  class={cn('overflow-hidden rounded-card border border-hairline bg-void-deep/80', className)}
+>
+  <figcaption class="flex items-center justify-between border-b border-hairline px-4 py-2.5">
+    <span class="font-mono text-xs uppercase tracking-[0.18em] text-ink-faint">{label ?? 'code'}</span>
+
+    <button
+      type="button"
+      data-copy
+      class="inline-flex items-center gap-1.5 rounded-control px-2 py-1 text-xs text-ink-faint transition-colors duration-200 hover:bg-white/5 hover:text-ink"
+    >
+      <span data-icon-idle class="contents">
+        <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+      </span>
+      <span data-icon-done class="contents" hidden>
+        <Check className="h-3.5 w-3.5 text-mint-400" aria-hidden="true" />
+      </span>
+      <span data-copy-label>Копировать</span>
+    </button>
+  </figcaption>
+
+  <pre class="scrollbar-none overflow-x-auto px-4 py-4 text-[0.8125rem] leading-relaxed"><code
+      data-code
+      class="font-mono text-ink-muted">{code}</code></pre>
+</figure>
+
+<script>
+  // One handler per block. Clipboard access can be denied, in which case the
+  // snippet is still selectable -- the label simply does not change.
+  document.querySelectorAll<HTMLElement>('[data-code-block]').forEach((block) => {
+    const button = block.querySelector<HTMLButtonElement>('[data-copy]');
+    const code = block.querySelector<HTMLElement>('[data-code]');
+    const label = block.querySelector<HTMLElement>('[data-copy-label]');
+    const idle = block.querySelector<HTMLElement>('[data-icon-idle]');
+    const done = block.querySelector<HTMLElement>('[data-icon-done]');
+
+    if (!button || !code || !label || !idle || !done) {
+      return;
+    }
+
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(code.textContent ?? '');
+      } catch {
+        return;
+      }
+
+      label.textContent = 'Скопировано';
+      idle.hidden = true;
+      done.hidden = false;
+
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        label.textContent = 'Копировать';
+        idle.hidden = false;
+        done.hidden = true;
+      }, 2000);
+    });
+  });
+</script>

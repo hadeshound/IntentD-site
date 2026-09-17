@@ -1,0 +1,35 @@
+---
+import Footer from '@/components/marketing/Footer.astro';
+import Navbar from '@/components/marketing/Navbar.astro';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  titleTemplate?: boolean;
+  description: string;
+  keywords?: string[];
+  noindex?: boolean;
+  canonical?: string;
+}
+
+const props = Astro.props;
+---
+
+{/* Header, main and footer -- what app/layout.tsx wrapped every route in. */}
+<BaseLayout {...props}>
+  {/* First stop for a keyboard user: jump past the header navigation. */}
+  <a
+    href="#main"
+    class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-control focus:bg-mint-500 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-void-deep"
+  >
+    Перейти к содержимому
+  </a>
+
+  <Navbar />
+
+  <main id="main" class="pt-18">
+    <slot />
+  </main>
+
+  <Footer />
+</BaseLayout>

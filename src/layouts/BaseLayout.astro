@@ -1,0 +1,112 @@
+---
+// Self-hosted type. Golos Text and Manrope are the only two families on the
+// site that cover Latin and Cyrillic in one file each; --font-* variables are
+// declared in global.css so tailwind.config.ts carries over unchanged.
+// Each package's index.css declares every subset it ships -- latin, latin-ext,
+// cyrillic and cyrillic-ext -- with a unicode-range per face, so a reader only
+// downloads the files their text actually needs.
+import '@fontsource-variable/golos-text';
+import '@fontsource-variable/manrope';
+import '@fontsource-variable/jetbrains-mono';
+
+import '@/styles/global.css';
+
+import SessionBridge from '@/components/auth/SessionBridge.astro';
+import { SITE_URL } from '@/lib/config/urls';
+import { routePath } from '@/lib/utils/pathname';
+
+interface Props {
+  /** Page title without the suffix; the site name is appended here. */
+  title: string;
+  /** Set for the landing page, whose title is the full string. */
+  titleTemplate?: boolean;
+  description: string;
+  keywords?: string[];
+  /** Mirrors the Next `robots: { index: false }` metadata on private pages. */
+  noindex?: boolean;
+  /** Skips the canonical when the URL carries query parameters. */
+  canonical?: string;
+}
+
+const {
+  title,
+  titleTemplate = true,
+  description,
+  keywords,
+  noindex = false,
+  canonical,
+} = Astro.props;
+
+const fullTitle = titleTemplate ? `${title} · IntentD` : title;
+const canonicalUrl = canonical ?? new URL(routePath(Astro.url.pathname), SITE_URL).href;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0B0F17" />
+    <meta name="color-scheme" content="dark" />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {keywords && keywords.length > 0 ? <meta name="keywords" content={keywords.join(', ')} /> : null}
+    {/* A canonical on a noindex page points crawlers at something we have
+        just asked them to ignore, so the private routes and 404 skip it. */}
+    {noindex ? null : <link rel="canonical" href={canonicalUrl} />}
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content="IntentD" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap.xml" />
+  </head>
+
+  <body class="min-h-screen">
+    <slot />
+
+    <SessionBridge />
+
+    <script>
+      // Scroll reveal, formerly lib/hooks/useReveal.ts. One observer for the
+      // whole page instead of one per element; the class pair, the threshold and
+      // the root margin are the hook's. Reveal is one-way -- re-animating on
+      // scroll-back is the jumpy behaviour this design explicitly avoids.
+      const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
+
+      const showAll = () => targets.forEach((element) => element.classList.add('reveal-visible'));
+
+      // Without the API (or with reduced motion), show the content immediately.
+      if (
+        typeof IntersectionObserver === 'undefined' ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ) {
+        showAll();
+      } else {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('reveal-visible');
+                observer.unobserve(entry.target);
+              }
+            }
+          },
+          { threshold: 0.15, rootMargin: '0px 0px -10% 0px' },
+        );
+
+        targets.forEach((element) => observer.observe(element));
+      }
+    </script>
+  </body>
+</html>

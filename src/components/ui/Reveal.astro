@@ -1,0 +1,24 @@
+---
+import { cn } from '@/lib/utils/cn';
+
+interface Props {
+  class?: string;
+  /** Stagger inside a group of siblings, in milliseconds. */
+  delay?: number;
+  as?: keyof HTMLElementTagNameMap;
+}
+
+const { class: className, delay = 0, as: Tag = 'div' } = Astro.props;
+---
+
+{/* Fades and lifts its children into place the first time they scroll into
+    view. The observer is a single page-wide one in BaseLayout: the React hook
+    this replaces created one per element, which is the only detail that
+    changed. The .reveal / .reveal-visible pair and the timings are identical. */}
+<Tag
+  data-reveal
+  class={cn('reveal', className)}
+  style={delay > 0 ? `transition-delay: ${delay}ms` : undefined}
+>
+  <slot />
+</Tag>

@@ -1,0 +1,64 @@
+---
+import { API_BASE_URL } from '@/lib/api/client';
+import { cn } from '@/lib/utils/cn';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+{/* Footer status light. It polls the real health endpoint rather than printing
+    a hardcoded "operational", so the badge cannot claim more than we know. The
+    server-rendered state is "checking"; the script below settles it. */}
+<p
+  class={cn('inline-flex items-center gap-2.5 text-sm', className)}
+  data-status-indicator
+  data-health-url={`${API_BASE_URL}/public/health`}
+>
+  <span class="relative flex h-2 w-2" aria-hidden="true">
+    <span data-ping class="absolute inline-flex h-full w-full animate-status-ping rounded-full bg-mint-400" hidden></span>
+    <span data-dot class="relative inline-flex h-2 w-2 rounded-full bg-ink-faint"></span>
+  </span>
+
+  <span data-label class="text-ink-muted">Проверяем статус</span>
+</p>
+
+<script>
+  const LABELS = {
+    checking: 'Проверяем статус',
+    operational: 'All Systems Operational',
+    degraded: 'Повышенное время отклика',
+  } as const;
+
+  document.querySelectorAll<HTMLElement>('[data-status-indicator]').forEach((root) => {
+    const url = root.dataset.healthUrl;
+    const ping = root.querySelector<HTMLElement>('[data-ping]');
+    const dot = root.querySelector<HTMLElement>('[data-dot]');
+    const label = root.querySelector<HTMLElement>('[data-label]');
+
+    if (!url || !ping || !dot || !label) {
+      return;
+    }
+
+    const paint = (status: keyof typeof LABELS) => {
+      const isOperational = status === 'operational';
+
+      ping.hidden = !isOperational;
+      dot.classList.remove('bg-mint-400', 'bg-ink-faint', 'bg-amber-400');
+      dot.classList.add(isOperational ? 'bg-mint-400' : status === 'checking' ? 'bg-ink-faint' : 'bg-amber-400');
+
+      label.classList.remove('text-mint-300', 'text-ink-muted');
+      label.classList.add(isOperational ? 'text-mint-300' : 'text-ink-muted');
+      label.textContent = LABELS[status];
+    };
+
+    fetch(url, { cache: 'no-store' })
+      .then((response) => response.json())
+      .then((payload: { data?: { status?: string } }) => {
+        paint(payload?.data?.status === 'ok' ? 'operational' : 'degraded');
+      })
+      .catch(() => paint('degraded'));
+  });
+</script>

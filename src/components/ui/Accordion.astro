@@ -1,0 +1,127 @@
+---
+import { Plus } from 'lucide-react';
+
+import type { FaqEntry } from '@/lib/content/faq';
+import { cn } from '@/lib/utils/cn';
+
+interface Props {
+  items: FaqEntry[];
+  /** Index opened on first render; -1 leaves everything collapsed. */
+  defaultOpen?: number;
+}
+
+const { items, defaultOpen = 0 } = Astro.props;
+
+// Ids have to be unique across the document, and a page may carry more than
+// one accordion, so each instance gets its own prefix. React's useId did this
+// in the Next version; here the ids are generated at render time.
+const uid = `faq-${Math.random().toString(36).slice(2, 8)}`;
+
+const QUESTION_OPEN = 'text-ink';
+const QUESTION_CLOSED = 'text-ink/90';
+const MARKER_OPEN = 'rotate-45 border-mint-500/50 bg-mint-500/10 text-mint-400';
+const MARKER_CLOSED = 'text-ink-faint group-hover:border-hairline-strong';
+---
+
+{/* Single-open accordion built from buttons and aria-expanded rather than
+    <details>, so the open/close transition can be animated consistently across
+    browsers while keyboard semantics stay native. */}
+<div
+  class="divide-y divide-hairline border-y border-hairline"
+  data-accordion
+  data-question-open={QUESTION_OPEN}
+  data-question-closed={QUESTION_CLOSED}
+  data-marker-open={MARKER_OPEN}
+  data-marker-closed={MARKER_CLOSED}
+>
+  {
+    items.map((item, index) => {
+      const isOpen = index === defaultOpen;
+      const panelId = `${uid}-panel-${index}`;
+      const buttonId = `${uid}-button-${index}`;
+
+      return (
+        <div>
+          <h3>
+            <button
+              id={buttonId}
+              type="button"
+              aria-expanded={isOpen}
+              aria-controls={panelId}
+              data-accordion-trigger
+              class="group flex w-full items-start justify-between gap-6 py-6 text-left transition-colors duration-200 hover:text-mint-300"
+            >
+              <span
+                data-question
+                class={cn(
+                  'font-display text-lg leading-snug transition-colors duration-200 sm:text-xl',
+                  isOpen ? QUESTION_OPEN : QUESTION_CLOSED,
+                )}
+              >
+                {item.question}
+              </span>
+
+              <span
+                aria-hidden="true"
+                data-marker
+                class={cn(
+                  'mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-hairline transition-[transform,border-color,background-color] duration-300 ease-surface',
+                  isOpen ? MARKER_OPEN : MARKER_CLOSED,
+                )}
+              >
+                <Plus className="h-3.5 w-3.5" />
+              </span>
+            </button>
+          </h3>
+
+          <div
+            id={panelId}
+            role="region"
+            aria-labelledby={buttonId}
+            data-accordion-panel
+            hidden={!isOpen}
+            class="pb-7 pr-12"
+          >
+            <p class="max-w-3xl text-[0.9375rem] leading-relaxed text-ink-muted">{item.answer}</p>
+          </div>
+        </div>
+      );
+    })
+  }
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-accordion]').forEach((root) => {
+    const questionOpen = (root.dataset.questionOpen ?? '').split(' ').filter(Boolean);
+    const questionClosed = (root.dataset.questionClosed ?? '').split(' ').filter(Boolean);
+    const markerOpen = (root.dataset.markerOpen ?? '').split(' ').filter(Boolean);
+    const markerClosed = (root.dataset.markerClosed ?? '').split(' ').filter(Boolean);
+
+    const triggers = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-accordion-trigger]'));
+
+    const paint = (openIndex: number) => {
+      triggers.forEach((trigger, index) => {
+        const isOpen = index === openIndex;
+        const panel = document.getElementById(trigger.getAttribute('aria-controls') ?? '');
+        const question = trigger.querySelector<HTMLElement>('[data-question]');
+        const marker = trigger.querySelector<HTMLElement>('[data-marker]');
+
+        trigger.setAttribute('aria-expanded', String(isOpen));
+        if (panel) {
+          panel.hidden = !isOpen;
+        }
+        question?.classList.remove(...(isOpen ? questionClosed : questionOpen));
+        question?.classList.add(...(isOpen ? questionOpen : questionClosed));
+        marker?.classList.remove(...(isOpen ? markerClosed : markerOpen));
+        marker?.classList.add(...(isOpen ? markerOpen : markerClosed));
+      });
+    };
+
+    triggers.forEach((trigger, index) => {
+      trigger.addEventListener('click', () => {
+        const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+        paint(isOpen ? -1 : index);
+      });
+    });
+  });
+</script>

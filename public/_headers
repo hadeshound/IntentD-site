@@ -1,0 +1,11 @@
+# Security headers. Cloudflare Pages reads this file and applies it to every
+# response, which is where next.config.js used to put its headers() block.
+#
+# Content-Security-Policy is intentionally absent: it belongs on the edge in
+# front of the app, where the report endpoint and the nonce strategy are
+# configured together.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()

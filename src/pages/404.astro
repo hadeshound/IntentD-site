@@ -1,0 +1,47 @@
+---
+import AmbientGlow from '@/components/ui/AmbientGlow.astro';
+import Button from '@/components/ui/Button.astro';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+
+const SUGGESTIONS = [
+  { href: '/pricing', label: 'Тарифы' },
+  { href: '/docs/api', label: 'API и формат данных' },
+  { href: '/contact', label: 'Контакты' },
+];
+---
+
+<MarketingLayout
+  title="Страница не найдена"
+  description="Такой страницы на сайте IntentD нет."
+  noindex
+>
+  <section class="relative overflow-hidden py-28 lg:py-38">
+    <div class="hairline-grid-overlay"></div>
+    <AmbientGlow class="-left-24 top-0 h-80 w-80" drift />
+
+    <div class="shell grid gap-12 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        <p class="font-mono text-eyebrow uppercase tracking-[0.22em] text-mint-400">404 · Not Found</p>
+
+        <h1 class="mt-7 text-hero">Такой страницы нет</h1>
+
+        <p class="mt-8 max-w-lg text-lg leading-relaxed text-ink-muted text-pretty">
+          Ссылка устарела или в адресе опечатка. Ниже — разделы, куда чаще всего ведут
+          сломанные ссылки.
+        </p>
+
+        <div class="mt-10 flex flex-wrap gap-3">
+          <Button href="/" size="lg">На главную</Button>
+
+          {
+            SUGGESTIONS.map((item) => (
+              <Button href={item.href} variant="secondary" size="lg">
+                {item.label}
+              </Button>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</MarketingLayout>

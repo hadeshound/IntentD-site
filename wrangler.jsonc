@@ -1,0 +1,12 @@
+{
+  // Cloudflare configuration for `npm run preview` and for Pages itself.
+  //
+  // nodejs_compat is not optional: the Astro runtime and the adapter's own
+  // chunks import node:path, node:util, node:crypto and friends, and without
+  // the flag the worker fails to build at all -- locally and on deploy.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "intentd-web",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": "./dist"
+}

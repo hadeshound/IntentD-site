@@ -1,0 +1,42 @@
+---
+import Accordion from '@/components/ui/Accordion.astro';
+import type { FaqEntry } from '@/lib/content/faq';
+
+interface Props {
+  items: FaqEntry[];
+  eyebrow?: string;
+  title?: string;
+  id?: string;
+}
+
+const { items, eyebrow = 'FAQ', title = 'Частые вопросы', id = 'faq' } = Astro.props;
+---
+
+{/* Heading and answers sit in separate columns rather than stacked, so the
+    section reads as a two-track layout like the rest of the page. */}
+<section id={id} class="py-24 lg:py-32">
+  <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-10">
+    <div class="lg:col-span-4">
+      <div class="lg:sticky lg:top-28">
+        <p class="flex items-center gap-3">
+          <span class="eyebrow">{eyebrow}</span>
+          <span class="h-px w-12 bg-hairline-strong"></span>
+        </p>
+
+        <h2 class="mt-6 text-section-title">{title}</h2>
+
+        <p class="mt-6 max-w-sm text-[0.9375rem] leading-relaxed text-ink-muted">
+          Не нашли ответ?{' '}
+          <a href="/contact" class="link-underline underline underline-offset-4 decoration-hairline-strong">
+            Напишите нам
+          </a>{' '}
+          — отвечаем в течение рабочего дня.
+        </p>
+      </div>
+    </div>
+
+    <div class="lg:col-span-7 lg:col-start-6">
+      <Accordion items={items} />
+    </div>
+  </div>
+</section>

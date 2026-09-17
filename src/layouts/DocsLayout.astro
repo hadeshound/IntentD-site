@@ -1,0 +1,83 @@
+---
+import AmbientGlow from '@/components/ui/AmbientGlow.astro';
+import MarketingLayout from './MarketingLayout.astro';
+
+export interface DocsSection {
+  id: string;
+  label: string;
+  audience: string;
+}
+
+interface Props {
+  /** <head> metadata, forwarded to BaseLayout. */
+  title: string;
+  description: string;
+  /** Page heading; defaults to the metadata title when omitted. */
+  heading?: string;
+  intro: string;
+  eyebrow?: string;
+  /** Drives the sticky table of contents. */
+  sections: DocsSection[];
+}
+
+const { title, description, heading, intro, eyebrow = 'Documentation', sections } = Astro.props;
+---
+
+{/* Documentation shell: a hero, a sticky contents column and the body. The
+    `badges` slot sits under the intro; the default slot holds the sections. */}
+<MarketingLayout title={title} description={description}>
+  <section class="relative overflow-hidden pb-14 pt-16 lg:pt-24">
+    <div class="hairline-grid-overlay"></div>
+    <AmbientGlow class="-left-24 top-0 h-96 w-96" drift />
+
+    <div class="shell grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-8">
+        <p class="flex items-center gap-3">
+          <span class="eyebrow">{eyebrow}</span>
+          <span class="h-px w-12 bg-hairline-strong"></span>
+        </p>
+
+        <h1 class="mt-7 text-hero">{heading ?? title}</h1>
+
+        <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted text-pretty">{intro}</p>
+
+        {Astro.slots.has('badges') ? <div class="mt-9 flex flex-wrap gap-3"><slot name="badges" /></div> : null}
+      </div>
+    </div>
+  </section>
+
+  <div class="shell grid gap-12 pb-24 lg:grid-cols-12 lg:gap-10 lg:pb-32">
+    {/* Sticky table of contents. Real anchors, so the page is usable with
+        JavaScript disabled and each section is linkable. */}
+    <nav aria-label="Содержание документации" class="lg:col-span-3">
+      <div class="lg:sticky lg:top-28">
+        <p class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">Содержание</p>
+
+        <ol class="mt-5 space-y-1">
+          {
+            sections.map((section, index) => (
+              <li>
+                <a
+                  href={`#${section.id}`}
+                  class="group flex items-baseline gap-3 rounded-control px-2.5 py-2 text-sm text-ink-muted transition-colors duration-200 hover:bg-white/5 hover:text-ink"
+                >
+                  <span class="font-mono text-xs text-ink-faint">{String(index + 1).padStart(2, '0')}</span>
+                  <span>
+                    {section.label}
+                    <span class="mt-0.5 block font-mono text-[0.625rem] uppercase tracking-[0.14em] text-ink-faint">
+                      {section.audience}
+                    </span>
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </nav>
+
+    <div class="space-y-20 lg:col-span-8 lg:col-start-5">
+      <slot />
+    </div>
+  </div>
+</MarketingLayout>

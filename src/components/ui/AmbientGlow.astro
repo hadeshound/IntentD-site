@@ -1,0 +1,16 @@
+---
+import { glowStyles, type GlowTone } from './styles';
+
+interface Props {
+  tone?: GlowTone;
+  class?: string;
+  /** Adds a slow drift so the background is never perfectly static. */
+  drift?: boolean;
+}
+
+const { tone = 'mint', class: className, drift = false } = Astro.props;
+---
+
+{/* Heavily blurred colour field placed behind a section. Sits below the content
+    layer and ignores pointer events, so it can overlap anything safely. */}
+<div aria-hidden="true" class={glowStyles(tone, drift, className)}></div>

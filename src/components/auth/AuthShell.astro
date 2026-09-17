@@ -1,0 +1,50 @@
+---
+import AmbientGlow from '@/components/ui/AmbientGlow.astro';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  description?: string;
+}
+
+const { eyebrow, title, description } = Astro.props;
+---
+
+{/* Layout for every /auth screen. The form sits left and never centres; the
+    supporting panel on the right is offset downwards so the two columns do not
+    share a baseline. The form goes in the default slot, the panel in `aside`,
+    and `footer` holds the link to the opposite auth page. */}
+<section class="relative overflow-hidden py-16 lg:py-24">
+  <div class="hairline-grid-overlay"></div>
+  <AmbientGlow class="-left-28 top-0 h-96 w-96" drift />
+  <AmbientGlow tone="violet" class="right-0 bottom-0 h-80 w-80" />
+
+  <div class="shell grid gap-14 lg:grid-cols-12 lg:gap-12">
+    <div class="lg:col-span-5">
+      <p class="flex items-center gap-3">
+        <span class="eyebrow">{eyebrow}</span>
+        <span class="h-px w-12 bg-hairline-strong"></span>
+      </p>
+
+      <h1 class="mt-7 font-display text-4xl leading-[1.05] tracking-tight text-ink sm:text-5xl">{title}</h1>
+
+      {
+        description ? (
+          <div class="mt-6 max-w-md text-[1.0625rem] leading-relaxed text-ink-muted text-pretty">{description}</div>
+        ) : null
+      }
+
+      <div class="mt-10"><slot /></div>
+
+      {
+        Astro.slots.has('footer') ? (
+          <div class="mt-8 border-t border-hairline pt-6 text-sm text-ink-muted">
+            <slot name="footer" />
+          </div>
+        ) : null
+      }
+    </div>
+
+    {Astro.slots.has('aside') ? <div class="lg:col-span-6 lg:col-start-7 lg:mt-20"><slot name="aside" /></div> : null}
+  </div>
+</section>

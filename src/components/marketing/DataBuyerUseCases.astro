@@ -1,0 +1,89 @@
+---
+import { BarChart3, Radar, ShoppingCart } from 'lucide-react';
+
+import Button from '@/components/ui/Button.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+
+const USE_CASES = [
+  {
+    icon: ShoppingCart,
+    segment: 'E-commerce & Retail',
+    title: 'Видеть спрос раньше конкурента',
+    body: 'Отслеживайте, какие товары и категории пользователи ищут прямо сейчас — до того, как они купят у конкурентов.',
+    signals: ['search_query', 'domain', 'clean_url'],
+  },
+  {
+    icon: Radar,
+    segment: 'AdTech & Programmatic',
+    title: 'Сегменты без 3rd-party cookies',
+    body: 'Обогащайте аудиторные сегменты точными коммерческими интентами без зависимости от сторонних cookies.',
+    signals: ['anon_uid', 'geo_country', 'device_type'],
+  },
+  {
+    icon: BarChart3,
+    segment: 'Market Research & Analytics',
+    title: 'Сдвиги интереса на больших выборках',
+    body: 'Анализируйте тренды посещаемости и смещение интересов на выборках из миллионов сессий.',
+    signals: ['timestamp', 'lang', 'domain'],
+  },
+];
+
+const TOTAL = String(USE_CASES.length).padStart(2, '0');
+---
+
+<section id="data-buyers" class="relative overflow-hidden py-24 lg:py-32">
+  <SectionHeading
+    class="shell"
+    eyebrow="Для покупателей данных"
+    title="Сигналы намерений высочайшего качества для вашего бизнеса"
+  >
+    <Button slot="aside" href="/docs/api" variant="secondary">Посмотреть схему данных</Button>
+  </SectionHeading>
+
+  <!-- The track bleeds past the right edge of the shell so the row visibly
+       continues off-screen instead of resolving into a neat three-up grid. -->
+  <div
+    class="scrollbar-none mt-16 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 lg:mt-20"
+    style="padding-inline: var(--shell-padding)"
+    role="region"
+    aria-label="Сценарии использования данных, горизонтальная прокрутка"
+    tabindex="0"
+  >
+    {
+      USE_CASES.map((useCase, index) => {
+        const Icon = useCase.icon;
+
+        return (
+          <article
+            class="surface-card surface-card-interactive w-[19rem] shrink-0 snap-start p-7 sm:w-[23rem] lg:w-[26rem] lg:p-9"
+            style={`margin-top: ${index * 1.75}rem`}
+          >
+            <div class="flex items-start justify-between gap-4">
+              <span class="inline-flex h-11 w-11 items-center justify-center rounded-control border border-hairline bg-white/[0.03] text-mint-400">
+                <Icon className="h-5 w-5" aria-hidden="true" />
+              </span>
+
+              <span class="font-mono text-xs text-ink-faint">
+                {String(index + 1).padStart(2, '0')} / {TOTAL}
+              </span>
+            </div>
+
+            <p class="mt-7 font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-ink-faint">{useCase.segment}</p>
+
+            <h3 class="mt-3 text-card-title">{useCase.title}</h3>
+
+            <p class="mt-3.5 text-[0.9375rem] leading-relaxed text-ink-muted">{useCase.body}</p>
+
+            <ul class="mt-7 flex flex-wrap gap-2 border-t border-hairline pt-6">
+              {useCase.signals.map((signal) => (
+                <li class="rounded-pill border border-hairline px-2.5 py-1 font-mono text-[0.6875rem] text-ink-muted">
+                  {signal}
+                </li>
+              ))}
+            </ul>
+          </article>
+        );
+      })
+    }
+  </div>
+</section>

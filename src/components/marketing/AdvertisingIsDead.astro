@@ -1,0 +1,73 @@
+---
+import { Ban, ShieldCheck, TrendingDown } from 'lucide-react';
+
+import Reveal from '@/components/ui/Reveal.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { cn } from '@/lib/utils/cn';
+
+const CARDS = [
+  {
+    icon: TrendingDown,
+    title: 'Рекламный баннер отпугивает',
+    body: 'Внедрение рекламы в интерфейс расширения снижает retention и вызывает поток однозвёздочных отзывов.',
+    /** Vertical offset that breaks the row alignment on large screens. */
+    offset: 'lg:mt-0',
+    isSolution: false,
+  },
+  {
+    icon: Ban,
+    title: 'Модерация блокирует',
+    body: 'Chrome и Firefox жёстко пессимизируют или удаляют расширения с рекламными скриптами и инжектором ссылок.',
+    offset: 'lg:mt-16',
+    isSolution: false,
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Решение от IntentD',
+    body: 'Мы собираем обезличенные агрегированные сигналы в фоновом режиме. Интерфейс вашего расширения остаётся на 100% чистым.',
+    offset: 'lg:mt-32',
+    isSolution: true,
+  },
+];
+---
+
+<section id="publishers" class="relative py-24 lg:py-32">
+  <SectionHeading class="shell" eyebrow="Для разработчиков расширений">
+    <Fragment slot="title">
+      Перестаньте рисковать вашими пользователями <span class="text-ink-faint">ради баннеров</span>
+    </Fragment>
+  </SectionHeading>
+
+  <div class="shell mt-16 grid gap-6 lg:mt-20 lg:grid-cols-3 lg:gap-7">
+    {
+      CARDS.map((card, index) => {
+        const Icon = card.icon;
+
+        return (
+          <Reveal delay={index * 110} class={card.offset}>
+            <article
+              class={cn('surface-card surface-card-interactive h-full p-7', card.isSolution && 'surface-card-accent')}
+            >
+              {card.isSolution ? <div class="ambient-glow -right-10 -top-10 h-40 w-40 bg-mint-500/25" /> : null}
+
+              <span
+                class={cn(
+                  'inline-flex h-11 w-11 items-center justify-center rounded-control border',
+                  card.isSolution
+                    ? 'border-mint-500/40 bg-mint-500/10 text-mint-400'
+                    : 'border-hairline bg-white/[0.03] text-ink-muted',
+                )}
+              >
+                <Icon className="h-5 w-5" aria-hidden="true" />
+              </span>
+
+              <h3 class="mt-6 text-card-title">{card.title}</h3>
+
+              <p class="mt-3.5 text-[0.9375rem] leading-relaxed text-ink-muted">{card.body}</p>
+            </article>
+          </Reveal>
+        );
+      })
+    }
+  </div>
+</section>

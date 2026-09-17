@@ -1,0 +1,55 @@
+---
+import AmbientGlow from '@/components/ui/AmbientGlow.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import type { Plan } from '@/lib/api/plans';
+import { PLAN_ORDER } from '@/lib/content/pricing';
+import PlanCard from './PlanCard.astro';
+
+interface Props {
+  plans: Plan[];
+  /** Set when the catalogue endpoint was unreachable and seeds were used. */
+  isFallback?: boolean;
+  /** The /pricing page renders its own heading, so it can suppress this one. */
+  showHeading?: boolean;
+}
+
+const { plans, isFallback = false, showHeading = true } = Astro.props;
+
+const ordered = [...plans].sort((a, b) => PLAN_ORDER.indexOf(a.code) - PLAN_ORDER.indexOf(b.code));
+---
+
+<section id="pricing" class="relative py-24 lg:py-32">
+  <AmbientGlow class="left-1/3 top-24 h-[26rem] w-[26rem]" drift />
+  <AmbientGlow tone="violet" class="right-0 bottom-10 h-[20rem] w-[20rem]" />
+
+  {
+    showHeading ? (
+      <SectionHeading
+        class="shell"
+        eyebrow="Тарифы"
+        title="Прозрачные тарифы для доступа к потоку данных"
+        description="Выберите объём сигналов, необходимый для ваших аналитических систем."
+      >
+        <a
+          slot="aside"
+          href="/pricing"
+          class="link-underline text-sm underline underline-offset-4 decoration-hairline-strong"
+        >
+          Сравнить все возможности
+        </a>
+      </SectionHeading>
+    ) : null
+  }
+
+  <div class="shell mt-16 grid items-start gap-6 lg:mt-20 lg:grid-cols-3 lg:gap-7">
+    {ordered.map((plan, index) => <PlanCard plan={plan} index={index} />)}
+  </div>
+
+  {
+    isFallback ? (
+      <p class="shell mt-8 font-mono text-xs text-ink-faint">
+        Каталог временно отдаётся из локальной копии — актуальные условия подтвердит менеджер.
+      </p>
+    ) : null
+  }
+</section>

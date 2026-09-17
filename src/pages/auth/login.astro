@@ -1,0 +1,61 @@
+---
+import AuthShell from '@/components/auth/AuthShell.astro';
+import { LoginForm } from '@/components/auth/LoginForm';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import { resolvePostAuthTarget } from '@/lib/utils/redirect';
+
+// Rendered per request: the destination is built from ?redirect= and ?plan=
+// exactly as the Next page did with searchParams, and there is nothing here
+// worth prerendering -- the page is noindex either way.
+export const prerender = false;
+
+const params = Astro.url.searchParams;
+const plan = params.get('plan');
+
+const redirectTo = resolvePostAuthTarget(params.get('redirect'), plan);
+
+const registerHref =
+  redirectTo === '/'
+    ? '/auth/register'
+    : `/auth/register?redirect=${redirectTo.split('?')[0]}${plan ? `&plan=${plan}` : ''}`;
+---
+
+<MarketingLayout
+  title="Вход"
+  description="Войдите в аккаунт IntentD, чтобы управлять доступом к потоку данных."
+  noindex
+>
+  <AuthShell
+    eyebrow="Вход"
+    title="С возвращением"
+    description="Войдите, чтобы продолжить оформление доступа или проверить статус заявки."
+  >
+    <LoginForm redirectTo={redirectTo} client:load />
+
+    <p slot="footer">
+      Ещё нет аккаунта?{' '}
+      <a href={registerHref} class="link-underline underline underline-offset-4">Создать аккаунт</a>
+    </p>
+
+    <div slot="aside" class="surface-card p-8 lg:p-10">
+      <div class="ambient-glow -right-16 -top-16 h-56 w-56 bg-mint-500/20"></div>
+
+      <p class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">Как устроена сессия</p>
+
+      <ul class="mt-7 space-y-5 text-[0.9375rem] leading-relaxed text-ink-muted">
+        <li>
+          <strong class="text-ink">Токен доступа живёт в памяти вкладки.</strong> Он
+          не попадает в localStorage, поэтому его нельзя вытащить сторонним скриптом.
+        </li>
+        <li>
+          <strong class="text-ink">Обновление — через HttpOnly-cookie.</strong>
+          JavaScript не читает её ни на нашей стороне, ни на чужой.
+        </li>
+        <li>
+          <strong class="text-ink">Смена пароля завершает все сессии.</strong> Старые
+          refresh-токены отзываются немедленно.
+        </li>
+      </ul>
+    </div>
+  </AuthShell>
+</MarketingLayout>

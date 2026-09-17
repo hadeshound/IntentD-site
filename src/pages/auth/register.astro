@@ -1,0 +1,75 @@
+---
+import { Check } from 'lucide-react';
+
+import AuthShell from '@/components/auth/AuthShell.astro';
+import { RegisterForm } from '@/components/auth/RegisterForm';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import { resolvePostAuthTarget } from '@/lib/utils/redirect';
+
+export const prerender = false;
+
+const BENEFITS = [
+  'Интеграция SDK занимает около пяти минут',
+  'Никакой рекламы и подмены контента в расширении',
+  'Данные в Parquet + LZ4, готовые для вашего хранилища',
+  'Фильтрация PII выполняется до отправки события',
+];
+
+function parseRole(raw: string | null): 'buyer' | 'publisher' | undefined {
+  return raw === 'buyer' || raw === 'publisher' ? raw : undefined;
+}
+
+const params = Astro.url.searchParams;
+const plan = params.get('plan');
+const redirectTo = resolvePostAuthTarget(params.get('redirect'), plan);
+
+// A visitor who came from a pricing CTA is a buyer unless they say otherwise.
+const defaultRole = parseRole(params.get('role')) ?? (plan ? 'buyer' : undefined);
+
+const loginHref =
+  redirectTo === '/'
+    ? '/auth/login'
+    : `/auth/login?redirect=${redirectTo.split('?')[0]}${plan ? `&plan=${plan}` : ''}`;
+
+const description =
+  'Создайте аккаунт IntentD: получите доступ к потокам данных или начните монетизировать расширение.';
+---
+
+<MarketingLayout title="Регистрация" description={description} noindex>
+  <AuthShell
+    eyebrow="Регистрация"
+    title="Создайте аккаунт в IntentD"
+    description="Получите доступ к потокам данных или начните монетизировать ваше расширение уже сегодня."
+  >
+    <RegisterForm redirectTo={redirectTo} defaultRole={defaultRole} client:load />
+
+    <p slot="footer">
+      Уже есть аккаунт?{' '}
+      <a href={loginHref} class="link-underline underline underline-offset-4">Войти</a>
+    </p>
+
+    <div slot="aside" class="surface-card surface-card-accent p-8 lg:p-10">
+      <div class="ambient-glow -right-16 -top-16 h-56 w-56 bg-mint-500/25"></div>
+
+      <p class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-mint-400">Что дальше</p>
+
+      <h2 class="mt-5 font-display text-2xl text-ink">После регистрации мы свяжемся с вами</h2>
+
+      <p class="mt-4 text-[0.9375rem] leading-relaxed text-ink-muted">
+        На этом этапе ключи и параметры выгрузки выдаёт менеджер: так мы проверяем
+        совместимость вашего сценария до подписания документов.
+      </p>
+
+      <ul class="mt-8 space-y-3.5 border-t border-hairline pt-8">
+        {
+          BENEFITS.map((benefit) => (
+            <li class="flex gap-3 text-[0.9375rem] leading-relaxed text-ink-muted">
+              <Check className="mt-1 h-4 w-4 shrink-0 text-mint-400" aria-hidden="true" />
+              <span>{benefit}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </AuthShell>
+</MarketingLayout>

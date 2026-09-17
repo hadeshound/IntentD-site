@@ -1,0 +1,97 @@
+---
+import { ArrowRight, Check } from 'lucide-react';
+
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+import type { Plan } from '@/lib/api/plans';
+import { dashboardRegisterFor } from '@/lib/config/urls';
+import { PLAN_PRESENTATION } from '@/lib/content/pricing';
+import { cn } from '@/lib/utils/cn';
+import { formatEventsLimit, formatPrice } from '@/lib/utils/format';
+
+interface Props {
+  plan: Plan;
+  /** Index in the grid; drives the vertical offset on wide screens. */
+  index: number;
+}
+
+const { plan, index } = Astro.props;
+
+const presentation = PLAN_PRESENTATION[plan.code];
+
+// Enterprise is quoted per deal, so its CTA goes to sales rather than to
+// checkout. Everything else routes through the dashboard: an anonymous visitor
+// to registration with the plan carried along, a signed-in one straight to
+// checkout. The card is server-rendered in the anonymous state and SessionBridge
+// rewrites data-auth-href once the silent refresh has settled -- which is the
+// same decision useAuth() made in the client component this replaces.
+const anonymousHref = plan.is_custom_priced ? presentation.cta.href : dashboardRegisterFor(plan.code);
+const authenticatedHref = plan.is_custom_priced ? null : `/checkout?plan=${plan.code}`;
+
+const isHighlighted = Boolean(presentation.highlighted);
+---
+
+<article
+  class={cn(
+    'surface-card surface-card-interactive flex flex-col p-7 lg:p-8',
+    isHighlighted && 'surface-card-accent lg:-mt-6 lg:mb-6',
+    !isHighlighted && index === 2 && 'lg:mt-8',
+  )}
+>
+  {isHighlighted ? <div class="ambient-glow -right-14 -top-16 h-56 w-56 bg-mint-500/25" /> : null}
+
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h3 class="font-display text-xl text-ink">{plan.name}</h3>
+      <p class="mt-2 max-w-[16rem] text-sm leading-relaxed text-ink-faint">{presentation.audience}</p>
+    </div>
+
+    {
+      isHighlighted && presentation.highlightLabel ? (
+        <Badge tone="mint">{presentation.highlightLabel}</Badge>
+      ) : null
+    }
+  </div>
+
+  <p class="mt-8 flex items-baseline gap-2">
+    <span class="font-display text-4xl tracking-tight text-ink lg:text-[2.75rem]">
+      {formatPrice(plan.price_cents, plan.currency)}
+    </span>
+    {plan.is_custom_priced ? null : <span class="text-sm text-ink-faint">/ мес</span>}
+  </p>
+
+  <p class="mt-2 font-mono text-xs uppercase tracking-[0.14em] text-ink-faint">
+    {
+      plan.is_custom_priced
+        ? 'Объём согласуется индивидуально'
+        : `${formatEventsLimit(plan.events_limit)} событий в месяц`
+    }
+  </p>
+
+  <ul class="mt-8 space-y-3.5 border-t border-hairline pt-8">
+    {
+      presentation.features.map((feature) => (
+        <li class="flex gap-3 text-[0.9375rem] leading-relaxed text-ink-muted">
+          <Check
+            className={cn('mt-1 h-4 w-4 shrink-0', isHighlighted ? 'text-mint-400' : 'text-mint-500/70')}
+            aria-hidden="true"
+          />
+          <span>{feature}</span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="mt-auto pt-9">
+    <Button
+      href={anonymousHref}
+      data-auth-href={authenticatedHref}
+      variant={isHighlighted ? 'primary' : 'secondary'}
+      size="lg"
+      class="w-full"
+    >
+      {presentation.cta.label}
+      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+    </Button>
+  </div>
+</article>

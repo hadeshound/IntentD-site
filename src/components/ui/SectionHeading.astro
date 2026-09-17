@@ -1,0 +1,58 @@
+---
+import { cn } from '@/lib/utils/cn';
+
+interface Props {
+  eyebrow: string;
+  /** Plain text; markup goes through the `title` slot instead. */
+  title?: string;
+  description?: string;
+  /** Sections alternate sides; nothing on this site is centred. */
+  align?: 'left' | 'right';
+  class?: string;
+  id?: string;
+}
+
+const { eyebrow, title, description, align = 'left', class: className, id } = Astro.props;
+
+const isRight = align === 'right';
+const hasDescription = Boolean(description) || Astro.slots.has('description');
+---
+
+{/* Section header used by every landing block. The eyebrow is a monospaced
+    label with a rule running out of it, which is what ties the sections
+    together without a centred title stack. The `aside` slot holds a CTA or a
+    stat that sits beside the heading. */}
+<div
+  class={cn(
+    'flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between',
+    isRight && 'lg:flex-row-reverse',
+    className,
+  )}
+>
+  <div class={cn('max-w-3xl', isRight && 'lg:text-right')}>
+    <p class={cn('flex items-center gap-3', isRight && 'lg:justify-end')}>
+      {isRight ? <span class="hidden h-px w-16 bg-hairline-strong lg:block"></span> : null}
+      <span class="eyebrow">{eyebrow}</span>
+      {!isRight ? <span class="h-px w-16 bg-hairline-strong"></span> : null}
+    </p>
+
+    <h2 id={id} class="mt-6 text-section-title text-balance">
+      {Astro.slots.has('title') ? <slot name="title" /> : title}
+    </h2>
+
+    {
+      hasDescription ? (
+        <div
+          class={cn(
+            'mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted text-pretty',
+            isRight && 'lg:ml-auto',
+          )}
+        >
+          {Astro.slots.has('description') ? <slot name="description" /> : description}
+        </div>
+      ) : null
+    }
+  </div>
+
+  {Astro.slots.has('aside') ? <div class="shrink-0"><slot name="aside" /></div> : null}
+</div>
