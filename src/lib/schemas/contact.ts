@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-import { getDictionary, type Lang } from '@/i18n';
+import { getDictionary } from '@/i18n';
 
 /** Mirrors contactRequest in internal/api/handlers/contact.go. */
-export function contactSchema(lang: Lang) {
-  const e = getDictionary(lang).contact.form.errors;
+export function contactSchema() {
+  const e = getDictionary().contact.form.errors;
 
   return z.object({
     name: z.string().trim().min(2, e.nameMin).max(255, e.max255),
@@ -29,8 +29,8 @@ export type ContactValues = z.infer<ReturnType<typeof contactSchema>>;
 export type ContactTopic = ContactValues['topic'];
 
 /** The topic list, in the order the select renders it. */
-export function contactTopics(lang: Lang): ReadonlyArray<{ value: ContactTopic; label: string }> {
-  const t = getDictionary(lang).contact.form.topics;
+export function contactTopics(): ReadonlyArray<{ value: ContactTopic; label: string }> {
+  const t = getDictionary().contact.form.topics;
 
   return [
     { value: 'buy_data', label: t.buy_data },

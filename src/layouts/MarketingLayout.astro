@@ -1,7 +1,7 @@
 ---
 import Footer from '@/components/marketing/Footer.astro';
 import Navbar from '@/components/marketing/Navbar.astro';
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 }
 
 const props = Astro.props;
-const t = getDictionary(getLangFromUrl(Astro.url));
+const t = getDictionary();
 ---
 
 {/* Header, main and footer -- what app/layout.tsx wrapped every route in. */}

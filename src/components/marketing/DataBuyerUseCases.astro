@@ -3,10 +3,9 @@ import { BarChart3, Radar, ShoppingCart } from 'lucide-react';
 
 import Button from '@/components/ui/Button.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
-import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import { getDictionary } from '@/i18n';
 
-const lang = getLangFromUrl(Astro.url);
-const dictionary = getDictionary(lang);
+const dictionary = getDictionary();
 const t = dictionary.useCases;
 
 // The icon and the field chips are fixed per card: the chips are schema field
@@ -29,7 +28,7 @@ const TOTAL = String(USE_CASES.length).padStart(2, '0');
 
 <section id="data-buyers" class="relative overflow-hidden py-24 lg:py-32">
   <SectionHeading class="shell" eyebrow={t.eyebrow} title={t.title}>
-    <Button slot="aside" href={getLocalizedPath('/docs/api', lang)} variant="secondary">{t.cta}</Button>
+    <Button slot="aside" href="/docs/api" variant="secondary">{t.cta}</Button>
   </SectionHeading>
 
   <!-- The track bleeds past the right edge of the shell so the row visibly

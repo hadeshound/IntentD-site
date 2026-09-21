@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
 import { useCallback, useEffect, useRef, type ReactNode } from 'react';
 
-import { useDictionary } from '@/i18n/react';
+import { getDictionary } from '@/i18n';
 
 interface ModalProps {
   open: boolean;
@@ -32,7 +32,7 @@ export function Modal({
   footer,
   dismissible = true,
 }: ModalProps) {
-  const d = useDictionary();
+  const d = getDictionary();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
 

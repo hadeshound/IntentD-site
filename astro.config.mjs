@@ -10,25 +10,6 @@ export default defineConfig({
   site,
 
   /**
-   * Four languages, English unprefixed.
-   *
-   * This block does not generate the routes -- it makes the locale set known
-   * to Astro and keeps `prefixDefaultLocale: false` honest. The routes
-   * themselves are src/pages/[lang]/*, which render the shared screens under
-   * src/screens for ru, uk and zh, while src/pages/* is the English copy at
-   * the root. `redirectToDefaultLocale` stays off: /ru/pricing is a real page,
-   * not a redirect target.
-   */
-  i18n: {
-    defaultLocale: 'en',
-    locales: ['en', 'ru', 'uk', 'zh'],
-    routing: {
-      prefixDefaultLocale: false,
-      redirectToDefaultLocale: false,
-    },
-  },
-
-  /**
    * Astro 5 dropped `output: 'hybrid'`: 'static' now *is* the hybrid mode --
    * every page is prerendered unless it opts out with `export const prerender
    * = false`. The auth screens and /checkout do exactly that, because they
@@ -37,16 +18,10 @@ export default defineConfig({
   output: 'static',
 
   /**
-   * Directory format for two reasons:
-   *
-   * 1. Locale home pages. With 'file', /ru is emitted as ru.html at the repo
-   *    root, and Cloudflare does not resolve /ru to /ru.html -- the request
-   *    404s or loops. With 'directory', /ru becomes ru/index.html and Cloudflare
-   *    serves it on the /ru path with no extra configuration.
-   *
-   * 2. Canonical URLs stay clean. trailingSlash: 'never' stops Cloudflare from
-   *    redirecting /pricing to /pricing/, so the URL shape stays the same as
-   *    the Next site and matches the sitemap.
+   * Directory format keeps canonical URLs clean: /pricing is emitted as
+   * pricing/index.html and served on /pricing. trailingSlash: 'never' stops
+   * Cloudflare from redirecting /pricing to /pricing/, so the URL shape stays
+   * the same as the Next site and matches the sitemap.
    */
   trailingSlash: 'never',
   build: {

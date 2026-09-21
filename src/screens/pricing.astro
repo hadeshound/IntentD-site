@@ -4,14 +4,13 @@ import FeatureMatrix from '@/components/marketing/FeatureMatrix.astro';
 import PricingGrid from '@/components/marketing/PricingGrid.astro';
 import AmbientGlow from '@/components/ui/AmbientGlow.astro';
 import Button from '@/components/ui/Button.astro';
-import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import { fetchPlansSafe } from '@/lib/api/plans';
 
 const { plans, isFallback } = await fetchPlansSafe();
 
-const lang = getLangFromUrl(Astro.url);
-const t = getDictionary(lang).pricing;
+const t = getDictionary().pricing;
 ---
 
 <MarketingLayout title={t.metaTitle} description={t.metaDescription}>
@@ -38,7 +37,7 @@ const t = getDictionary(lang).pricing;
           <h2 class="font-display text-lg text-ink">{t.custom.title}</h2>
           <p class="mt-3 text-sm leading-relaxed text-ink-muted">{t.custom.body}</p>
           <Button
-            href={getLocalizedPath('/contact?topic=enterprise', lang)}
+            href="/contact?topic=enterprise"
             variant="secondary"
             class="mt-6 w-full"
           >

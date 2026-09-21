@@ -3,12 +3,11 @@ import { ArrowRight, Check, Zap } from 'lucide-react';
 
 import AmbientGlow from '@/components/ui/AmbientGlow.astro';
 import Button from '@/components/ui/Button.astro';
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import { DASHBOARD_LINKS } from '@/lib/config/urls';
 import DataFlowDiagram from './DataFlowDiagram.astro';
 
-const lang = getLangFromUrl(Astro.url);
-const t = getDictionary(lang).hero;
+const t = getDictionary().hero;
 
 // The first point is the speed claim; the other two are compliance marks.
 const TRUST_ICONS = [Zap, Check, Check];

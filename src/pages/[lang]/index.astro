@@ -1,8 +1,10 @@
 ---
+// Prefixed route for every language except the default one. The body is the
+// same screen the English route renders; it reads the language off the URL.
 import Screen from '@/screens/index.astro';
 import { prefixedLangPaths } from '@/i18n/routes';
 
-// Главные страницы локалей теперь в физических папках /ru/, /uk/, /zh/
-// Здесь оставляем только подстраницы (pricing, contact и т.д.)
-export const getStaticPaths = () => [];
+export const getStaticPaths = prefixedLangPaths;
 ---
+
+<Screen />

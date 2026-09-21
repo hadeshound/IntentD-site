@@ -4,31 +4,14 @@ import { useMemo } from 'react';
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/Field';
-import { getDictionary, type Lang } from '@/i18n';
-import { LangProvider } from '@/i18n/react';
+import { getDictionary } from '@/i18n';
 import { requestPasswordReset } from '@/lib/api/auth';
 import { useZodForm } from '@/lib/hooks/useZodForm';
 import { forgotPasswordSchema } from '@/lib/schemas/auth';
 
-interface ForgotPasswordFormProps {
-  lang: Lang;
-}
-
-/**
- * Publishes the page language to the shared primitives below (fields, dialogs)
- * so they do not each need it threaded through as a prop.
- */
-export function ForgotPasswordForm(props: ForgotPasswordFormProps) {
-  return (
-    <LangProvider lang={props.lang}>
-      <ForgotPasswordFormBody {...props} />
-    </LangProvider>
-  );
-}
-
-function ForgotPasswordFormBody({ lang }: ForgotPasswordFormProps) {
-  const t = getDictionary(lang).auth.forgot.form;
-  const schema = useMemo(() => forgotPasswordSchema(lang), [lang]);
+export function ForgotPasswordForm() {
+  const t = getDictionary().auth.forgot.form;
+  const schema = useMemo(() => forgotPasswordSchema(), []);
 
   const form = useZodForm({
     schema,

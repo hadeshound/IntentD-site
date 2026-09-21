@@ -7,7 +7,7 @@ import Hero from '@/components/marketing/Hero.astro';
 import HowItWorks from '@/components/marketing/HowItWorks.astro';
 import PricingGrid from '@/components/marketing/PricingGrid.astro';
 import WhyIntentD from '@/components/marketing/WhyIntentD.astro';
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import { fetchPlansSafe } from '@/lib/api/plans';
 
@@ -16,8 +16,7 @@ import { fetchPlansSafe } from '@/lib/api/plans';
 // a price change is picked up by the next deploy.
 const { plans, isFallback } = await fetchPlansSafe();
 
-const lang = getLangFromUrl(Astro.url);
-const t = getDictionary(lang).home;
+const t = getDictionary().home;
 ---
 
 <MarketingLayout
@@ -32,6 +31,6 @@ const t = getDictionary(lang).home;
   <DataBuyerUseCases />
   <WhyIntentD />
   <PricingGrid plans={plans} isFallback={isFallback} />
-  <FaqSection items={[...getDictionary(lang).faq.landing]} />
+  <FaqSection items={[...getDictionary().faq.landing]} />
   <ContactSection />
 </MarketingLayout>

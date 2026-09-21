@@ -1,6 +1,6 @@
 import { useId, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react';
 
-import { useDictionary } from '@/i18n/react';
+import { getDictionary } from '@/i18n';
 import { cn } from '@/lib/utils/cn';
 import { controlStyles } from './styles';
 
@@ -19,7 +19,7 @@ interface FieldShellProps {
  * the correction without losing the current position.
  */
 function FieldShell({ id, label, error, hint, optional, children }: FieldShellProps) {
-  const d = useDictionary();
+  const d = getDictionary();
 
   return (
     <div className="space-y-1.5">

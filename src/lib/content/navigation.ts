@@ -1,12 +1,9 @@
-import { getDictionary, getLocalizedPath, type Lang } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import { DASHBOARD_LINKS } from '@/lib/config/urls';
 
 /**
- * Link tables shared by the header and the footer.
- *
- * Built per language: the labels come from the dictionary and every internal
- * href is rewritten through getLocalizedPath, so a reader on /ru stays on /ru
- * when they follow the navigation. Dashboard links are absolute and untouched.
+ * Link tables shared by the header and the footer. The labels come from the dictionary;
+ * dashboard links are absolute.
  */
 
 export interface NavLink {
@@ -16,14 +13,14 @@ export interface NavLink {
   external?: boolean;
 }
 
-export function primaryNav(lang: Lang): NavLink[] {
-  const t = getDictionary(lang).nav;
+export function primaryNav(): NavLink[] {
+  const t = getDictionary().nav;
 
   return [
-    { label: t.pricing, href: getLocalizedPath('/pricing', lang) },
-    { label: t.docs, href: getLocalizedPath('/docs/api', lang) },
-    { label: t.forPublishers, href: getLocalizedPath('/#publishers', lang) },
-    { label: t.forBuyers, href: getLocalizedPath('/#data-buyers', lang) },
+    { label: t.pricing, href: '/pricing' },
+    { label: t.docs, href: '/docs/api' },
+    { label: t.forPublishers, href: '/#publishers' },
+    { label: t.forBuyers, href: '/#data-buyers' },
   ];
 }
 
@@ -32,9 +29,9 @@ export interface FooterColumn {
   links: NavLink[];
 }
 
-export function footerColumns(lang: Lang): FooterColumn[] {
-  const t = getDictionary(lang).footer;
-  const path = (route: string) => getLocalizedPath(route, lang);
+export function footerColumns(): FooterColumn[] {
+  const t = getDictionary().footer;
+  const path = (route: string) => route;
 
   return [
     {

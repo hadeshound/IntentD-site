@@ -1,4 +1,4 @@
-import { getDictionary, type Lang } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import type { Plan, PlanCode } from '@/lib/api/plans';
 
 /**
@@ -9,8 +9,7 @@ import type { Plan, PlanCode } from '@/lib/api/plans';
  * not honour. The words around those numbers come from the dictionaries, which
  * is why this file is a set of lookups rather than a table of copy.
  *
- * Plan names are not translated either -- Starter, Growth, Scale and Enterprise
- * are product names, and the API is their source.
+ * Plan names -- Starter, Growth, Scale and Enterprise -- come from the API.
  */
 
 export interface PlanPresentation {
@@ -26,8 +25,8 @@ export interface PlanPresentation {
 /** The tier that carries the highlight in the grid. */
 const HIGHLIGHTED_PLAN: PlanCode = 'growth';
 
-export function planPresentation(lang: Lang, code: PlanCode): PlanPresentation {
-  const plan = getDictionary(lang).pricing.plans[code];
+export function planPresentation(code: PlanCode): PlanPresentation {
+  const plan = getDictionary().pricing.plans[code];
 
   return {
     code,
@@ -54,8 +53,8 @@ export interface MatrixGroup {
   rows: MatrixRow[];
 }
 
-export function featureMatrix(lang: Lang): MatrixGroup[] {
-  return getDictionary(lang).pricing.matrix.groups.map((group) => ({
+export function featureMatrix(): MatrixGroup[] {
+  return getDictionary().pricing.matrix.groups.map((group) => ({
     title: group.title,
     rows: group.rows.map((row) => ({ label: row.label, values: { ...row.values } })),
   }));

@@ -1,7 +1,7 @@
 ---
 import Reveal from '@/components/ui/Reveal.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import { cn } from '@/lib/utils/cn';
 
 interface Track {
@@ -12,7 +12,7 @@ interface Track {
   steps: Array<{ title: string; body: string }>;
 }
 
-const t = getDictionary(getLangFromUrl(Astro.url)).howItWorks;
+const t = getDictionary().howItWorks;
 
 const TRACKS: Track[] = [
   { id: 'publishers-track', accent: 'mint', ...t.publishers, steps: [...t.publishers.steps] },

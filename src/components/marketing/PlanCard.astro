@@ -3,7 +3,7 @@ import { ArrowRight, Check } from 'lucide-react';
 
 import Badge from '@/components/ui/Badge.astro';
 import Button from '@/components/ui/Button.astro';
-import { getDictionary, getLocalizedPath, type Lang } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import type { Plan } from '@/lib/api/plans';
 import { planPresentation } from '@/lib/content/pricing';
 import { cn } from '@/lib/utils/cn';
@@ -12,15 +12,14 @@ import { buildRegisterRedirect } from '@/lib/utils/redirect';
 
 interface Props {
   plan: Plan;
-  lang: Lang;
   /** Index in the grid; drives the vertical offset on wide screens. */
   index: number;
 }
 
-const { plan, lang, index } = Astro.props;
+const { plan, index } = Astro.props;
 
-const t = getDictionary(lang).pricing;
-const presentation = planPresentation(lang, plan.code);
+const t = getDictionary().pricing;
+const presentation = planPresentation(plan.code);
 
 // Enterprise is quoted per deal, so its CTA goes to sales rather than to
 // checkout. Everything else sends an anonymous visitor to registration with
@@ -28,13 +27,13 @@ const presentation = planPresentation(lang, plan.code);
 // is server-rendered in the anonymous state and SessionBridge rewrites
 // data-auth-href once the silent refresh has settled -- which is the same
 // decision useAuth() made in the client component this replaces.
-const contactHref = getLocalizedPath('/contact?topic=enterprise', lang);
+const contactHref = '/contact?topic=enterprise';
 const anonymousHref = plan.is_custom_priced
   ? contactHref
-  : buildRegisterRedirect(plan.code, lang);
+  : buildRegisterRedirect(plan.code);
 const authenticatedHref = plan.is_custom_priced
   ? null
-  : getLocalizedPath(`/checkout?plan=${plan.code}`, lang);
+  : `/checkout?plan=${plan.code}`;
 
 const isHighlighted = presentation.highlighted;
 const ctaLabel = plan.is_custom_priced ? t.cta.contactSales : t.cta.subscribe;
@@ -45,7 +44,7 @@ const offsetClass = !isHighlighted && index === 3 ? 'lg:mt-8' : undefined;
 // A plan quoted per deal has no published allowance; a catalogue that predates
 // migration 000015 has none either, and that line is simply left out rather
 // than filled with a number nobody promised.
-const allowance = usersAllowance(plan.users_limit, lang);
+const allowance = usersAllowance(plan.users_limit);
 const volumeLabel = plan.is_custom_priced
   ? t.customVolume
   : allowance.kind === 'limited'
@@ -79,7 +78,7 @@ const volumeLabel = plan.is_custom_priced
 
   <p class="mt-8 flex items-baseline gap-2">
     <span class="font-display text-4xl tracking-tight text-ink lg:text-[2.75rem]">
-      {formatPrice(plan.price_cents, plan.currency, lang)}
+      {formatPrice(plan.price_cents, plan.currency)}
     </span>
     {plan.is_custom_priced ? null : <span class="text-sm text-ink-faint">{t.perMonth}</span>}
   </p>
@@ -90,7 +89,7 @@ const volumeLabel = plan.is_custom_priced
   {
     plan.setup_price_cents > 0 ? (
       <p class="mt-2 text-sm text-ink-muted">
-        + {formatPrice(plan.setup_price_cents, plan.currency, lang)}{' '}
+        + {formatPrice(plan.setup_price_cents, plan.currency)}{' '}
         <span class="text-ink-faint">{t.setupFee}</span>
       </p>
     ) : null

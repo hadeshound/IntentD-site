@@ -1,15 +1,14 @@
 ---
 import { Check, Minus } from 'lucide-react';
 
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import type { PlanCode } from '@/lib/api/plans';
 import { featureMatrix, PLAN_ORDER, planPresentation } from '@/lib/content/pricing';
 
-const lang = getLangFromUrl(Astro.url);
-const dictionary = getDictionary(lang);
+const dictionary = getDictionary();
 const t = dictionary.pricing.matrix;
 
-// Plan names are product names and stay in English in every language.
+// Plan names are product names.
 const COLUMN_TITLES: Record<PlanCode, string> = {
   starter: 'Starter',
   growth: 'Growth',
@@ -17,19 +16,13 @@ const COLUMN_TITLES: Record<PlanCode, string> = {
   enterprise: 'Enterprise',
 };
 
-const groups = featureMatrix(lang);
+const groups = featureMatrix();
 
-// A short form of the audience line under each column header. Splitting on
-// spaces suits the Latin and Cyrillic copy; Chinese has no spaces, so it is
-// truncated by character count instead.
+// A short form of the audience line under each column header.
 const AUDIENCE_WORDS = 3;
-const AUDIENCE_CHARS = 10;
 
 function shortAudience(code: PlanCode): string {
-  const full = planPresentation(lang, code).audience;
-  if (lang === 'zh') {
-    return full.length > AUDIENCE_CHARS ? `${full.slice(0, AUDIENCE_CHARS)}…` : full;
-  }
+  const full = planPresentation(code).audience;
   return full.split(' ').slice(0, AUDIENCE_WORDS).join(' ');
 }
 ---

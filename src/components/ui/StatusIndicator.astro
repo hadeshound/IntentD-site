@@ -1,18 +1,17 @@
 ---
-import { getDictionary, type Lang } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import { API_BASE_URL } from '@/lib/api/client';
 import { cn } from '@/lib/utils/cn';
 
 interface Props {
-  lang: Lang;
   class?: string;
 }
 
-const { lang, class: className } = Astro.props;
+const { class: className } = Astro.props;
 
 // The three states are rendered into data attributes rather than looked up in
 // the script, so the client code carries no copy of its own.
-const labels = getDictionary(lang).status;
+const labels = getDictionary().status;
 ---
 
 {/* Footer status light. It polls the real health endpoint rather than printing

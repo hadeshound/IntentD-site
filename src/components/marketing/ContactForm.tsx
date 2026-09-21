@@ -4,8 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { SelectField, TextAreaField, TextField } from '@/components/ui/Field';
-import { getDictionary, type Lang } from '@/i18n';
-import { LangProvider } from '@/i18n/react';
+import { getDictionary } from '@/i18n';
 import { submitContactMessage } from '@/lib/api/contact';
 import { useZodForm } from '@/lib/hooks/useZodForm';
 import { contactSchema, contactTopics, type ContactValues } from '@/lib/schemas/contact';
@@ -30,32 +29,17 @@ function topicFromLocation(): ContactValues['topic'] | undefined {
 }
 
 interface ContactFormProps {
-  /** The page language; islands cannot read it from the URL the way .astro can. */
-  lang: Lang;
   /** Pre-selects a topic. Falls back to ?topic= when not given. */
   defaultTopic?: ContactValues['topic'];
   /** Hides the optional company field on the compact landing variant. */
   showCompanyField?: boolean;
 }
 
-/**
- * Publishes the page language to the shared primitives below (fields, dialogs)
- * so they do not each need it threaded through as a prop.
- */
-export function ContactForm(props: ContactFormProps) {
-  return (
-    <LangProvider lang={props.lang}>
-      <ContactFormBody {...props} />
-    </LangProvider>
-  );
-}
+export function ContactForm({ defaultTopic, showCompanyField = true }: ContactFormProps) {
+  const t = getDictionary().contact.form;
 
-function ContactFormBody({ lang, defaultTopic, showCompanyField = true }: ContactFormProps) {
-  const t = getDictionary(lang).contact.form;
-
-  // The schema carries its messages, so it is rebuilt when the language does.
-  const schema = useMemo(() => contactSchema(lang), [lang]);
-  const topics = useMemo(() => contactTopics(lang), [lang]);
+  const schema = useMemo(() => contactSchema(), []);
+  const topics = useMemo(() => contactTopics(), []);
 
   const form = useZodForm({
     schema,

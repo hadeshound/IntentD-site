@@ -1,6 +1,6 @@
 ---
 import AmbientGlow from '@/components/ui/AmbientGlow.astro';
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 
 export interface LegalSection {
   id: string;
@@ -22,7 +22,7 @@ interface Props {
 
 const { title, updatedAt, intro, notice, sections } = Astro.props;
 
-const t = getDictionary(getLangFromUrl(Astro.url));
+const t = getDictionary();
 ---
 
 {/* Shared shell for /terms and /privacy: numbered sections, a sticky contents

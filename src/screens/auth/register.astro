@@ -3,12 +3,11 @@ import { Check } from 'lucide-react';
 
 import AuthShell from '@/components/auth/AuthShell.astro';
 import { RegisterForm } from '@/components/auth/RegisterForm';
-import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import { resolvePostAuthTarget } from '@/lib/utils/redirect';
 
-const lang = getLangFromUrl(Astro.url);
-const t = getDictionary(lang).auth.register;
+const t = getDictionary().auth.register;
 
 function parseRole(raw: string | null): 'buyer' | 'publisher' | undefined {
   return raw === 'buyer' || raw === 'publisher' ? raw : undefined;
@@ -16,21 +15,21 @@ function parseRole(raw: string | null): 'buyer' | 'publisher' | undefined {
 
 const params = Astro.url.searchParams;
 const plan = params.get('plan');
-const redirectTo = resolvePostAuthTarget(params.get('redirect'), plan, lang);
+const redirectTo = resolvePostAuthTarget(params.get('redirect'), plan);
 
 // A visitor who came from a pricing CTA is a buyer unless they say otherwise.
 const defaultRole = parseRole(params.get('role')) ?? (plan ? 'buyer' : undefined);
 
-const loginBase = getLocalizedPath('/auth/login', lang);
+const loginBase = '/auth/login';
 const loginHref =
-  redirectTo === getLocalizedPath('/', lang)
+  redirectTo === '/'
     ? loginBase
     : `${loginBase}?redirect=${redirectTo.split('?')[0]}${plan ? `&plan=${plan}` : ''}`;
 ---
 
 <MarketingLayout title={t.metaTitle} description={t.metaDescription} noindex>
   <AuthShell eyebrow={t.eyebrow} title={t.title} description={t.description}>
-    <RegisterForm redirectTo={redirectTo} lang={lang} defaultRole={defaultRole} client:load />
+    <RegisterForm redirectTo={redirectTo} defaultRole={defaultRole} client:load />
 
     <p slot="footer">
       {t.haveAccount}{' '}

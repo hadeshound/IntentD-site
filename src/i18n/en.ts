@@ -6,8 +6,7 @@ import { marketing } from './en/marketing';
 import { pricing } from './en/pricing';
 
 /**
- * The English dictionary, and the schema every other language is typed
- * against. Split across ./en/* by area so no single file has to hold the
+ * The site copy. Split across ./en/* by area so no single file has to hold the
  * landing copy, the API reference and the legal text at once.
  */
 export const en = {

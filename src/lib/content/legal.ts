@@ -1,4 +1,4 @@
-import { getDictionary, getLocalizedPath, type Lang } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import type { LegalSection } from '@/components/marketing/LegalDocument.astro';
 import { PRIVACY_EMAIL, SUPPORT_EMAIL } from './navigation';
 
@@ -7,17 +7,16 @@ import { PRIVACY_EMAIL, SUPPORT_EMAIL } from './navigation';
  *
  * The bodies carry `{{token}}` placeholders instead of literal addresses and
  * routes, so a support address or a moved page is changed in one place rather
- * than in eight paragraphs across four languages -- and so every internal link
- * inside the legal text keeps the reader's language.
+ * than in several paragraphs.
  */
-function tokensFor(lang: Lang): Record<string, string> {
+function tokensFor(): Record<string, string> {
   return {
     support: SUPPORT_EMAIL,
     privacy: PRIVACY_EMAIL,
-    schema: getLocalizedPath('/docs/api#data-schema', lang),
-    pricing: getLocalizedPath('/pricing', lang),
-    terms: getLocalizedPath('/terms#buyers', lang),
-    contact: getLocalizedPath('/contact?topic=support', lang),
+    schema: '/docs/api#data-schema',
+    pricing: '/pricing',
+    terms: '/terms#buyers',
+    contact: '/contact?topic=support',
   };
 }
 
@@ -37,10 +36,10 @@ export interface LegalDocumentContent {
   sections: LegalSection[];
 }
 
-export function legalDocument(lang: Lang, key: LegalDocumentKey): LegalDocumentContent {
-  const legal = getDictionary(lang).legal;
+export function legalDocument(key: LegalDocumentKey): LegalDocumentContent {
+  const legal = getDictionary().legal;
   const document = legal[key];
-  const tokens = tokensFor(lang);
+  const tokens = tokensFor();
 
   // Object key order is the section order: it is the reading order of the
   // document and the numbering the contents list prints.

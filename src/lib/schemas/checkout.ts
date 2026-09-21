@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-import { getDictionary, type Lang } from '@/i18n';
+import { getDictionary } from '@/i18n';
 
 /** Mirrors checkoutIntentRequest in internal/api/handlers/subscriptions.go. */
-export function checkoutSchema(lang: Lang) {
-  const e = getDictionary(lang).checkout.errors;
+export function checkoutSchema() {
+  const e = getDictionary().checkout.errors;
 
   return z.object({
     // Enterprise is quoted per deal and never reaches this form, which is why

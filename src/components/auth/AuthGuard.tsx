@@ -2,14 +2,13 @@ import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 
 import { Spinner } from '@/components/ui/Spinner';
-import { getDictionary, type Lang } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import { useAuth } from '@/lib/hooks/useAuth';
 
 interface AuthGuardProps {
   children: ReactNode;
   /** Where to send an anonymous visitor, including the return path. */
   loginHref: string;
-  lang: Lang;
 }
 
 /**
@@ -22,9 +21,9 @@ interface AuthGuardProps {
  * login screen. (An SSR cookie check was the other option, but the cookie is set
  * by api.intentd.io and never reaches this origin.)
  */
-export function AuthGuard({ children, loginHref, lang }: AuthGuardProps) {
+export function AuthGuard({ children, loginHref }: AuthGuardProps) {
   const { status } = useAuth();
-  const t = getDictionary(lang).auth.guard;
+  const t = getDictionary().auth.guard;
 
   useEffect(() => {
     if (status === 'anonymous') {

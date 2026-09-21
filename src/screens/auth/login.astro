@@ -1,29 +1,28 @@
 ---
 import AuthShell from '@/components/auth/AuthShell.astro';
 import { LoginForm } from '@/components/auth/LoginForm';
-import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import { resolvePostAuthTarget } from '@/lib/utils/redirect';
 
-const lang = getLangFromUrl(Astro.url);
-const t = getDictionary(lang).auth.login;
+const t = getDictionary().auth.login;
 
 const params = Astro.url.searchParams;
 const plan = params.get('plan');
 
-const redirectTo = resolvePostAuthTarget(params.get('redirect'), plan, lang);
+const redirectTo = resolvePostAuthTarget(params.get('redirect'), plan);
 
 // The counterpart link keeps whatever the visitor was on their way to.
-const registerBase = getLocalizedPath('/auth/register', lang);
+const registerBase = '/auth/register';
 const registerHref =
-  redirectTo === getLocalizedPath('/', lang)
+  redirectTo === '/'
     ? registerBase
     : `${registerBase}?redirect=${redirectTo.split('?')[0]}${plan ? `&plan=${plan}` : ''}`;
 ---
 
 <MarketingLayout title={t.metaTitle} description={t.metaDescription} noindex>
   <AuthShell eyebrow={t.eyebrow} title={t.title} description={t.description}>
-    <LoginForm redirectTo={redirectTo} lang={lang} client:load />
+    <LoginForm redirectTo={redirectTo} client:load />
 
     <p slot="footer">
       {t.noAccount}{' '}

@@ -23,7 +23,6 @@ export const common = {
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
     homeLink: 'IntentD — home',
-    languageSwitcher: 'Language',
     included: 'Included',
     notIncluded: 'Not included',
     docsContents: 'Documentation contents',

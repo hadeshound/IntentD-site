@@ -1,12 +1,11 @@
-import { getDictionary, type Lang } from '@/i18n';
+import { getDictionary } from '@/i18n';
 
 /**
  * Reference tables rendered on /docs/api.
  *
  * The structural half -- field names, wire types, HTTP methods, paths, status
- * codes, rate limits -- is the protocol and is identical in every language.
- * Only the prose column comes from the dictionary, which is also why these are
- * functions rather than constants.
+ * codes, rate limits -- is the protocol. Only the prose column comes from
+ * the dictionary.
  */
 
 export interface SchemaField {
@@ -17,8 +16,8 @@ export interface SchemaField {
   tier?: 'growth' | 'enterprise';
 }
 
-export function eventSchema(lang: Lang): SchemaField[] {
-  const f = getDictionary(lang).docs.api.schema.fields;
+export function eventSchema(): SchemaField[] {
+  const f = getDictionary().docs.api.schema.fields;
 
   return [
     { name: 'event_id', type: 'String', description: f.event_id },
@@ -40,8 +39,8 @@ export interface EndpointSpec {
   limit: string;
 }
 
-export function ingestEndpoints(lang: Lang): EndpointSpec[] {
-  const e = getDictionary(lang).docs.api.ingest.endpoints;
+export function ingestEndpoints(): EndpointSpec[] {
+  const e = getDictionary().docs.api.ingest.endpoints;
 
   return [
     { method: 'POST', path: '/sdk/register', ...e.register },
@@ -56,8 +55,8 @@ export interface ErrorCodeSpec {
   meaning: string;
 }
 
-export function ingestErrors(lang: Lang): ErrorCodeSpec[] {
-  const m = getDictionary(lang).docs.api.ingest.errors;
+export function ingestErrors(): ErrorCodeSpec[] {
+  const m = getDictionary().docs.api.ingest.errors;
 
   return [
     { status: 400, code: 'BUCKET_INVALID_FORMAT', meaning: m.BUCKET_INVALID_FORMAT },
@@ -77,8 +76,8 @@ export function ingestErrors(lang: Lang): ErrorCodeSpec[] {
  * Code samples. The code is the same everywhere; only its comments differ,
  * so the samples live in the dictionaries next to the prose that explains them.
  */
-export function docsSnippets(lang: Lang) {
-  return getDictionary(lang).docs.api.snippets;
+export function docsSnippets() {
+  return getDictionary().docs.api.snippets;
 }
 
 /** The S3 layout, which carries no words at all. */

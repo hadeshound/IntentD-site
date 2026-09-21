@@ -2,12 +2,11 @@
 import { Mail, MessageSquare, Users } from 'lucide-react';
 
 import AmbientGlow from '@/components/ui/AmbientGlow.astro';
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import { SALES_EMAIL, SUPPORT_EMAIL } from '@/lib/content/navigation';
 import { ContactForm } from './ContactForm';
 
-const lang = getLangFromUrl(Astro.url);
-const t = getDictionary(lang).contact.section;
+const t = getDictionary().contact.section;
 
 const CHANNELS = [
   { icon: Users, title: t.salesTitle, body: t.salesBody, email: SALES_EMAIL },
@@ -64,7 +63,7 @@ const CHANNELS = [
 
     <div class="lg:col-span-6 lg:col-start-7">
       <div class="surface-card p-7 lg:p-9">
-        <ContactForm lang={lang} client:load />
+        <ContactForm client:load />
       </div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 /**
  * Pricing copy. Prices, user allowances and delivery cadence are NOT here:
  * they come from GET /public/plans, so the page cannot advertise a number the
- * backend would not honour. Plan names stay in English in every language.
+ * backend would not honour.
  */
 export const pricing = {
   pricing: {

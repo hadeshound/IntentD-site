@@ -1,16 +1,15 @@
 ---
 import AmbientGlow from '@/components/ui/AmbientGlow.astro';
 import Button from '@/components/ui/Button.astro';
-import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 
-const lang = getLangFromUrl(Astro.url);
-const t = getDictionary(lang).notFound;
+const t = getDictionary().notFound;
 
 const SUGGESTIONS = [
-  { href: getLocalizedPath('/pricing', lang), label: t.suggestions.pricing },
-  { href: getLocalizedPath('/docs/api', lang), label: t.suggestions.api },
-  { href: getLocalizedPath('/contact', lang), label: t.suggestions.contact },
+  { href: '/pricing', label: t.suggestions.pricing },
+  { href: '/docs/api', label: t.suggestions.api },
+  { href: '/contact', label: t.suggestions.contact },
 ];
 ---
 
@@ -28,7 +27,7 @@ const SUGGESTIONS = [
         <p class="mt-8 max-w-lg text-lg leading-relaxed text-ink-muted text-pretty">{t.body}</p>
 
         <div class="mt-10 flex flex-wrap gap-3">
-          <Button href={getLocalizedPath('/', lang)} size="lg">{t.home}</Button>
+          <Button href="/" size="lg">{t.home}</Button>
 
           {
             SUGGESTIONS.map((item) => (

@@ -4,8 +4,7 @@ import { useMemo } from 'react';
 import { Alert } from '@/components/ui/Alert';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/Field';
-import { getDictionary, getLocalizedPath, type Lang } from '@/i18n';
-import { LangProvider } from '@/i18n/react';
+import { getDictionary } from '@/i18n';
 import { resetPassword } from '@/lib/api/auth';
 import { useZodForm } from '@/lib/hooks/useZodForm';
 import { resetPasswordSchema } from '@/lib/schemas/auth';
@@ -13,24 +12,11 @@ import { resetPasswordSchema } from '@/lib/schemas/auth';
 interface ResetPasswordFormProps {
   /** Token taken from the emailed link. */
   token: string;
-  lang: Lang;
 }
 
-/**
- * Publishes the page language to the shared primitives below (fields, dialogs)
- * so they do not each need it threaded through as a prop.
- */
-export function ResetPasswordForm(props: ResetPasswordFormProps) {
-  return (
-    <LangProvider lang={props.lang}>
-      <ResetPasswordFormBody {...props} />
-    </LangProvider>
-  );
-}
-
-function ResetPasswordFormBody({ token, lang }: ResetPasswordFormProps) {
-  const t = getDictionary(lang).auth.reset.form;
-  const schema = useMemo(() => resetPasswordSchema(lang), [lang]);
+export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
+  const t = getDictionary().auth.reset.form;
+  const schema = useMemo(() => resetPasswordSchema(), []);
 
   const form = useZodForm({
     schema,
@@ -45,7 +31,7 @@ function ResetPasswordFormBody({ token, lang }: ResetPasswordFormProps) {
       <Alert tone="error" title={t.incompleteTitle}>
         <p>
           {t.incompleteBodyBefore}{' '}
-          <a href={getLocalizedPath('/auth/forgot-password', lang)}>{t.incompleteLink}</a>.
+          <a href="/auth/forgot-password">{t.incompleteLink}</a>.
         </p>
       </Alert>
     );
@@ -58,7 +44,7 @@ function ResetPasswordFormBody({ token, lang }: ResetPasswordFormProps) {
           <p>{t.successBody}</p>
         </Alert>
 
-        <ButtonLink href={getLocalizedPath('/auth/login', lang)} size="lg" className="w-full">
+        <ButtonLink href="/auth/login" size="lg" className="w-full">
           {t.goToLogin}
           <Check className="h-4 w-4" aria-hidden="true" />
         </ButtonLink>

@@ -2,9 +2,8 @@
 import { Menu, X } from 'lucide-react';
 
 import Button from '@/components/ui/Button.astro';
-import LanguageSwitcher from '@/components/ui/LanguageSwitcher.astro';
 import Logo from '@/components/ui/Logo.astro';
-import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import { DASHBOARD_LINKS } from '@/lib/config/urls';
 import { primaryNav } from '@/lib/content/navigation';
 import { cn } from '@/lib/utils/cn';
@@ -12,10 +11,9 @@ import { routePath } from '@/lib/utils/pathname';
 
 // Astro has no usePathname(); the current URL is on Astro.url, normalised to
 // the form the links in the navigation table use.
-const lang = getLangFromUrl(Astro.url);
-const t = getDictionary(lang);
-const pathname = getLocalizedPath(routePath(Astro.url.pathname), lang);
-const links = primaryNav(lang);
+const t = getDictionary();
+const pathname = routePath(Astro.url.pathname);
+const links = primaryNav();
 ---
 
 {/* Sticky glass header. It floats above the page instead of sitting in the
@@ -26,7 +24,7 @@ const links = primaryNav(lang);
   class="fixed inset-x-0 top-0 z-50 border-b border-transparent transition-[background-color,border-color,backdrop-filter] duration-300"
 >
   <nav class="shell flex h-18 items-center justify-between gap-6" aria-label={t.a11y.primaryNav}>
-    <a href={getLocalizedPath('/', lang)} class="rounded-control" aria-label={t.a11y.homeLink}>
+    <a href="/" class="rounded-control" aria-label={t.a11y.homeLink}>
       <Logo />
     </a>
 
@@ -49,8 +47,6 @@ const links = primaryNav(lang);
     </ul>
 
     <div class="hidden items-center gap-3 lg:flex">
-      <LanguageSwitcher lang={lang} />
-
       <div class="flex items-center gap-3" data-auth-when="authenticated" hidden>
         <span class="max-w-[12rem] truncate text-sm text-ink-muted" title="" data-auth-email></span>
         <Button href={DASHBOARD_LINKS.home} size="sm">{t.nav.dashboard}</Button>
@@ -95,9 +91,6 @@ const links = primaryNav(lang);
         }
       </ul>
 
-      <div class="border-t border-hairline pt-6">
-        <LanguageSwitcher lang={lang} variant="list" />
-      </div>
 
       <div class="flex flex-col gap-3 border-t border-hairline pt-6">
         <div class="flex flex-col gap-3" data-auth-when="authenticated" hidden>
@@ -128,7 +121,7 @@ const links = primaryNav(lang);
     let isMenuOpen = false;
 
     // The two aria-labels are rendered into the button by the server, so this
-    // script stays language-agnostic.
+    // script carries no copy of its own.
     const labelOpen = toggle.dataset.labelOpen ?? 'Open menu';
     const labelClose = toggle.dataset.labelClose ?? 'Close menu';
 

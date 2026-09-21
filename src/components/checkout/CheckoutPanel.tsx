@@ -8,7 +8,7 @@ import { Button, ButtonLink } from '@/components/ui/Button';
 import { TextAreaField, TextField } from '@/components/ui/Field';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
-import { getDictionary, getLocalizedPath, type Lang } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import { isSelfServePlan, type PlanCode, type SelfServePlanCode } from '@/lib/api/plans';
 import { createCheckoutIntent } from '@/lib/api/subscriptions';
 import { planPresentation } from '@/lib/content/pricing';
@@ -27,25 +27,24 @@ import {
 interface CheckoutPanelProps {
   /** Plan code taken from ?plan=, already narrowed by the page. */
   planCode: PlanCode | null;
-  lang: Lang;
 }
 
-export function CheckoutPanel({ planCode, lang }: CheckoutPanelProps) {
+export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
   const { user, reload } = useAuth();
-  const { plans, isLoading, error } = usePlans(lang);
+  const { plans, isLoading, error } = usePlans();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const t = getDictionary(lang).checkout;
-  const pricingHref = getLocalizedPath('/pricing', lang);
+  const t = getDictionary().checkout;
+  const pricingHref = '/pricing';
 
   const plan = useMemo(() => findPlan(plans, planCode), [plans, planCode]);
   const presentation = useMemo(
-    () => (planCode ? planPresentation(lang, planCode) : null),
-    [lang, planCode],
+    () => (planCode ? planPresentation(planCode) : null),
+    [planCode],
   );
 
   const existingCompany = user?.company_name?.trim() ?? '';
-  const schema = useMemo(() => checkoutSchema(lang), [lang]);
+  const schema = useMemo(() => checkoutSchema(), []);
 
   const form = useZodForm({
     schema,
@@ -88,7 +87,7 @@ export function CheckoutPanel({ planCode, lang }: CheckoutPanelProps) {
     return (
       <Alert tone="info" title={t.enterprise.title}>
         <p>{t.enterprise.body}</p>
-        <ButtonLink href={getLocalizedPath('/contact?topic=enterprise', lang)} className="mt-5">
+        <ButtonLink href="/contact?topic=enterprise" className="mt-5">
           {t.enterprise.cta}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </ButtonLink>
@@ -129,7 +128,7 @@ export function CheckoutPanel({ planCode, lang }: CheckoutPanelProps) {
 
   // --- main view ----------------------------------------------------------
 
-  const allowance = usersAllowance(plan.users_limit, lang);
+  const allowance = usersAllowance(plan.users_limit);
 
   return (
     <>
@@ -151,7 +150,7 @@ export function CheckoutPanel({ planCode, lang }: CheckoutPanelProps) {
 
             <p className="mt-7 flex items-baseline gap-2">
               <span className="font-display text-4xl tracking-tight text-ink">
-                {formatPrice(plan.price_cents, plan.currency, lang)}
+                {formatPrice(plan.price_cents, plan.currency)}
               </span>
               <span className="text-sm text-ink-faint">{t.monthlyFee}</span>
             </p>
@@ -163,7 +162,7 @@ export function CheckoutPanel({ planCode, lang }: CheckoutPanelProps) {
                 <div className="flex items-start justify-between gap-6">
                   <dt className="text-ink-muted">{t.setupFee}</dt>
                   <dd className="text-right font-mono text-ink">
-                    {formatPrice(plan.setup_price_cents, plan.currency, lang)}
+                    {formatPrice(plan.setup_price_cents, plan.currency)}
                   </dd>
                 </div>
               ) : null}
@@ -184,19 +183,19 @@ export function CheckoutPanel({ planCode, lang }: CheckoutPanelProps) {
               <div className="flex items-start justify-between gap-6">
                 <dt className="text-ink-muted">{t.delivery}</dt>
                 <dd className="max-w-[16rem] text-right text-ink">
-                  {formatDelivery(plan.delivery_frequency, lang)}
+                  {formatDelivery(plan.delivery_frequency)}
                 </dd>
               </div>
 
               <div className="flex items-start justify-between gap-6">
                 <dt className="text-ink-muted">{t.sla}</dt>
-                <dd className="text-right text-ink">{formatSla(plan.sla, lang)}</dd>
+                <dd className="text-right text-ink">{formatSla(plan.sla)}</dd>
               </div>
 
               <div className="flex items-start justify-between gap-6">
                 <dt className="text-ink-muted">{t.support}</dt>
                 <dd className="max-w-[16rem] text-right text-ink">
-                  {formatSupport(plan.support_level, lang)}
+                  {formatSupport(plan.support_level)}
                 </dd>
               </div>
 
@@ -292,7 +291,7 @@ export function CheckoutPanel({ planCode, lang }: CheckoutPanelProps) {
         onClose={() => {
           setIsModalOpen(false);
           // No dashboard exists yet, so the flow returns to the landing page.
-          window.location.assign(getLocalizedPath('/', lang));
+          window.location.assign('/');
         }}
         title={t.modal.title}
         description={t.modal.description}
@@ -301,12 +300,12 @@ export function CheckoutPanel({ planCode, lang }: CheckoutPanelProps) {
             <Button
               onClick={() => {
                 setIsModalOpen(false);
-                window.location.assign(getLocalizedPath('/', lang));
+                window.location.assign('/');
               }}
             >
               {t.modal.home}
             </Button>
-            <ButtonLink href={getLocalizedPath('/docs/api', lang)} variant="secondary">
+            <ButtonLink href="/docs/api" variant="secondary">
               {t.modal.docs}
             </ButtonLink>
           </>

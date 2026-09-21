@@ -3,10 +3,10 @@ import { Database, Gauge, Lock, ShieldCheck } from 'lucide-react';
 
 import Reveal from '@/components/ui/Reveal.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import { cn } from '@/lib/utils/cn';
 
-const t = getDictionary(getLangFromUrl(Astro.url)).why;
+const t = getDictionary().why;
 
 // Icon, grid span and the accent flag are layout, not copy: the first card is
 // the wide accented one, and the rest alternate around it.

@@ -9,7 +9,7 @@
  */
 
 import { API_BASE_URL } from '@/lib/config/urls';
-import { currentDictionary } from '@/i18n/runtime';
+import { getDictionary } from '@/i18n';
 
 export { API_BASE_URL };
 
@@ -52,12 +52,8 @@ export class ApiError extends Error {
   }
 }
 
-/**
- * Read at call time rather than at import time: the language can change
- * while the tab stays open.
- */
 function networkErrorMessage(): string {
-  return currentDictionary().errors.network;
+  return getDictionary().errors.network;
 }
 
 // --- in-memory access token -------------------------------------------------
@@ -133,7 +129,7 @@ async function rawRequest<T>(path: string, options: RequestOptions): Promise<T> 
   if (!response.ok || !envelope?.success) {
     const error = envelope?.error;
     throw new ApiError(
-      error?.message ?? currentDictionary().errors.unexpected,
+      error?.message ?? getDictionary().errors.unexpected,
       error?.code ?? 'INTERNAL_ERROR',
       response.status,
       error?.details,

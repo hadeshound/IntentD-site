@@ -1,6 +1,6 @@
 ---
 import AmbientGlow from '@/components/ui/AmbientGlow.astro';
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import MarketingLayout from './MarketingLayout.astro';
 
 export interface DocsSection {
@@ -21,7 +21,7 @@ interface Props {
   sections: DocsSection[];
 }
 
-const t = getDictionary(getLangFromUrl(Astro.url));
+const t = getDictionary();
 
 const {
   title,

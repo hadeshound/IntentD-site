@@ -1,4 +1,4 @@
-import { getDictionary, langMeta, type Lang } from '@/i18n';
+import { getDictionary } from '@/i18n';
 
 /** Presentation helpers shared by the pricing grid, checkout and docs. */
 
@@ -9,13 +9,11 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
 
 /**
  * Renders a catalogue price. Cents are dropped when the amount is whole, which
- * it always is for the published tiers; a zero price means "quoted per deal",
- * and that phrase is the only translated part -- the digits and the grouping
- * stay in en-US so $4,999 reads identically in every language.
+ * it always is for the published tiers; a zero price means "quoted per deal".
  */
-export function formatPrice(cents: number, currency = 'USD', lang: Lang = 'en'): string {
+export function formatPrice(cents: number, currency = 'USD'): string {
   if (cents <= 0) {
-    return getDictionary(lang).pricing.customPrice;
+    return getDictionary().pricing.customPrice;
   }
 
   const symbol = CURRENCY_SYMBOLS[currency] ?? `${currency} `;
@@ -41,30 +39,30 @@ export type UsersAllowance =
   | { kind: 'unlimited'; text: string }
   | { kind: 'unknown' };
 
-export function usersAllowance(limit: number | null | undefined, lang: Lang = 'en'): UsersAllowance {
+export function usersAllowance(limit: number | null | undefined): UsersAllowance {
   if (limit === null) {
-    return { kind: 'unlimited', text: getDictionary(lang).pricing.unlimitedUsers };
+    return { kind: 'unlimited', text: getDictionary().pricing.unlimitedUsers };
   }
   if (typeof limit !== 'number' || !Number.isFinite(limit)) {
     return { kind: 'unknown' };
   }
   if (limit <= 0) {
-    return { kind: 'unlimited', text: getDictionary(lang).pricing.unlimitedUsers };
+    return { kind: 'unlimited', text: getDictionary().pricing.unlimitedUsers };
   }
-  return { kind: 'limited', text: formatUsersLimit(limit, lang) };
+  return { kind: 'limited', text: formatUsersLimit(limit) };
 }
 
-/** Just the number, grouped for the reader's locale. */
-export function formatUsersLimit(limit: number, lang: Lang = 'en'): string {
-  return new Intl.NumberFormat(langMeta(lang).htmlLang).format(limit);
+/** Just the number, with thousands separators. */
+export function formatUsersLimit(limit: number): string {
+  return new Intl.NumberFormat('en').format(limit);
 }
 
 /** Formats the monthly event allowance; zero means an unmetered firehose. */
-export function formatEventsLimit(limit: number, lang: Lang = 'en'): string {
+export function formatEventsLimit(limit: number): string {
   if (!Number.isFinite(limit) || limit <= 0) {
-    return getDictionary(lang).checkout.unlimited;
+    return getDictionary().checkout.unlimited;
   }
-  return new Intl.NumberFormat(langMeta(lang).htmlLang).format(limit);
+  return new Intl.NumberFormat('en').format(limit);
 }
 
 /** Compact variant for tight card headers: 5 000 000 becomes "5M". */
@@ -86,21 +84,21 @@ export function formatEventsCompact(limit: number): string {
  * An unknown value falls through to the code itself: loud enough to be caught
  * in review, and the card still renders.
  */
-export function formatDelivery(frequency: string, lang: Lang = 'en'): string {
-  const labels: Record<string, string> = getDictionary(lang).pricing.deliveryLabels;
+export function formatDelivery(frequency: string): string {
+  const labels: Record<string, string> = getDictionary().pricing.deliveryLabels;
   return labels[frequency] ?? frequency;
 }
 
 /** The SLA figure as published: a percentage, or the best-effort phrase. */
-export function formatSla(sla: string, lang: Lang = 'en'): string {
+export function formatSla(sla: string): string {
   if (!sla || sla === 'best_effort') {
-    return getDictionary(lang).pricing.slaBestEffort;
+    return getDictionary().pricing.slaBestEffort;
   }
   return `${sla}%`;
 }
 
 /** The support tier as published on the comparison table. */
-export function formatSupport(level: string, lang: Lang = 'en'): string {
-  const labels: Record<string, string> = getDictionary(lang).pricing.supportLabels;
+export function formatSupport(level: string): string {
+  const labels: Record<string, string> = getDictionary().pricing.supportLabels;
   return labels[level] ?? level;
 }

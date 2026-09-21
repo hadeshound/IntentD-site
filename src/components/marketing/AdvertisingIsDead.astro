@@ -3,10 +3,10 @@ import { Ban, ShieldCheck, TrendingDown } from 'lucide-react';
 
 import Reveal from '@/components/ui/Reveal.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import { cn } from '@/lib/utils/cn';
 
-const t = getDictionary(getLangFromUrl(Astro.url)).advertising;
+const t = getDictionary().advertising;
 
 // Icon, vertical offset and the solution flag belong to the layout, not to the
 // copy: two problem cards, then the answer.

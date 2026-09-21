@@ -2,7 +2,7 @@
 import Badge from '@/components/ui/Badge.astro';
 import Button from '@/components/ui/Button.astro';
 import CodeBlock from '@/components/ui/CodeBlock.astro';
-import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import DocsLayout, { type DocsSection } from '@/layouts/DocsLayout.astro';
 import {
   docsSnippets,
@@ -12,10 +12,9 @@ import {
   S3_PATH_TEMPLATE,
 } from '@/lib/content/docs';
 
-const lang = getLangFromUrl(Astro.url);
-const t = getDictionary(lang).docs.api;
+const t = getDictionary().docs.api;
 
-const path = (route: string) => getLocalizedPath(route, lang);
+const path = (route: string) => route;
 
 const SECTIONS: DocsSection[] = [
   { id: 'quickstart', ...t.sections.quickstart },
@@ -33,10 +32,10 @@ const DELIVERY_FACTS = [
   { term: t.delivery.facts.archive, value: t.delivery.facts.archiveValue },
 ];
 
-const snippets = docsSnippets(lang);
-const schema = eventSchema(lang);
-const endpoints = ingestEndpoints(lang);
-const errors = ingestErrors(lang);
+const snippets = docsSnippets();
+const schema = eventSchema();
+const endpoints = ingestEndpoints();
+const errors = ingestErrors();
 ---
 
 <DocsLayout

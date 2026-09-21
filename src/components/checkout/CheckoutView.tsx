@@ -1,6 +1,5 @@
 import { AuthGuard } from '@/components/auth/AuthGuard';
-import { getDictionary, type Lang } from '@/i18n';
-import { LangProvider } from '@/i18n/react';
+import { getDictionary } from '@/i18n';
 import type { PlanCode } from '@/lib/api/plans';
 import { CheckoutPanel } from './CheckoutPanel';
 
@@ -9,7 +8,6 @@ interface CheckoutViewProps {
   planCode: PlanCode | null;
   /** Login destination for an anonymous visitor, built by the page. */
   loginHref: string;
-  lang: Lang;
 }
 
 /**
@@ -19,23 +17,11 @@ interface CheckoutViewProps {
  * page had it: an anonymous visitor on their way to the login screen should not
  * see a page about reserving a bucket for half a second.
  */
-/**
- * Publishes the page language to the shared primitives below (fields, dialogs)
- * so they do not each need it threaded through as a prop.
- */
-export function CheckoutView(props: CheckoutViewProps) {
-  return (
-    <LangProvider lang={props.lang}>
-      <CheckoutViewBody {...props} />
-    </LangProvider>
-  );
-}
-
-function CheckoutViewBody({ planCode, loginHref, lang }: CheckoutViewProps) {
-  const t = getDictionary(lang).checkout;
+export function CheckoutView({ planCode, loginHref }: CheckoutViewProps) {
+  const t = getDictionary().checkout;
 
   return (
-    <AuthGuard loginHref={loginHref} lang={lang}>
+    <AuthGuard loginHref={loginHref}>
       <div className="shell">
         <div className="max-w-3xl">
           <p className="flex items-center gap-3">
@@ -51,7 +37,7 @@ function CheckoutViewBody({ planCode, loginHref, lang }: CheckoutViewProps) {
         </div>
 
         <div className="mt-14 lg:mt-16">
-          <CheckoutPanel planCode={planCode} lang={lang} />
+          <CheckoutPanel planCode={planCode} />
         </div>
       </div>
     </AuthGuard>

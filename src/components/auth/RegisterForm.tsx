@@ -5,8 +5,7 @@ import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { CheckboxField, TextField } from '@/components/ui/Field';
 import { RadioCardGroup } from '@/components/ui/RadioCardGroup';
-import { getDictionary, getLocalizedPath, type Lang } from '@/i18n';
-import { LangProvider } from '@/i18n/react';
+import { getDictionary } from '@/i18n';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useZodForm } from '@/lib/hooks/useZodForm';
 import { registerSchema } from '@/lib/schemas/auth';
@@ -15,28 +14,15 @@ type Role = 'buyer' | 'publisher';
 
 interface RegisterFormProps {
   redirectTo: string;
-  lang: Lang;
   /** Pre-selected from ?role= on the pricing and hero CTAs. */
   defaultRole?: Role;
 }
 
-/**
- * Publishes the page language to the shared primitives below (fields, dialogs)
- * so they do not each need it threaded through as a prop.
- */
-export function RegisterForm(props: RegisterFormProps) {
-  return (
-    <LangProvider lang={props.lang}>
-      <RegisterFormBody {...props} />
-    </LangProvider>
-  );
-}
-
-function RegisterFormBody({ redirectTo, lang, defaultRole }: RegisterFormProps) {
+export function RegisterForm({ redirectTo, defaultRole }: RegisterFormProps) {
   const { register, status } = useAuth();
-  const t = getDictionary(lang).auth.register.form;
+  const t = getDictionary().auth.register.form;
 
-  const schema = useMemo(() => registerSchema(lang), [lang]);
+  const schema = useMemo(() => registerSchema(), []);
 
   const roleOptions = useMemo(
     () => [
@@ -131,11 +117,11 @@ function RegisterFormBody({ redirectTo, lang, defaultRole }: RegisterFormProps) 
         error={form.errorFor('accept_terms')}
       >
         {t.acceptBefore}{' '}
-        <a href={getLocalizedPath('/terms', lang)} className="text-mint-400 underline underline-offset-4">
+        <a href="/terms" className="text-mint-400 underline underline-offset-4">
           {t.acceptTerms}
         </a>{' '}
         {t.acceptAnd}{' '}
-        <a href={getLocalizedPath('/privacy', lang)} className="text-mint-400 underline underline-offset-4">
+        <a href="/privacy" className="text-mint-400 underline underline-offset-4">
           {t.acceptPrivacy}
         </a>
         .

@@ -2,13 +2,12 @@
 import { ContactForm } from '@/components/marketing/ContactForm';
 import FaqSection from '@/components/marketing/FaqSection.astro';
 import AmbientGlow from '@/components/ui/AmbientGlow.astro';
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import { PRIVACY_EMAIL, SALES_EMAIL, SUPPORT_EMAIL } from '@/lib/content/navigation';
 import { Clock, Mail, ShieldCheck } from 'lucide-react';
 
-const lang = getLangFromUrl(Astro.url);
-const t = getDictionary(lang).contact;
+const t = getDictionary().contact;
 
 const DIRECT_CHANNELS = [
   { icon: Mail, label: t.directChannels.sales, email: SALES_EMAIL },
@@ -77,7 +76,7 @@ const DIRECT_CHANNELS = [
           <p class="mt-2 text-sm text-ink-muted">{t.formHint}</p>
 
           <div class="mt-8">
-            <ContactForm lang={lang} client:load />
+            <ContactForm client:load />
           </div>
         </div>
       </div>

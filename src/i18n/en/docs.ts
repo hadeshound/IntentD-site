@@ -1,8 +1,4 @@
-/**
- * Documentation prose. Technical terms — API, SDK, Parquet, HMAC, S3, LZ4,
- * PII, field names, error codes, header names — stay in English in every
- * language, so only the surrounding explanation is translated.
- */
+/** Documentation prose. */
 export const docs = {
   docs: {
     layout: {

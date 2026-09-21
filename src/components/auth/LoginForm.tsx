@@ -4,8 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { CheckboxField, TextField } from '@/components/ui/Field';
-import { getDictionary, getLocalizedPath, type Lang } from '@/i18n';
-import { LangProvider } from '@/i18n/react';
+import { getDictionary } from '@/i18n';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useZodForm } from '@/lib/hooks/useZodForm';
 import { loginSchema } from '@/lib/schemas/auth';
@@ -13,27 +12,13 @@ import { loginSchema } from '@/lib/schemas/auth';
 interface LoginFormProps {
   /** Destination after a successful sign-in, already sanitised by the page. */
   redirectTo: string;
-  lang: Lang;
 }
 
-/**
- * Publishes the page language to the shared primitives below (fields, dialogs)
- * so they do not each need it threaded through as a prop.
- */
-export function LoginForm(props: LoginFormProps) {
-  return (
-    <LangProvider lang={props.lang}>
-      <LoginFormBody {...props} />
-    </LangProvider>
-  );
-}
-
-function LoginFormBody({ redirectTo, lang }: LoginFormProps) {
+export function LoginForm({ redirectTo }: LoginFormProps) {
   const { login, status } = useAuth();
-  const t = getDictionary(lang).auth.login.form;
+  const t = getDictionary().auth.login.form;
 
-  // The schema carries its messages, so it is rebuilt when the language does.
-  const schema = useMemo(() => loginSchema(lang), [lang]);
+  const schema = useMemo(() => loginSchema(), []);
 
   const form = useZodForm({
     schema,
@@ -96,7 +81,7 @@ function LoginFormBody({ redirectTo, lang }: LoginFormProps) {
         </CheckboxField>
 
         <a
-          href={getLocalizedPath('/auth/forgot-password', lang)}
+          href="/auth/forgot-password"
           className="text-sm text-ink-muted underline underline-offset-4 decoration-hairline-strong transition-colors duration-200 hover:text-mint-300"
         >
           {t.forgot}

@@ -1,12 +1,11 @@
 ---
 import Logo from '@/components/ui/Logo.astro';
 import StatusIndicator from '@/components/ui/StatusIndicator.astro';
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import { footerColumns, SUPPORT_EMAIL } from '@/lib/content/navigation';
 
-const lang = getLangFromUrl(Astro.url);
-const t = getDictionary(lang);
-const columns = footerColumns(lang);
+const t = getDictionary();
+const columns = footerColumns();
 
 const year = new Date().getFullYear();
 ---
@@ -18,7 +17,7 @@ const year = new Date().getFullYear();
 
       <p class="max-w-sm text-sm leading-relaxed text-ink-muted">{t.footer.tagline}</p>
 
-      <StatusIndicator lang={lang} />
+      <StatusIndicator />
     </div>
 
     <div class="grid gap-10 sm:grid-cols-3">

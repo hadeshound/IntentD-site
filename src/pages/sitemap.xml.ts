@@ -1,6 +1,5 @@
 import type { APIRoute } from 'astro';
 
-import { alternateUrls, getLocalizedPath, LANGUAGE_META, LANGUAGES } from '@/i18n';
 import { SITE_URL } from '@/lib/config/urls';
 
 export const prerender = true;
@@ -13,10 +12,6 @@ export const prerender = true;
  * single /sitemap.xml with both, robots.txt points at that exact path, and
  * search engines have it indexed -- so the path and the payload stay as they
  * were. Add a public route here when you add one to src/pages.
- *
- * Every route is published once per language, and each entry carries the full
- * xhtml:link alternate set, which is what Google asks for when hreflang is
- * declared in a sitemap rather than only in the page head.
  */
 const PUBLIC_ROUTES: Array<{
   path: string;
@@ -36,29 +31,17 @@ const PUBLIC_ROUTES: Array<{
 export const GET: APIRoute = () => {
   const lastModified = new Date().toISOString();
 
-  const entries = PUBLIC_ROUTES.flatMap((route) => {
-    const alternates = alternateUrls(route.path, SITE_URL)
-      .map(
-        (entry) =>
-          `    <xhtml:link rel="alternate" hreflang="${LANGUAGE_META[entry.lang].htmlLang}" href="${entry.href}" />`,
-      )
-      .join('\n');
-
-    return LANGUAGES.map((lang) => {
-      const loc = new URL(getLocalizedPath(route.path, lang), SITE_URL).href;
-
-      return `  <url>
-    <loc>${loc}</loc>
-${alternates}
+  const entries = PUBLIC_ROUTES.map(
+    (route) => `  <url>
+    <loc>${new URL(route.path, SITE_URL).href}</loc>
     <lastmod>${lastModified}</lastmod>
     <changefreq>${route.changeFrequency}</changefreq>
     <priority>${route.priority}</priority>
-  </url>`;
-    });
-  }).join('\n');
+  </url>`,
+  ).join('\n');
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries}
 </urlset>
 `;

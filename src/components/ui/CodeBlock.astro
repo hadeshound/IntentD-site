@@ -1,7 +1,7 @@
 ---
 import { Check, Copy } from 'lucide-react';
 
-import { getDictionary, getLangFromUrl } from '@/i18n';
+import { getDictionary } from '@/i18n';
 import { cn } from '@/lib/utils/cn';
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 const { code, label, class: className } = Astro.props;
 
 // Rendered into data attributes so the script below carries no copy of its own.
-const t = getDictionary(getLangFromUrl(Astro.url)).common;
+const t = getDictionary().common;
 ---
 
 {/* Monospaced snippet with a copy control. Wide lines scroll inside the block

@@ -1,21 +1,17 @@
 import { z } from 'zod';
 
-import { getDictionary, type Lang } from '@/i18n';
+import { getDictionary } from '@/i18n';
 
 /**
  * These rules mirror internal/auth/password.go and the `validate` tags on the
  * Go request structs one-for-one. The browser copy exists to give instant
  * feedback; the server remains the authority and re-checks everything.
- *
- * The schemas are built per language rather than declared once: a Zod message
- * is baked into the schema at construction time, so a shared instance could
- * only ever speak one language.
  */
 
 type AuthErrors = ReturnType<typeof getDictionary>['auth']['errors'];
 
-function errorsFor(lang: Lang): AuthErrors {
-  return getDictionary(lang).auth.errors;
+function errorsFor(): AuthErrors {
+  return getDictionary().auth.errors;
 }
 
 function emailField(e: AuthErrors) {
@@ -36,8 +32,8 @@ function passwordField(e: AuthErrors) {
     .refine((value) => /\d/.test(value), e.passwordDigit);
 }
 
-export function loginSchema(lang: Lang) {
-  const e = errorsFor(lang);
+export function loginSchema() {
+  const e = errorsFor();
 
   return z.object({
     email: emailField(e),
@@ -48,8 +44,8 @@ export function loginSchema(lang: Lang) {
 
 export type LoginValues = z.infer<ReturnType<typeof loginSchema>>;
 
-export function registerSchema(lang: Lang) {
-  const e = errorsFor(lang);
+export function registerSchema() {
+  const e = errorsFor();
 
   return z.object({
     email: emailField(e),
@@ -66,14 +62,14 @@ export function registerSchema(lang: Lang) {
 
 export type RegisterValues = z.infer<ReturnType<typeof registerSchema>>;
 
-export function forgotPasswordSchema(lang: Lang) {
-  return z.object({ email: emailField(errorsFor(lang)) });
+export function forgotPasswordSchema() {
+  return z.object({ email: emailField(errorsFor()) });
 }
 
 export type ForgotPasswordValues = z.infer<ReturnType<typeof forgotPasswordSchema>>;
 
-export function resetPasswordSchema(lang: Lang) {
-  const e = errorsFor(lang);
+export function resetPasswordSchema() {
+  const e = errorsFor();
 
   return z
     .object({
