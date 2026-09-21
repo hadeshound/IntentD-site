@@ -1,0 +1,285 @@
+---
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+import CodeBlock from '@/components/ui/CodeBlock.astro';
+import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import DocsLayout, { type DocsSection } from '@/layouts/DocsLayout.astro';
+import {
+  docsSnippets,
+  eventSchema,
+  ingestEndpoints,
+  ingestErrors,
+  S3_PATH_TEMPLATE,
+} from '@/lib/content/docs';
+
+const lang = getLangFromUrl(Astro.url);
+const t = getDictionary(lang).docs.api;
+
+const path = (route: string) => getLocalizedPath(route, lang);
+
+const SECTIONS: DocsSection[] = [
+  { id: 'quickstart', ...t.sections.quickstart },
+  { id: 'ingest-api', ...t.sections.ingest },
+  { id: 'data-schema', ...t.sections.schema },
+  { id: 'provenance', ...t.sections.provenance },
+  { id: 'delivery', ...t.sections.delivery },
+  { id: 'examples', ...t.sections.examples },
+];
+
+const DELIVERY_FACTS = [
+  { term: t.delivery.facts.format, value: 'Parquet + LZ4' },
+  { term: t.delivery.facts.storage, value: 'AWS S3' },
+  { term: t.delivery.facts.hot, value: t.delivery.facts.hotValue },
+  { term: t.delivery.facts.archive, value: t.delivery.facts.archiveValue },
+];
+
+const snippets = docsSnippets(lang);
+const schema = eventSchema(lang);
+const endpoints = ingestEndpoints(lang);
+const errors = ingestErrors(lang);
+---
+
+<DocsLayout
+  title={t.metaTitle}
+  heading={t.heading}
+  description={t.metaDescription}
+  intro={t.intro}
+  sections={SECTIONS}
+>
+  <Fragment slot="badges">
+    <Badge tone="mint">Manifest V3</Badge>
+    <Badge>HMAC-SHA256</Badge>
+    <Badge>X25519 + AES-GCM</Badge>
+    <Badge>Parquet + LZ4</Badge>
+    <Badge tone="violet">PII-free</Badge>
+  </Fragment>
+
+  <!-- 1. SDK Quickstart -->
+  <section id="quickstart" class="scroll-mt-28">
+    <p class="eyebrow">01 · {t.sections.quickstart.audience}</p>
+    <h2 class="mt-4 font-display text-3xl text-ink sm:text-4xl">{t.quickstart.title}</h2>
+
+    <p class="mt-5 prose-body max-w-2xl">
+      {t.quickstart.body}
+      <a href={path('/docs/sdk')} class="text-mint-300 underline underline-offset-4">
+        {t.quickstart.consentLink}</a>.
+    </p>
+
+    <div class="mt-8 space-y-4">
+      <CodeBlock code={snippets.install} label="bash" />
+      <CodeBlock code={snippets.init} label="background.js" />
+    </div>
+
+    <div class="surface-card mt-8 p-6">
+      <h3 class="font-display text-lg text-ink">{t.quickstart.manifestTitle}</h3>
+      <ul class="mt-4 space-y-2.5 text-[0.9375rem] leading-relaxed text-ink-muted">
+        <li>
+          <code class="font-mono text-mint-300">manifest_version: 3</code>
+          {t.quickstart.manifest.version}
+        </li>
+        <li>
+          <code class="font-mono text-mint-300">storage</code>,
+          <code class="font-mono text-mint-300">alarms</code>,
+          <code class="font-mono text-mint-300">unlimitedStorage</code>
+          {t.quickstart.manifest.storage}
+        </li>
+        <li>
+          <code class="font-mono text-mint-300">webNavigation</code>
+          {t.quickstart.manifest.navigation}
+        </li>
+        <li>
+          <code class="font-mono text-mint-300">api.intentd.io</code>
+          {t.quickstart.manifest.host}
+        </li>
+      </ul>
+    </div>
+
+    <p class="mt-6 text-sm text-ink-faint">{t.quickstart.note}</p>
+  </section>
+
+  <!-- 2. Ingest API -->
+  <section id="ingest-api" class="scroll-mt-28">
+    <p class="eyebrow">02 · {t.sections.ingest.audience}</p>
+    <h2 class="mt-4 font-display text-3xl text-ink sm:text-4xl">{t.ingest.title}</h2>
+
+    <dl class="mt-8 grid gap-4 sm:grid-cols-2">
+      <div class="surface-card p-5">
+        <dt class="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-ink-faint">{t.ingest.baseUrl}</dt>
+        <dd class="mt-2 break-all font-mono text-sm text-mint-300">https://api.intentd.io/v1</dd>
+      </div>
+
+      <div class="surface-card p-5">
+        <dt class="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-ink-faint">{t.ingest.auth}</dt>
+        <dd class="mt-2 font-mono text-sm text-ink-muted">{t.ingest.authValue}</dd>
+      </div>
+    </dl>
+
+    <h3 class="mt-10 font-display text-xl text-ink">{t.ingest.endpointsTitle}</h3>
+
+    <div class="mt-5 overflow-x-auto rounded-card border border-hairline">
+      <table class="w-full min-w-[38rem] border-collapse text-left text-sm">
+        <thead>
+          <tr class="border-b border-hairline bg-white/[0.02]">
+            <th scope="col" class="px-5 py-3.5 font-medium text-ink-faint">{t.ingest.tableMethod}</th>
+            <th scope="col" class="px-5 py-3.5 font-medium text-ink-faint">{t.ingest.tablePath}</th>
+            <th scope="col" class="px-5 py-3.5 font-medium text-ink-faint">{t.ingest.tablePurpose}</th>
+            <th scope="col" class="px-5 py-3.5 font-medium text-ink-faint">{t.ingest.tableLimit}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            endpoints.map((endpoint) => (
+              <tr class="border-b border-hairline last:border-b-0">
+                <td class="px-5 py-4"><Badge tone="mint">{endpoint.method}</Badge></td>
+                <td class="px-5 py-4 font-mono text-ink">{endpoint.path}</td>
+                <td class="px-5 py-4 text-ink-muted">{endpoint.description}</td>
+                <td class="px-5 py-4 font-mono text-xs text-ink-faint">{endpoint.limit}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="mt-10 font-display text-xl text-ink">{t.ingest.requestTitle}</h3>
+    <CodeBlock class="mt-5" code={snippets.request} label="http" />
+
+    <h3 class="mt-10 font-display text-xl text-ink">{t.ingest.errorsTitle}</h3>
+
+    <div class="mt-5 overflow-x-auto rounded-card border border-hairline">
+      <table class="w-full min-w-[34rem] border-collapse text-left text-sm">
+        <thead>
+          <tr class="border-b border-hairline bg-white/[0.02]">
+            <th scope="col" class="px-5 py-3.5 font-medium text-ink-faint">{t.ingest.tableHttp}</th>
+            <th scope="col" class="px-5 py-3.5 font-medium text-ink-faint">{t.ingest.tableCode}</th>
+            <th scope="col" class="px-5 py-3.5 font-medium text-ink-faint">{t.ingest.tableMeaning}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            errors.map((error) => (
+              <tr class="border-b border-hairline last:border-b-0">
+                <td class="px-5 py-3.5 font-mono text-ink-faint">{error.status}</td>
+                <td class="px-5 py-3.5 font-mono text-ink">{error.code}</td>
+                <td class="px-5 py-3.5 text-ink-muted">{error.meaning}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="mt-6 text-sm leading-relaxed text-ink-faint">
+      {t.ingest.retryNote}
+      <a href={path('/docs/bucket-format-v1')} class="text-mint-300 underline underline-offset-4">
+        {t.ingest.specLink}</a>.
+    </p>
+  </section>
+
+  <!-- 3. Data schema -->
+  <section id="data-schema" class="scroll-mt-28">
+    <p class="eyebrow">03 · {t.sections.schema.audience}</p>
+    <h2 class="mt-4 font-display text-3xl text-ink sm:text-4xl">{t.schema.title}</h2>
+
+    <p class="mt-5 prose-body max-w-2xl">{t.schema.body}</p>
+
+    <div class="mt-8 overflow-x-auto rounded-card border border-hairline">
+      <table class="w-full min-w-[40rem] border-collapse text-left text-sm">
+        <caption class="sr-only">{t.schema.caption}</caption>
+        <thead>
+          <tr class="border-b border-hairline bg-white/[0.02]">
+            <th scope="col" class="px-5 py-3.5 font-medium text-ink-faint">{t.schema.tableField}</th>
+            <th scope="col" class="px-5 py-3.5 font-medium text-ink-faint">{t.schema.tableType}</th>
+            <th scope="col" class="px-5 py-3.5 font-medium text-ink-faint">{t.schema.tableDescription}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            schema.map((field) => (
+              <tr class="border-b border-hairline last:border-b-0">
+                <th scope="row" class="px-5 py-3.5 text-left font-mono font-normal text-mint-300">
+                  {field.name}
+                </th>
+                <td class="px-5 py-3.5 font-mono text-ink-faint">{field.type}</td>
+                <td class="px-5 py-3.5 text-ink-muted">
+                  {field.description}
+                  {
+                    field.tier ? (
+                      <span class="ml-2 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-violet-400">
+                        {field.tier}+
+                      </span>
+                    ) : null
+                  }
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Provenance -->
+  <section id="provenance" class="scroll-mt-28">
+    <p class="eyebrow">{t.sections.provenance.audience}</p>
+    <h2 class="mt-4 font-display text-3xl text-ink sm:text-4xl">{t.provenance.title}</h2>
+
+    <ul class="mt-6 max-w-2xl list-disc space-y-3 pl-5 prose-body">
+      {t.provenance.items.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+
+  <!-- 4. Delivery -->
+  <section id="delivery" class="scroll-mt-28">
+    <p class="eyebrow">04 · {t.sections.delivery.audience}</p>
+    <h2 class="mt-4 font-display text-3xl text-ink sm:text-4xl">{t.delivery.title}</h2>
+
+    <dl class="mt-8 grid gap-4 sm:grid-cols-2">
+      {
+        DELIVERY_FACTS.map((item) => (
+          <div class="surface-card p-5">
+            <dt class="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-ink-faint">{item.term}</dt>
+            <dd class="mt-2 font-display text-lg text-ink">{item.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <h3 class="mt-10 font-display text-xl text-ink">{t.delivery.pathsTitle}</h3>
+    <CodeBlock class="mt-5" label="s3" code={S3_PATH_TEMPLATE} />
+
+    <p class="mt-6 prose-body max-w-2xl">{t.delivery.body}</p>
+  </section>
+
+  <!-- 5. Examples -->
+  <section id="examples" class="scroll-mt-28">
+    <p class="eyebrow">05 · {t.sections.examples.audience}</p>
+    <h2 class="mt-4 font-display text-3xl text-ink sm:text-4xl">{t.examples.title}</h2>
+
+    <p class="mt-5 prose-body max-w-2xl">{t.examples.body}</p>
+
+    <div class="mt-8 space-y-6">
+      <CodeBlock code={snippets.python} label="python" />
+      <CodeBlock code={snippets.go} label="go" />
+    </div>
+  </section>
+
+  <section class="surface-card surface-card-accent scroll-mt-28 p-8 lg:p-10">
+    <div class="ambient-glow -right-16 -top-16 h-56 w-56 bg-mint-500/25"></div>
+
+    <h2 class="font-display text-2xl text-ink">{t.cta.title}</h2>
+    <p class="mt-3 max-w-xl prose-body">{t.cta.body}</p>
+
+    <div class="mt-8 flex flex-wrap gap-3">
+      <Button href={path('/auth/register')}>{t.cta.primary}</Button>
+      <Button href={path('/contact?topic=support')} variant="secondary">{t.cta.secondary}</Button>
+    </div>
+
+    <p class="mt-6 text-sm text-ink-faint">
+      {t.cta.note}
+      <span class="font-mono">portal/docs/swagger.yaml</span>. {t.cta.noteAfter}
+      <a href={path('/contact?topic=support')} class="link-underline underline underline-offset-4">
+        {t.cta.noteLink}</a>.
+    </p>
+  </section>
+</DocsLayout>

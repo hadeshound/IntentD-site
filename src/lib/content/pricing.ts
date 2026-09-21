@@ -1,64 +1,45 @@
+import { getDictionary, type Lang } from '@/i18n';
 import type { Plan, PlanCode } from '@/lib/api/plans';
 
 /**
- * Marketing copy for the catalogue. Prices and event limits are NOT duplicated
- * here: they come from GET /public/plans so the page can never advertise a
- * number the backend would not honour.
+ * Presentation layer for the catalogue.
+ *
+ * Prices, user allowances and delivery cadence are NOT here: they come from
+ * GET /public/plans so the page can never advertise a number the backend would
+ * not honour. The words around those numbers come from the dictionaries, which
+ * is why this file is a set of lookups rather than a table of copy.
+ *
+ * Plan names are not translated either -- Starter, Growth, Scale and Enterprise
+ * are product names, and the API is their source.
  */
+
 export interface PlanPresentation {
   code: PlanCode;
   /** Who the tier is for, shown under the title. */
   audience: string;
   features: string[];
-  cta: {
-    label: string;
-    href: string;
-  };
-  /** Only one tier may carry the highlight. */
-  highlighted?: boolean;
-  highlightLabel?: string;
+  /** Only the highlighted tier carries a label. */
+  highlightLabel: string;
+  highlighted: boolean;
 }
 
-export const PLAN_PRESENTATION: Record<PlanCode, PlanPresentation> = {
-  starter: {
-    code: 'starter',
-    audience: 'Стартапы и локальные маркетинговые агентства',
-    features: [
-      'До 5 000 000 событий в месяц',
-      'Ежедневные выгрузки в S3 (Parquet)',
-      'Базовая очистка PII и стандартные категории',
-      'Email-поддержка',
-    ],
-    cta: { label: 'Оформить подписку', href: '/checkout?plan=starter' },
-  },
-  growth: {
-    code: 'growth',
-    audience: 'AdTech-платформы и средне-крупные E-commerce',
-    features: [
-      'До 30 000 000 событий в месяц',
-      'Почасовая синхронизация S3 / MinIO',
-      'Извлечение ключевых поисковых запросов и категорий',
-      'Приоритетная поддержка 24/7',
-    ],
-    cta: { label: 'Оформить подписку', href: '/checkout?plan=growth' },
-    highlighted: true,
-    highlightLabel: 'Популярный выбор',
-  },
-  enterprise: {
-    code: 'enterprise',
-    audience: 'Фонды, исследовательские институты, data brokers',
-    features: [
-      'Неограниченный поток (Raw Firehose)',
-      'Кастомные правила фильтрации',
-      'Выделенный канал S3 / GCS Direct Access',
-      'SLA 99.9%',
-    ],
-    cta: { label: 'Связаться с менеджером', href: '/contact?topic=enterprise' },
-  },
-};
+/** The tier that carries the highlight in the grid. */
+const HIGHLIGHTED_PLAN: PlanCode = 'growth';
+
+export function planPresentation(lang: Lang, code: PlanCode): PlanPresentation {
+  const plan = getDictionary(lang).pricing.plans[code];
+
+  return {
+    code,
+    audience: plan.audience,
+    features: [...plan.features],
+    highlightLabel: plan.highlightLabel,
+    highlighted: code === HIGHLIGHTED_PLAN,
+  };
+}
 
 /** Order used when the API is unreachable and the grid renders from copy alone. */
-export const PLAN_ORDER: PlanCode[] = ['starter', 'growth', 'enterprise'];
+export const PLAN_ORDER: PlanCode[] = ['starter', 'growth', 'scale', 'enterprise'];
 
 // --- Feature matrix (/pricing) ---------------------------------------------
 
@@ -73,78 +54,15 @@ export interface MatrixGroup {
   rows: MatrixRow[];
 }
 
-export const FEATURE_MATRIX: MatrixGroup[] = [
-  {
-    title: 'Объём и доставка',
-    rows: [
-      {
-        label: 'События в месяц',
-        values: { starter: '5 000 000', growth: '30 000 000', enterprise: 'Без лимита' },
-      },
-      {
-        label: 'Частота выгрузки',
-        values: { starter: 'Раз в сутки', growth: 'Раз в час', enterprise: 'Near real-time' },
-      },
-      {
-        label: 'Формат',
-        values: {
-          starter: 'Parquet + LZ4',
-          growth: 'Parquet + LZ4',
-          enterprise: 'Parquet + LZ4 / Raw JSONL',
-        },
-      },
-      {
-        label: 'Доставка в собственный bucket',
-        values: { starter: false, growth: true, enterprise: true },
-      },
-      {
-        label: 'S3 / GCS Direct Access',
-        values: { starter: false, growth: false, enterprise: true },
-      },
-    ],
-  },
-  {
-    title: 'Состав данных',
-    rows: [
-      {
-        label: 'Очищенный URL и домен',
-        values: { starter: true, growth: true, enterprise: true },
-      },
-      {
-        label: 'Поисковые интенты',
-        values: { starter: 'Базовые', growth: 'Полные + категории', enterprise: 'Полные + кастомные' },
-      },
-      {
-        label: 'Гео и тип устройства',
-        values: { starter: false, growth: true, enterprise: true },
-      },
-      {
-        label: 'Кастомные правила фильтрации',
-        values: { starter: false, growth: false, enterprise: true },
-      },
-    ],
-  },
-  {
-    title: 'Поддержка и условия',
-    rows: [
-      {
-        label: 'Канал поддержки',
-        values: { starter: 'Email', growth: 'Приоритетный 24/7', enterprise: 'Выделенный менеджер' },
-      },
-      {
-        label: 'SLA доступности',
-        values: { starter: '—', growth: '—', enterprise: '99.9%' },
-      },
-      {
-        label: 'DPA и юридическое сопровождение',
-        values: { starter: 'Стандартный', growth: 'Стандартный', enterprise: 'Индивидуальный' },
-      },
-    ],
-  },
-];
+export function featureMatrix(lang: Lang): MatrixGroup[] {
+  return getDictionary(lang).pricing.matrix.groups.map((group) => ({
+    title: group.title,
+    rows: group.rows.map((row) => ({ label: row.label, values: { ...row.values } })),
+  }));
+}
 
 /**
- * Mirror of the seed rows in portal/internal/db/migrations/000003_seed_plans.up.sql.
+ * Mirror of the catalogue after portal migration 000015_update_plans.up.sql.
  * Used only when the catalogue endpoint is unreachable at render time, so the
  * pricing page degrades to our own published figures rather than to an empty
  * section. Update both files together.
@@ -152,32 +70,76 @@ export const FEATURE_MATRIX: MatrixGroup[] = [
 export const FALLBACK_PLANS: Plan[] = [
   {
     code: 'starter',
-    name: 'Starter Data Stream',
+    name: 'Starter',
     price_cents: 49900,
+    setup_price_cents: 49900,
     currency: 'USD',
     events_limit: 5_000_000,
-    features: { target: 'startups', delivery: 'daily', support: 'email' },
+    users_limit: 10_000,
+    delivery_frequency: 'daily',
+    sla: 'best_effort',
+    support_level: 'email',
+    features: { target: 'startups', delivery: 'daily', support: 'email', sla: 'best_effort' },
     display_order: 1,
     is_custom_priced: false,
   },
   {
     code: 'growth',
-    name: 'Growth Stream',
+    name: 'Growth',
     price_cents: 199900,
+    setup_price_cents: 99900,
     currency: 'USD',
     events_limit: 30_000_000,
-    features: { target: 'adtech', delivery: 'hourly', support: 'priority_24_7' },
+    users_limit: 100_000,
+    delivery_frequency: 'hourly',
+    sla: '99.5',
+    support_level: 'priority_24_7',
+    features: { target: 'adtech', delivery: 'hourly', support: 'priority_24_7', sla: '99.5' },
     display_order: 2,
     is_custom_priced: false,
   },
   {
+    code: 'scale',
+    name: 'Scale',
+    price_cents: 499900,
+    setup_price_cents: 149900,
+    currency: 'USD',
+    events_limit: 150_000_000,
+    users_limit: 500_000,
+    delivery_frequency: 'hourly_direct',
+    sla: '99.7',
+    support_level: 'dedicated_manager',
+    features: {
+      target: 'large_adtech',
+      delivery: 'hourly_direct',
+      support: 'dedicated_manager',
+      sla: '99.7',
+      fields: 'all',
+      custom_filters: true,
+    },
+    display_order: 3,
+    is_custom_priced: false,
+  },
+  {
     code: 'enterprise',
-    name: 'Enterprise Data Pipeline',
+    name: 'Enterprise',
     price_cents: 0,
+    setup_price_cents: 0,
     currency: 'USD',
     events_limit: 0,
-    features: { target: 'enterprise', delivery: 'realtime', support: 'dedicated', sla: '99.9' },
-    display_order: 3,
+    users_limit: null,
+    delivery_frequency: 'realtime',
+    sla: '99.9',
+    support_level: 'dedicated_team',
+    features: {
+      target: 'enterprise',
+      delivery: 'realtime',
+      support: 'dedicated_team',
+      sla: '99.9',
+      fields: 'custom',
+      custom_schema: true,
+    },
+    display_order: 4,
     is_custom_priced: true,
   },
 ];

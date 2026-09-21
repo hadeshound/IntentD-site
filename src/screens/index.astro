@@ -1,0 +1,37 @@
+---
+import AdvertisingIsDead from '@/components/marketing/AdvertisingIsDead.astro';
+import ContactSection from '@/components/marketing/ContactSection.astro';
+import DataBuyerUseCases from '@/components/marketing/DataBuyerUseCases.astro';
+import FaqSection from '@/components/marketing/FaqSection.astro';
+import Hero from '@/components/marketing/Hero.astro';
+import HowItWorks from '@/components/marketing/HowItWorks.astro';
+import PricingGrid from '@/components/marketing/PricingGrid.astro';
+import WhyIntentD from '@/components/marketing/WhyIntentD.astro';
+import { getDictionary, getLangFromUrl } from '@/i18n';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import { fetchPlansSafe } from '@/lib/api/plans';
+
+// The catalogue is read once, when the page is built, so a visit never waits on
+// the API. `revalidate = 300` in the Next version served the same purpose; here
+// a price change is picked up by the next deploy.
+const { plans, isFallback } = await fetchPlansSafe();
+
+const lang = getLangFromUrl(Astro.url);
+const t = getDictionary(lang).home;
+---
+
+<MarketingLayout
+  title={t.metaTitle}
+  titleTemplate={false}
+  description={t.metaDescription}
+  keywords={[...t.keywords]}
+>
+  <Hero />
+  <AdvertisingIsDead />
+  <HowItWorks />
+  <DataBuyerUseCases />
+  <WhyIntentD />
+  <PricingGrid plans={plans} isFallback={isFallback} />
+  <FaqSection items={[...getDictionary(lang).faq.landing]} />
+  <ContactSection />
+</MarketingLayout>

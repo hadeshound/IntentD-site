@@ -1,3 +1,5 @@
+import { getDictionary, langMeta, type Lang } from '@/i18n';
+
 /** Presentation helpers shared by the pricing grid, checkout and docs. */
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
@@ -7,11 +9,13 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
 
 /**
  * Renders a catalogue price. Cents are dropped when the amount is whole, which
- * it always is for the published tiers; a zero price means "quoted per deal".
+ * it always is for the published tiers; a zero price means "quoted per deal",
+ * and that phrase is the only translated part -- the digits and the grouping
+ * stay in en-US so $4,999 reads identically in every language.
  */
-export function formatPrice(cents: number, currency = 'USD'): string {
+export function formatPrice(cents: number, currency = 'USD', lang: Lang = 'en'): string {
   if (cents <= 0) {
-    return 'Индивидуально';
+    return getDictionary(lang).pricing.customPrice;
   }
 
   const symbol = CURRENCY_SYMBOLS[currency] ?? `${currency} `;
@@ -23,12 +27,44 @@ export function formatPrice(cents: number, currency = 'USD'): string {
   return `${symbol}${rendered}`;
 }
 
-/** Formats the monthly event allowance; zero means an unmetered firehose. */
-export function formatEventsLimit(limit: number): string {
-  if (limit <= 0) {
-    return 'Без лимита';
+/**
+ * The monthly active-user allowance, ready to render.
+ *
+ * Three outcomes rather than one string, because they are three different
+ * claims: a number, "unlimited", and "we do not know". The last one happens
+ * when the frontend is deployed ahead of portal migration 000015 and the
+ * catalogue response has no users_limit at all -- printing a figure there
+ * would be inventing one, so the caller omits the line instead.
+ */
+export type UsersAllowance =
+  | { kind: 'limited'; text: string }
+  | { kind: 'unlimited'; text: string }
+  | { kind: 'unknown' };
+
+export function usersAllowance(limit: number | null | undefined, lang: Lang = 'en'): UsersAllowance {
+  if (limit === null) {
+    return { kind: 'unlimited', text: getDictionary(lang).pricing.unlimitedUsers };
   }
-  return new Intl.NumberFormat('ru-RU').format(limit);
+  if (typeof limit !== 'number' || !Number.isFinite(limit)) {
+    return { kind: 'unknown' };
+  }
+  if (limit <= 0) {
+    return { kind: 'unlimited', text: getDictionary(lang).pricing.unlimitedUsers };
+  }
+  return { kind: 'limited', text: formatUsersLimit(limit, lang) };
+}
+
+/** Just the number, grouped for the reader's locale. */
+export function formatUsersLimit(limit: number, lang: Lang = 'en'): string {
+  return new Intl.NumberFormat(langMeta(lang).htmlLang).format(limit);
+}
+
+/** Formats the monthly event allowance; zero means an unmetered firehose. */
+export function formatEventsLimit(limit: number, lang: Lang = 'en'): string {
+  if (!Number.isFinite(limit) || limit <= 0) {
+    return getDictionary(lang).checkout.unlimited;
+  }
+  return new Intl.NumberFormat(langMeta(lang).htmlLang).format(limit);
 }
 
 /** Compact variant for tight card headers: 5 000 000 becomes "5M". */
@@ -43,4 +79,28 @@ export function formatEventsCompact(limit: number): string {
     return `${Math.round(limit / 1_000)}K`;
   }
   return String(limit);
+}
+
+/**
+ * The delivery cadence as a phrase rather than the raw enum the API sends.
+ * An unknown value falls through to the code itself: loud enough to be caught
+ * in review, and the card still renders.
+ */
+export function formatDelivery(frequency: string, lang: Lang = 'en'): string {
+  const labels: Record<string, string> = getDictionary(lang).pricing.deliveryLabels;
+  return labels[frequency] ?? frequency;
+}
+
+/** The SLA figure as published: a percentage, or the best-effort phrase. */
+export function formatSla(sla: string, lang: Lang = 'en'): string {
+  if (!sla || sla === 'best_effort') {
+    return getDictionary(lang).pricing.slaBestEffort;
+  }
+  return `${sla}%`;
+}
+
+/** The support tier as published on the comparison table. */
+export function formatSupport(level: string, lang: Lang = 'en'): string {
+  const labels: Record<string, string> = getDictionary(lang).pricing.supportLabels;
+  return labels[level] ?? level;
 }

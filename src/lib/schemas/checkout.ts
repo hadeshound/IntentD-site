@@ -1,16 +1,20 @@
 import { z } from 'zod';
 
-/** Mirrors checkoutIntentRequest in internal/api/handlers/subscriptions.go. */
-export const checkoutSchema = z.object({
-  plan_code: z.enum(['starter', 'growth'], {
-    errorMap: () => ({ message: 'Выберите тариф' }),
-  }),
-  company_name: z
-    .string()
-    .trim()
-    .min(2, 'Укажите юридическое или рабочее название компании')
-    .max(255, 'Не длиннее 255 символов'),
-  notes: z.string().trim().max(2000, 'Не длиннее 2000 символов').optional(),
-});
+import { getDictionary, type Lang } from '@/i18n';
 
-export type CheckoutValues = z.infer<typeof checkoutSchema>;
+/** Mirrors checkoutIntentRequest in internal/api/handlers/subscriptions.go. */
+export function checkoutSchema(lang: Lang) {
+  const e = getDictionary(lang).checkout.errors;
+
+  return z.object({
+    // Enterprise is quoted per deal and never reaches this form, which is why
+    // it is absent here as well as from the Go `oneof` tag.
+    plan_code: z.enum(['starter', 'growth', 'scale'], {
+      errorMap: () => ({ message: e.planRequired }),
+    }),
+    company_name: z.string().trim().min(2, e.companyMin).max(255, e.max255),
+    notes: z.string().trim().max(2000, e.max2000).optional(),
+  });
+}
+
+export type CheckoutValues = z.infer<ReturnType<typeof checkoutSchema>>;

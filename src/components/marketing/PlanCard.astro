@@ -3,39 +3,63 @@ import { ArrowRight, Check } from 'lucide-react';
 
 import Badge from '@/components/ui/Badge.astro';
 import Button from '@/components/ui/Button.astro';
+import { getDictionary, getLocalizedPath, type Lang } from '@/i18n';
 import type { Plan } from '@/lib/api/plans';
-import { dashboardRegisterFor } from '@/lib/config/urls';
-import { PLAN_PRESENTATION } from '@/lib/content/pricing';
+import { planPresentation } from '@/lib/content/pricing';
 import { cn } from '@/lib/utils/cn';
-import { formatEventsLimit, formatPrice } from '@/lib/utils/format';
+import { formatPrice, usersAllowance } from '@/lib/utils/format';
+import { buildRegisterRedirect } from '@/lib/utils/redirect';
 
 interface Props {
   plan: Plan;
+  lang: Lang;
   /** Index in the grid; drives the vertical offset on wide screens. */
   index: number;
 }
 
-const { plan, index } = Astro.props;
+const { plan, lang, index } = Astro.props;
 
-const presentation = PLAN_PRESENTATION[plan.code];
+const t = getDictionary(lang).pricing;
+const presentation = planPresentation(lang, plan.code);
 
 // Enterprise is quoted per deal, so its CTA goes to sales rather than to
-// checkout. Everything else routes through the dashboard: an anonymous visitor
-// to registration with the plan carried along, a signed-in one straight to
-// checkout. The card is server-rendered in the anonymous state and SessionBridge
-// rewrites data-auth-href once the silent refresh has settled -- which is the
-// same decision useAuth() made in the client component this replaces.
-const anonymousHref = plan.is_custom_priced ? presentation.cta.href : dashboardRegisterFor(plan.code);
-const authenticatedHref = plan.is_custom_priced ? null : `/checkout?plan=${plan.code}`;
+// checkout. Everything else sends an anonymous visitor to registration with
+// the plan carried along, and a signed-in one straight to checkout. The card
+// is server-rendered in the anonymous state and SessionBridge rewrites
+// data-auth-href once the silent refresh has settled -- which is the same
+// decision useAuth() made in the client component this replaces.
+const contactHref = getLocalizedPath('/contact?topic=enterprise', lang);
+const anonymousHref = plan.is_custom_priced
+  ? contactHref
+  : buildRegisterRedirect(plan.code, lang);
+const authenticatedHref = plan.is_custom_priced
+  ? null
+  : getLocalizedPath(`/checkout?plan=${plan.code}`, lang);
 
-const isHighlighted = Boolean(presentation.highlighted);
+const isHighlighted = presentation.highlighted;
+const ctaLabel = plan.is_custom_priced ? t.cta.contactSales : t.cta.subscribe;
+
+// The grid holds four cards; the last one keeps the staggered rhythm.
+const offsetClass = !isHighlighted && index === 3 ? 'lg:mt-8' : undefined;
+
+// A plan quoted per deal has no published allowance; a catalogue that predates
+// migration 000015 has none either, and that line is simply left out rather
+// than filled with a number nobody promised.
+const allowance = usersAllowance(plan.users_limit, lang);
+const volumeLabel = plan.is_custom_priced
+  ? t.customVolume
+  : allowance.kind === 'limited'
+    ? `${allowance.text} ${t.activeUsers}`
+    : allowance.kind === 'unlimited'
+      ? allowance.text
+      : null;
 ---
 
 <article
   class={cn(
     'surface-card surface-card-interactive flex flex-col p-7 lg:p-8',
     isHighlighted && 'surface-card-accent lg:-mt-6 lg:mb-6',
-    !isHighlighted && index === 2 && 'lg:mt-8',
+    offsetClass,
   )}
 >
   {isHighlighted ? <div class="ambient-glow -right-14 -top-16 h-56 w-56 bg-mint-500/25" /> : null}
@@ -55,18 +79,28 @@ const isHighlighted = Boolean(presentation.highlighted);
 
   <p class="mt-8 flex items-baseline gap-2">
     <span class="font-display text-4xl tracking-tight text-ink lg:text-[2.75rem]">
-      {formatPrice(plan.price_cents, plan.currency)}
+      {formatPrice(plan.price_cents, plan.currency, lang)}
     </span>
-    {plan.is_custom_priced ? null : <span class="text-sm text-ink-faint">/ мес</span>}
+    {plan.is_custom_priced ? null : <span class="text-sm text-ink-faint">{t.perMonth}</span>}
   </p>
 
-  <p class="mt-2 font-mono text-xs uppercase tracking-[0.14em] text-ink-faint">
-    {
-      plan.is_custom_priced
-        ? 'Объём согласуется индивидуально'
-        : `${formatEventsLimit(plan.events_limit)} событий в месяц`
-    }
-  </p>
+  {/* The setup fee is a second, one-off number: it belongs next to the price
+      rather than buried in the feature list, because it changes what the first
+      invoice looks like. */}
+  {
+    plan.setup_price_cents > 0 ? (
+      <p class="mt-2 text-sm text-ink-muted">
+        + {formatPrice(plan.setup_price_cents, plan.currency, lang)}{' '}
+        <span class="text-ink-faint">{t.setupFee}</span>
+      </p>
+    ) : null
+  }
+
+  {
+    volumeLabel ? (
+      <p class="mt-3 font-mono text-xs uppercase tracking-[0.14em] text-ink-faint">{volumeLabel}</p>
+    ) : null
+  }
 
   <ul class="mt-8 space-y-3.5 border-t border-hairline pt-8">
     {
@@ -90,7 +124,7 @@ const isHighlighted = Boolean(presentation.highlighted);
       size="lg"
       class="w-full"
     >
-      {presentation.cta.label}
+      {ctaLabel}
       <ArrowRight className="h-4 w-4" aria-hidden="true" />
     </Button>
   </div>

@@ -9,6 +9,7 @@
  */
 
 import { API_BASE_URL } from '@/lib/config/urls';
+import { currentDictionary } from '@/i18n/runtime';
 
 export { API_BASE_URL };
 
@@ -51,8 +52,13 @@ export class ApiError extends Error {
   }
 }
 
-const NETWORK_ERROR_MESSAGE =
-  'Не удалось связаться с сервером. Проверьте подключение и попробуйте ещё раз.';
+/**
+ * Read at call time rather than at import time: the language can change
+ * while the tab stays open.
+ */
+function networkErrorMessage(): string {
+  return currentDictionary().errors.network;
+}
 
 // --- in-memory access token -------------------------------------------------
 
@@ -114,7 +120,7 @@ async function rawRequest<T>(path: string, options: RequestOptions): Promise<T> 
     if (cause instanceof DOMException && cause.name === 'AbortError') {
       throw cause;
     }
-    throw new ApiError(NETWORK_ERROR_MESSAGE, 'NETWORK_ERROR', 0);
+    throw new ApiError(networkErrorMessage(), 'NETWORK_ERROR', 0);
   }
 
   let envelope: ApiEnvelope<T> | null = null;
@@ -127,7 +133,7 @@ async function rawRequest<T>(path: string, options: RequestOptions): Promise<T> 
   if (!response.ok || !envelope?.success) {
     const error = envelope?.error;
     throw new ApiError(
-      error?.message ?? 'Произошла непредвиденная ошибка.',
+      error?.message ?? currentDictionary().errors.unexpected,
       error?.code ?? 'INTERNAL_ERROR',
       response.status,
       error?.details,

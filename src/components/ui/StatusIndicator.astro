@@ -1,12 +1,18 @@
 ---
+import { getDictionary, type Lang } from '@/i18n';
 import { API_BASE_URL } from '@/lib/api/client';
 import { cn } from '@/lib/utils/cn';
 
 interface Props {
+  lang: Lang;
   class?: string;
 }
 
-const { class: className } = Astro.props;
+const { lang, class: className } = Astro.props;
+
+// The three states are rendered into data attributes rather than looked up in
+// the script, so the client code carries no copy of its own.
+const labels = getDictionary(lang).status;
 ---
 
 {/* Footer status light. It polls the real health endpoint rather than printing
@@ -16,22 +22,19 @@ const { class: className } = Astro.props;
   class={cn('inline-flex items-center gap-2.5 text-sm', className)}
   data-status-indicator
   data-health-url={`${API_BASE_URL}/public/health`}
+  data-label-checking={labels.checking}
+  data-label-operational={labels.operational}
+  data-label-degraded={labels.degraded}
 >
   <span class="relative flex h-2 w-2" aria-hidden="true">
     <span data-ping class="absolute inline-flex h-full w-full animate-status-ping rounded-full bg-mint-400" hidden></span>
     <span data-dot class="relative inline-flex h-2 w-2 rounded-full bg-ink-faint"></span>
   </span>
 
-  <span data-label class="text-ink-muted">Проверяем статус</span>
+  <span data-label class="text-ink-muted">{labels.checking}</span>
 </p>
 
 <script>
-  const LABELS = {
-    checking: 'Проверяем статус',
-    operational: 'All Systems Operational',
-    degraded: 'Повышенное время отклика',
-  } as const;
-
   document.querySelectorAll<HTMLElement>('[data-status-indicator]').forEach((root) => {
     const url = root.dataset.healthUrl;
     const ping = root.querySelector<HTMLElement>('[data-ping]');
@@ -42,7 +45,13 @@ const { class: className } = Astro.props;
       return;
     }
 
-    const paint = (status: keyof typeof LABELS) => {
+    const labels = {
+      checking: root.dataset.labelChecking ?? '',
+      operational: root.dataset.labelOperational ?? '',
+      degraded: root.dataset.labelDegraded ?? '',
+    };
+
+    const paint = (status: keyof typeof labels) => {
       const isOperational = status === 'operational';
 
       ping.hidden = !isOperational;
@@ -51,7 +60,7 @@ const { class: className } = Astro.props;
 
       label.classList.remove('text-mint-300', 'text-ink-muted');
       label.classList.add(isOperational ? 'text-mint-300' : 'text-ink-muted');
-      label.textContent = LABELS[status];
+      label.textContent = labels[status];
     };
 
     fetch(url, { cache: 'no-store' })

@@ -1,4 +1,6 @@
 import { AuthGuard } from '@/components/auth/AuthGuard';
+import { getDictionary, type Lang } from '@/i18n';
+import { LangProvider } from '@/i18n/react';
 import type { PlanCode } from '@/lib/api/plans';
 import { CheckoutPanel } from './CheckoutPanel';
 
@@ -7,6 +9,7 @@ interface CheckoutViewProps {
   planCode: PlanCode | null;
   /** Login destination for an anonymous visitor, built by the page. */
   loginHref: string;
+  lang: Lang;
 }
 
 /**
@@ -16,28 +19,39 @@ interface CheckoutViewProps {
  * page had it: an anonymous visitor on their way to the login screen should not
  * see a page about reserving a bucket for half a second.
  */
-export function CheckoutView({ planCode, loginHref }: CheckoutViewProps) {
+/**
+ * Publishes the page language to the shared primitives below (fields, dialogs)
+ * so they do not each need it threaded through as a prop.
+ */
+export function CheckoutView(props: CheckoutViewProps) {
   return (
-    <AuthGuard loginHref={loginHref}>
+    <LangProvider lang={props.lang}>
+      <CheckoutViewBody {...props} />
+    </LangProvider>
+  );
+}
+
+function CheckoutViewBody({ planCode, loginHref, lang }: CheckoutViewProps) {
+  const t = getDictionary(lang).checkout;
+
+  return (
+    <AuthGuard loginHref={loginHref} lang={lang}>
       <div className="shell">
         <div className="max-w-3xl">
           <p className="flex items-center gap-3">
-            <span className="eyebrow">Checkout</span>
+            <span className="eyebrow">{t.eyebrow}</span>
             <span className="h-px w-12 bg-hairline-strong" />
           </p>
 
           <h1 className="mt-7 font-display text-4xl leading-[1.05] tracking-tight text-ink sm:text-5xl">
-            Оформление доступа к IntentD Data Stream
+            {t.title}
           </h1>
 
-          <p className="mt-7 text-lg leading-relaxed text-ink-muted text-pretty">
-            После подтверждения заявки за вашим аккаунтом будет зарезервирован
-            индивидуальный S3-бакет с данными.
-          </p>
+          <p className="mt-7 text-lg leading-relaxed text-ink-muted text-pretty">{t.intro}</p>
         </div>
 
         <div className="mt-14 lg:mt-16">
-          <CheckoutPanel planCode={planCode} />
+          <CheckoutPanel planCode={planCode} lang={lang} />
         </div>
       </div>
     </AuthGuard>

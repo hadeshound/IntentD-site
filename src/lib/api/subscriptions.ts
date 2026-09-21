@@ -1,8 +1,9 @@
 import { apiRequest } from './client';
-import type { PlanCode } from './plans';
+import type { SelfServePlanCode } from './plans';
 
 export interface CheckoutIntentPayload {
-  plan_code: Exclude<PlanCode, 'enterprise'>;
+  /** Enterprise is quoted per deal and never reaches this endpoint. */
+  plan_code: SelfServePlanCode;
   company_name?: string;
   notes?: string;
 }
@@ -20,7 +21,11 @@ export interface PendingSubscription {
   plan_code: string;
   plan_name: string;
   price_cents: number;
+  /** One-off provisioning fee quoted alongside the monthly price. */
+  setup_price_cents: number;
   currency: string;
+  /** Null on unlimited tiers. */
+  users_limit: number | null;
   status: string;
   notes: string | null;
   created_at: string;

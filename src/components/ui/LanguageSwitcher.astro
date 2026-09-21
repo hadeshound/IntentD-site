@@ -1,0 +1,134 @@
+---
+import { Check, Globe } from 'lucide-react';
+
+import { getDictionary, getLocalizedPath, LANG_COOKIE, LANGUAGE_META, LANGUAGES, type Lang } from '@/i18n';
+import { cn } from '@/lib/utils/cn';
+import { routePath } from '@/lib/utils/pathname';
+
+interface Props {
+  lang: Lang;
+  /** The mobile sheet renders the same options as a flat list. */
+  variant?: 'dropdown' | 'list';
+  class?: string;
+}
+
+const { lang, variant = 'dropdown', class: className } = Astro.props;
+
+const t = getDictionary(lang);
+const active = LANGUAGE_META[lang];
+
+// The same route in every language, so switching keeps the reader where they
+// are instead of sending them back to the landing page.
+const route = routePath(Astro.url.pathname);
+const options = LANGUAGES.map((code) => ({
+  code,
+  meta: LANGUAGE_META[code],
+  href: getLocalizedPath(route, code),
+}));
+---
+
+{
+  variant === 'list' ? (
+    <div class={cn('space-y-1', className)}>
+      <p class="px-3 font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">
+        {t.a11y.languageSwitcher}
+      </p>
+
+      <ul class="flex flex-wrap gap-2 px-1 pt-2">
+        {options.map((option) => (
+          <li>
+            <a
+              href={option.href}
+              hreflang={option.meta.htmlLang}
+              lang={option.meta.htmlLang}
+              data-lang-option={option.code}
+              aria-current={option.code === lang ? 'true' : undefined}
+              class={cn(
+                'inline-flex items-center gap-2 rounded-control border px-3 py-2 text-sm transition-colors duration-200',
+                option.code === lang
+                  ? 'border-mint-500/40 bg-mint-500/10 text-mint-300'
+                  : 'border-hairline text-ink-muted hover:bg-white/5 hover:text-ink',
+              )}
+            >
+              {option.meta.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : (
+    /* A details/summary dropdown: it opens, closes on Escape and works with a
+       keyboard without any of our own script. The click-outside handler below
+       is the one behaviour the element does not provide. */
+    <details class={cn('relative', className)} data-lang-switcher>
+      <summary
+        class="flex cursor-pointer list-none items-center gap-1.5 rounded-control px-2.5 py-1.5 text-sm text-ink-muted transition-colors duration-200 hover:bg-white/5 hover:text-ink"
+        aria-label={t.a11y.languageSwitcher}
+      >
+        <Globe className="h-4 w-4" aria-hidden="true" />
+        <span>{active.short}</span>
+      </summary>
+
+      <ul
+        class="absolute right-0 top-full z-50 mt-2 min-w-[11rem] overflow-hidden rounded-card border border-hairline bg-void/95 py-1.5 shadow-xl backdrop-blur-xl"
+        role="list"
+      >
+        {options.map((option) => (
+          <li>
+            <a
+              href={option.href}
+              hreflang={option.meta.htmlLang}
+              lang={option.meta.htmlLang}
+              data-lang-option={option.code}
+              aria-current={option.code === lang ? 'true' : undefined}
+              class={cn(
+                'flex items-center justify-between gap-3 px-3.5 py-2 text-sm transition-colors duration-200',
+                option.code === lang ? 'text-mint-300' : 'text-ink-muted hover:bg-white/5 hover:text-ink',
+              )}
+            >
+              <span>{option.meta.label}</span>
+              <span class="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-ink-faint">
+                {option.meta.short}
+              </span>
+              {option.code === lang ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : null}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </details>
+  )
+}
+
+<script is:inline define:vars={{ cookieName: LANG_COOKIE }}>
+  (function () {
+    // Choosing a language is an explicit decision, so it is written to the
+    // cookie before the navigation happens -- otherwise the detection script
+    // on the next page would read the old value and bounce the reader back.
+    document.addEventListener('click', function (event) {
+      var link = event.target instanceof Element ? event.target.closest('[data-lang-option]') : null;
+      if (!link) return;
+
+      var code = link.getAttribute('data-lang-option');
+      if (!code) return;
+
+      document.cookie =
+        cookieName + '=' + encodeURIComponent(code) + '; path=/; max-age=31536000; samesite=lax';
+    });
+
+    // details/summary has no click-outside behaviour of its own.
+    document.addEventListener('click', function (event) {
+      document.querySelectorAll('[data-lang-switcher][open]').forEach(function (element) {
+        if (!element.contains(event.target)) {
+          element.removeAttribute('open');
+        }
+      });
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') return;
+      document.querySelectorAll('[data-lang-switcher][open]').forEach(function (element) {
+        element.removeAttribute('open');
+      });
+    });
+  })();
+</script>

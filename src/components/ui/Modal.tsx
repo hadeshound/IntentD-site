@@ -1,6 +1,8 @@
 import { X } from 'lucide-react';
 import { useCallback, useEffect, useRef, type ReactNode } from 'react';
 
+import { useDictionary } from '@/i18n/react';
+
 interface ModalProps {
   open: boolean;
   onClose: () => void;
@@ -30,6 +32,7 @@ export function Modal({
   footer,
   dismissible = true,
 }: ModalProps) {
+  const d = useDictionary();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
 
@@ -118,7 +121,7 @@ export function Modal({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Закрыть окно"
+            aria-label={d.a11y.closeDialog}
             className="absolute right-4 top-4 rounded-control p-1.5 text-ink-faint transition-colors duration-200 hover:bg-white/5 hover:text-ink"
           >
             <X className="h-4 w-4" aria-hidden="true" />

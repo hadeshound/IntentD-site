@@ -1,0 +1,61 @@
+---
+import { Check } from 'lucide-react';
+
+import AuthShell from '@/components/auth/AuthShell.astro';
+import { RegisterForm } from '@/components/auth/RegisterForm';
+import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import { resolvePostAuthTarget } from '@/lib/utils/redirect';
+
+const lang = getLangFromUrl(Astro.url);
+const t = getDictionary(lang).auth.register;
+
+function parseRole(raw: string | null): 'buyer' | 'publisher' | undefined {
+  return raw === 'buyer' || raw === 'publisher' ? raw : undefined;
+}
+
+const params = Astro.url.searchParams;
+const plan = params.get('plan');
+const redirectTo = resolvePostAuthTarget(params.get('redirect'), plan, lang);
+
+// A visitor who came from a pricing CTA is a buyer unless they say otherwise.
+const defaultRole = parseRole(params.get('role')) ?? (plan ? 'buyer' : undefined);
+
+const loginBase = getLocalizedPath('/auth/login', lang);
+const loginHref =
+  redirectTo === getLocalizedPath('/', lang)
+    ? loginBase
+    : `${loginBase}?redirect=${redirectTo.split('?')[0]}${plan ? `&plan=${plan}` : ''}`;
+---
+
+<MarketingLayout title={t.metaTitle} description={t.metaDescription} noindex>
+  <AuthShell eyebrow={t.eyebrow} title={t.title} description={t.description}>
+    <RegisterForm redirectTo={redirectTo} lang={lang} defaultRole={defaultRole} client:load />
+
+    <p slot="footer">
+      {t.haveAccount}{' '}
+      <a href={loginHref} class="link-underline underline underline-offset-4">{t.login}</a>
+    </p>
+
+    <div slot="aside" class="surface-card surface-card-accent p-8 lg:p-10">
+      <div class="ambient-glow -right-16 -top-16 h-56 w-56 bg-mint-500/25"></div>
+
+      <p class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-mint-400">{t.asideEyebrow}</p>
+
+      <h2 class="mt-5 font-display text-2xl text-ink">{t.asideTitle}</h2>
+
+      <p class="mt-4 text-[0.9375rem] leading-relaxed text-ink-muted">{t.asideBody}</p>
+
+      <ul class="mt-8 space-y-3.5 border-t border-hairline pt-8">
+        {
+          t.benefits.map((benefit) => (
+            <li class="flex gap-3 text-[0.9375rem] leading-relaxed text-ink-muted">
+              <Check className="mt-1 h-4 w-4 shrink-0 text-mint-400" aria-hidden="true" />
+              <span>{benefit}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </AuthShell>
+</MarketingLayout>

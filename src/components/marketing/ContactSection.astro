@@ -2,22 +2,16 @@
 import { Mail, MessageSquare, Users } from 'lucide-react';
 
 import AmbientGlow from '@/components/ui/AmbientGlow.astro';
+import { getDictionary, getLangFromUrl } from '@/i18n';
 import { SALES_EMAIL, SUPPORT_EMAIL } from '@/lib/content/navigation';
 import { ContactForm } from './ContactForm';
 
+const lang = getLangFromUrl(Astro.url);
+const t = getDictionary(lang).contact.section;
+
 const CHANNELS = [
-  {
-    icon: Users,
-    title: 'Отдел продаж',
-    body: 'Доступ к потоку, тестовые выгрузки, условия Enterprise.',
-    email: SALES_EMAIL,
-  },
-  {
-    icon: MessageSquare,
-    title: 'Техническая поддержка',
-    body: 'Интеграция SDK, ключи, вопросы по формату Parquet.',
-    email: SUPPORT_EMAIL,
-  },
+  { icon: Users, title: t.salesTitle, body: t.salesBody, email: SALES_EMAIL },
+  { icon: MessageSquare, title: t.supportTitle, body: t.supportBody, email: SUPPORT_EMAIL },
 ];
 ---
 
@@ -29,16 +23,13 @@ const CHANNELS = [
   <div class="shell grid gap-14 lg:grid-cols-12 lg:gap-12">
     <div class="lg:col-span-5">
       <p class="flex items-center gap-3">
-        <span class="eyebrow">Контакты</span>
+        <span class="eyebrow">{t.eyebrow}</span>
         <span class="h-px w-12 bg-hairline-strong"></span>
       </p>
 
-      <h2 class="mt-6 text-section-title">Обсудим ваш сценарий</h2>
+      <h2 class="mt-6 text-section-title">{t.title}</h2>
 
-      <p class="mt-6 max-w-md text-lg leading-relaxed text-ink-muted text-pretty">
-        Расскажите, что вам нужно: подключить расширение, получить сэмпл выгрузки
-        или обсудить объёмы Enterprise. Мы ответим по существу.
-      </p>
+      <p class="mt-6 max-w-md text-lg leading-relaxed text-ink-muted text-pretty">{t.body}</p>
 
       <ul class="mt-10 space-y-4">
         {
@@ -73,7 +64,7 @@ const CHANNELS = [
 
     <div class="lg:col-span-6 lg:col-start-7">
       <div class="surface-card p-7 lg:p-9">
-        <ContactForm client:load />
+        <ContactForm lang={lang} client:load />
       </div>
     </div>
   </div>

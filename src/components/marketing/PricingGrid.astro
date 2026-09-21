@@ -1,6 +1,7 @@
 ---
 import AmbientGlow from '@/components/ui/AmbientGlow.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
 import type { Plan } from '@/lib/api/plans';
 import { PLAN_ORDER } from '@/lib/content/pricing';
 import PlanCard from './PlanCard.astro';
@@ -15,6 +16,9 @@ interface Props {
 
 const { plans, isFallback = false, showHeading = true } = Astro.props;
 
+const lang = getLangFromUrl(Astro.url);
+const t = getDictionary(lang).pricing;
+
 const ordered = [...plans].sort((a, b) => PLAN_ORDER.indexOf(a.code) - PLAN_ORDER.indexOf(b.code));
 ---
 
@@ -26,30 +30,30 @@ const ordered = [...plans].sort((a, b) => PLAN_ORDER.indexOf(a.code) - PLAN_ORDE
     showHeading ? (
       <SectionHeading
         class="shell"
-        eyebrow="Тарифы"
-        title="Прозрачные тарифы для доступа к потоку данных"
-        description="Выберите объём сигналов, необходимый для ваших аналитических систем."
+        eyebrow={t.eyebrow}
+        title={`${t.titleBefore} ${t.titleAccent}`}
+        description={t.subtitle}
       >
         <a
           slot="aside"
-          href="/pricing"
+          href={getLocalizedPath('/pricing', lang)}
           class="link-underline text-sm underline underline-offset-4 decoration-hairline-strong"
         >
-          Сравнить все возможности
+          {t.compareAll}
         </a>
       </SectionHeading>
     ) : null
   }
 
-  <div class="shell mt-16 grid items-start gap-6 lg:mt-20 lg:grid-cols-3 lg:gap-7">
-    {ordered.map((plan, index) => <PlanCard plan={plan} index={index} />)}
+  {/* Four tiers: two columns on a tablet, four on a wide screen. Three-up
+      would leave Enterprise orphaned on its own row. */}
+  <div class="shell mt-16 grid items-start gap-6 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4 lg:gap-5">
+    {ordered.map((plan, index) => <PlanCard plan={plan} lang={lang} index={index} />)}
   </div>
 
   {
     isFallback ? (
-      <p class="shell mt-8 font-mono text-xs text-ink-faint">
-        Каталог временно отдаётся из локальной копии — актуальные условия подтвердит менеджер.
-      </p>
+      <p class="shell mt-8 font-mono text-xs text-ink-faint">{t.fallbackNote}</p>
     ) : null
   }
 </section>

@@ -1,15 +1,37 @@
 import { Send } from 'lucide-react';
+import { useMemo } from 'react';
 
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/Field';
+import { getDictionary, type Lang } from '@/i18n';
+import { LangProvider } from '@/i18n/react';
 import { requestPasswordReset } from '@/lib/api/auth';
 import { useZodForm } from '@/lib/hooks/useZodForm';
 import { forgotPasswordSchema } from '@/lib/schemas/auth';
 
-export function ForgotPasswordForm() {
+interface ForgotPasswordFormProps {
+  lang: Lang;
+}
+
+/**
+ * Publishes the page language to the shared primitives below (fields, dialogs)
+ * so they do not each need it threaded through as a prop.
+ */
+export function ForgotPasswordForm(props: ForgotPasswordFormProps) {
+  return (
+    <LangProvider lang={props.lang}>
+      <ForgotPasswordFormBody {...props} />
+    </LangProvider>
+  );
+}
+
+function ForgotPasswordFormBody({ lang }: ForgotPasswordFormProps) {
+  const t = getDictionary(lang).auth.forgot.form;
+  const schema = useMemo(() => forgotPasswordSchema(lang), [lang]);
+
   const form = useZodForm({
-    schema: forgotPasswordSchema,
+    schema,
     initialValues: { email: '' },
     onSubmit: async (values) => {
       await requestPasswordReset(values.email);
@@ -20,17 +42,14 @@ export function ForgotPasswordForm() {
   // that distinction is what turns a reset form into an account-enumeration tool.
   if (form.status === 'success') {
     return (
-      <Alert tone="success" title="Проверьте почту">
-        <p>
-          Если такой email зарегистрирован — мы отправили инструкцию по восстановлению
-          пароля. Ссылка действует один час.
-        </p>
+      <Alert tone="success" title={t.successTitle}>
+        <p>{t.successBody}</p>
         <button
           type="button"
           onClick={form.reset}
           className="mt-3 text-sm underline underline-offset-4 transition-colors duration-200 hover:text-mint-200"
         >
-          Указать другой адрес
+          {t.tryAnother}
         </button>
       </Alert>
     );
@@ -39,7 +58,7 @@ export function ForgotPasswordForm() {
   return (
     <form onSubmit={form.handleSubmit} noValidate className="space-y-5">
       <TextField
-        label="Email аккаунта"
+        label={t.email}
         name="email"
         type="email"
         inputMode="email"
@@ -60,9 +79,9 @@ export function ForgotPasswordForm() {
         size="lg"
         className="w-full"
         isLoading={form.isSubmitting}
-        loadingLabel="Отправляем…"
+        loadingLabel={t.submitting}
       >
-        Отправить инструкцию
+        {t.submit}
         <Send className="h-4 w-4" aria-hidden="true" />
       </Button>
     </form>

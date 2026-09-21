@@ -1,9 +1,11 @@
 import { ArrowRight } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { CheckboxField, TextField } from '@/components/ui/Field';
+import { getDictionary, getLocalizedPath, type Lang } from '@/i18n';
+import { LangProvider } from '@/i18n/react';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useZodForm } from '@/lib/hooks/useZodForm';
 import { loginSchema } from '@/lib/schemas/auth';
@@ -11,13 +13,30 @@ import { loginSchema } from '@/lib/schemas/auth';
 interface LoginFormProps {
   /** Destination after a successful sign-in, already sanitised by the page. */
   redirectTo: string;
+  lang: Lang;
 }
 
-export function LoginForm({ redirectTo }: LoginFormProps) {
+/**
+ * Publishes the page language to the shared primitives below (fields, dialogs)
+ * so they do not each need it threaded through as a prop.
+ */
+export function LoginForm(props: LoginFormProps) {
+  return (
+    <LangProvider lang={props.lang}>
+      <LoginFormBody {...props} />
+    </LangProvider>
+  );
+}
+
+function LoginFormBody({ redirectTo, lang }: LoginFormProps) {
   const { login, status } = useAuth();
+  const t = getDictionary(lang).auth.login.form;
+
+  // The schema carries its messages, so it is rebuilt when the language does.
+  const schema = useMemo(() => loginSchema(lang), [lang]);
 
   const form = useZodForm({
-    schema: loginSchema,
+    schema,
     initialValues: { email: '', password: '', remember_me: false },
     onSubmit: async (values) => {
       await login({
@@ -41,7 +60,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
   return (
     <form onSubmit={form.handleSubmit} noValidate className="space-y-5">
       <TextField
-        label="Email"
+        label={t.email}
         name="email"
         type="email"
         inputMode="email"
@@ -56,7 +75,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
       />
 
       <TextField
-        label="Пароль"
+        label={t.password}
         name="password"
         type="password"
         autoComplete="current-password"
@@ -73,21 +92,21 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           checked={form.values.remember_me ?? false}
           onChange={(checked) => form.setValue('remember_me', checked)}
         >
-          Запомнить меня
+          {t.remember}
         </CheckboxField>
 
         <a
-          href="/auth/forgot-password"
+          href={getLocalizedPath('/auth/forgot-password', lang)}
           className="text-sm text-ink-muted underline underline-offset-4 decoration-hairline-strong transition-colors duration-200 hover:text-mint-300"
         >
-          Забыли пароль?
+          {t.forgot}
         </a>
       </div>
 
       {form.formError ? <Alert tone="error">{form.formError}</Alert> : null}
 
-      <Button type="submit" size="lg" className="w-full" isLoading={form.isSubmitting} loadingLabel="Входим…">
-        Войти
+      <Button type="submit" size="lg" className="w-full" isLoading={form.isSubmitting} loadingLabel={t.submitting}>
+        {t.submit}
         <ArrowRight className="h-4 w-4" aria-hidden="true" />
       </Button>
     </form>

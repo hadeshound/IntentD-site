@@ -1,5 +1,6 @@
 import { useId, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react';
 
+import { useDictionary } from '@/i18n/react';
 import { cn } from '@/lib/utils/cn';
 import { controlStyles } from './styles';
 
@@ -18,11 +19,13 @@ interface FieldShellProps {
  * the correction without losing the current position.
  */
 function FieldShell({ id, label, error, hint, optional, children }: FieldShellProps) {
+  const d = useDictionary();
+
   return (
     <div className="space-y-1.5">
       <label htmlFor={id} className="flex items-baseline justify-between gap-3 text-sm text-ink">
         <span className="font-medium">{label}</span>
-        {optional ? <span className="text-xs text-ink-faint">необязательно</span> : null}
+        {optional ? <span className="text-xs text-ink-faint">{d.common.optional}</span> : null}
       </label>
 
       {children}

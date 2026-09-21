@@ -4,7 +4,9 @@
 // declared in global.css so tailwind.config.ts carries over unchanged.
 // Each package's index.css declares every subset it ships -- latin, latin-ext,
 // cyrillic and cyrillic-ext -- with a unicode-range per face, so a reader only
-// downloads the files their text actually needs.
+// downloads the files their text actually needs. Simplified Chinese ships no
+// webfont here on purpose: a CJK face is megabytes, and the system families
+// render the page correctly without that download.
 import '@fontsource-variable/golos-text';
 import '@fontsource-variable/manrope';
 import '@fontsource-variable/jetbrains-mono';
@@ -12,6 +14,16 @@ import '@fontsource-variable/jetbrains-mono';
 import '@/styles/global.css';
 
 import SessionBridge from '@/components/auth/SessionBridge.astro';
+import {
+  alternateUrls,
+  DEFAULT_LANG,
+  getLangFromUrl,
+  getLocalizedPath,
+  LANG_COOKIE,
+  LANG_QUERY_PARAM,
+  LANGUAGE_META,
+  langMeta,
+} from '@/i18n';
 import { SITE_URL } from '@/lib/config/urls';
 import { routePath } from '@/lib/utils/pathname';
 
@@ -37,12 +49,36 @@ const {
   canonical,
 } = Astro.props;
 
+const lang = getLangFromUrl(Astro.url);
+const meta = langMeta(lang);
+
 const fullTitle = titleTemplate ? `${title} · IntentD` : title;
-const canonicalUrl = canonical ?? new URL(routePath(Astro.url.pathname), SITE_URL).href;
+
+// The route with its language prefix removed: the canonical is built back up
+// for this language, and the hreflang block for every other one.
+const route = routePath(Astro.url.pathname);
+const canonicalUrl = canonical ?? new URL(getLocalizedPath(route, lang), SITE_URL).href;
+
+// hreflang is pointless on a page crawlers have just been asked to ignore.
+const alternates = noindex ? [] : alternateUrls(route, SITE_URL);
+const defaultAlternate = alternates.find((entry) => entry.lang === DEFAULT_LANG);
+
+// Handed to the detection script below so the language table has one source.
+const detection = {
+  cookie: LANG_COOKIE,
+  param: LANG_QUERY_PARAM,
+  current: lang,
+  fallback: DEFAULT_LANG,
+  route,
+  languages: Object.values(LANGUAGE_META).map((entry) => ({
+    code: entry.code,
+    match: entry.browserPrefixes,
+  })),
+};
 ---
 
 <!doctype html>
-<html lang="ru">
+<html lang={meta.htmlLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -57,8 +93,25 @@ const canonicalUrl = canonical ?? new URL(routePath(Astro.url.pathname), SITE_UR
     {noindex ? null : <link rel="canonical" href={canonicalUrl} />}
     <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
 
+    {/* Every language version of this exact route, plus x-default pointing at
+        the unprefixed English copy -- which is also where a visitor with an
+        unsupported browser language lands. */}
+    {
+      alternates.map((entry) => (
+        <link rel="alternate" hreflang={LANGUAGE_META[entry.lang].htmlLang} href={entry.href} />
+      ))
+    }
+    {defaultAlternate ? <link rel="alternate" hreflang="x-default" href={defaultAlternate.href} /> : null}
+
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:locale" content={meta.ogLocale} />
+    {
+      alternates
+        .filter((entry) => entry.lang !== lang)
+        .map((entry) => (
+          <meta property="og:locale:alternate" content={LANGUAGE_META[entry.lang].ogLocale} />
+        ))
+    }
     <meta property="og:site_name" content="IntentD" />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={fullTitle} />
@@ -76,6 +129,102 @@ const canonicalUrl = canonical ?? new URL(routePath(Astro.url.pathname), SITE_UR
     <slot />
 
     <SessionBridge />
+
+    {/* Language detection: ?lang= first, then the stored choice, then the
+        browser. It runs in the browser because the site is prerendered -- a
+        crawler, which runs no script, always sees the language of the URL it
+        asked for, which is exactly what the hreflang block above promises. */}
+    <script is:inline define:vars={{ detection }}>
+      (function () {
+        var COOKIE = detection.cookie;
+        var GUARD = 'intentd_lang_auto';
+
+        function readCookie() {
+          var match = document.cookie.match(new RegExp('(?:^|; )' + COOKIE + '=([^;]*)'));
+          return match ? decodeURIComponent(match[1]) : null;
+        }
+
+        function writeCookie(value) {
+          // A year, site-wide, Lax: switching language is a top-level
+          // navigation, so Lax is enough and keeps the cookie off cross-site
+          // requests.
+          document.cookie =
+            COOKIE + '=' + encodeURIComponent(value) + '; path=/; max-age=31536000; samesite=lax';
+        }
+
+        function isKnown(code) {
+          for (var i = 0; i < detection.languages.length; i += 1) {
+            if (detection.languages[i].code === code) return true;
+          }
+          return false;
+        }
+
+        function fromBrowser() {
+          var tags =
+            navigator.languages && navigator.languages.length
+              ? navigator.languages
+              : [navigator.language];
+
+          for (var i = 0; i < tags.length; i += 1) {
+            var tag = String(tags[i] || '').toLowerCase();
+
+            for (var j = 0; j < detection.languages.length; j += 1) {
+              var entry = detection.languages[j];
+              for (var k = 0; k < entry.match.length; k += 1) {
+                var prefix = entry.match[k];
+                if (tag === prefix || tag.indexOf(prefix + '-') === 0) return entry.code;
+              }
+            }
+          }
+          return null;
+        }
+
+        function pathFor(code, search) {
+          var base = detection.route === '/' ? '' : detection.route;
+          var path = code === detection.fallback ? base || '/' : '/' + code + base;
+          return path + (search ? '?' + search : '') + window.location.hash;
+        }
+
+        var url = new URL(window.location.href);
+        var requested = url.searchParams.get(detection.param);
+
+        // 1. ?lang= wins outright, is remembered, and is then dropped from the
+        //    address bar so the language lives in the path alone.
+        if (requested && isKnown(requested)) {
+          writeCookie(requested);
+          url.searchParams.delete(detection.param);
+          window.location.replace(pathFor(requested, url.searchParams.toString()));
+          return;
+        }
+
+        var search = url.searchParams.toString();
+
+        // 2. A stored choice, honoured on any page whose language differs.
+        var stored = readCookie();
+        if (stored && isKnown(stored)) {
+          if (stored !== detection.current) {
+            window.location.replace(pathFor(stored, search));
+          }
+          return;
+        }
+
+        // 3. The browser's own languages, at most once per tab, so a reader
+        //    who deliberately navigates elsewhere is not bounced repeatedly.
+        try {
+          if (sessionStorage.getItem(GUARD)) return;
+          sessionStorage.setItem(GUARD, '1');
+        } catch (error) {
+          // Private mode or blocked storage: skip the automatic step rather
+          // than risk a redirect we cannot remember having made.
+          return;
+        }
+
+        var detected = fromBrowser();
+        if (detected && detected !== detection.current) {
+          window.location.replace(pathFor(detected, search));
+        }
+      })();
+    </script>
 
     <script>
       // Scroll reveal, formerly lib/hooks/useReveal.ts. One observer for the

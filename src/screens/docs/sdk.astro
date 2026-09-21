@@ -1,0 +1,76 @@
+---
+import Badge from '@/components/ui/Badge.astro';
+import CodeBlock from '@/components/ui/CodeBlock.astro';
+import DocsTable from '@/components/ui/DocsTable.astro';
+import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+
+const lang = getLangFromUrl(Astro.url);
+const t = getDictionary(lang).docs.sdk;
+---
+
+<MarketingLayout title={t.metaTitle} description={t.metaDescription}>
+  <div class="shell pb-24 pt-16 lg:pb-32 lg:pt-24">
+    <div class="max-w-3xl">
+      <a
+        href={getLocalizedPath('/docs/api', lang)}
+        class="text-sm text-ink-muted transition-colors duration-200 hover:text-ink"
+      >
+        {t.backToApi}
+      </a>
+
+      <p class="mt-8 eyebrow">{t.eyebrow}</p>
+      <h1 class="mt-5 text-hero">{t.title}</h1>
+
+      <p class="mt-8 text-lg leading-relaxed text-ink-muted text-pretty">{t.intro}</p>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <Badge tone="mint">Manifest V3</Badge>
+        <Badge>Opt-in</Badge>
+        <Badge tone="violet">Shadow DOM</Badge>
+      </div>
+
+      <section id="install" class="mt-16 scroll-mt-28">
+        <h2 class="font-display text-3xl text-ink">{t.install.title}</h2>
+        <p class="mt-5 prose-body">{t.install.body}</p>
+        <CodeBlock class="mt-5" label={t.install.archiveLabel} code={t.install.files} />
+        <CodeBlock class="mt-4" label="manifest.json" code={t.install.manifest} />
+        <CodeBlock class="mt-4" label="background.js" code={t.install.background} />
+      </section>
+
+      <section id="consent-flow" class="mt-16 scroll-mt-28">
+        <h2 class="font-display text-3xl text-ink">{t.consent.title}</h2>
+
+        <h3 class="mt-8 font-display text-xl text-ink">{t.consent.withPopupTitle}</h3>
+        <p class="mt-4 prose-body">
+          {t.consent.withPopupBodyBefore} <code class="font-mono">IntentD.mountConsent()</code>
+          {t.consent.withPopupBodyAfter}
+        </p>
+        <CodeBlock class="mt-5" label="popup.html" code={t.consent.popupHtml} />
+        <CodeBlock class="mt-4" label="popup.js" code={t.consent.popupJs} />
+        <p class="mt-4 prose-body">{t.consent.shadowDom}</p>
+
+        <h3 class="mt-10 font-display text-xl text-ink">{t.consent.withoutPopupTitle}</h3>
+        <p class="mt-4 prose-body">{t.consent.withoutPopupBody}</p>
+
+        <h3 class="mt-10 font-display text-xl text-ink">{t.consent.triggersTitle}</h3>
+        <DocsTable head={[...t.consent.triggersHead]} rows={t.consent.triggers.map((row) => [...row])} />
+
+        <h3 class="mt-10 font-display text-xl text-ink">{t.consent.revokeTitle}</h3>
+        <p class="mt-4 prose-body">{t.consent.revokeBody}</p>
+        <CodeBlock class="mt-5" label="options.js" code={t.consent.optionsJs} />
+
+        <div class="surface-card mt-8 p-6">
+          <h3 class="font-display text-lg text-ink">{t.consent.warningTitle}</h3>
+          <p class="mt-3 text-[0.9375rem] leading-relaxed text-ink-muted">{t.consent.warningBody}</p>
+        </div>
+      </section>
+
+      <section id="api" class="mt-16 scroll-mt-28">
+        <h2 class="font-display text-3xl text-ink">{t.api.title}</h2>
+        <DocsTable head={[...t.api.head]} rows={t.api.rows.map((row) => [...row])} mono />
+        <p class="mt-5 prose-body">{t.api.storageNote}</p>
+      </section>
+    </div>
+  </div>
+</MarketingLayout>

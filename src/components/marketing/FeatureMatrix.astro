@@ -1,42 +1,65 @@
 ---
 import { Check, Minus } from 'lucide-react';
 
+import { getDictionary, getLangFromUrl } from '@/i18n';
 import type { PlanCode } from '@/lib/api/plans';
-import { FEATURE_MATRIX, PLAN_ORDER, PLAN_PRESENTATION } from '@/lib/content/pricing';
+import { featureMatrix, PLAN_ORDER, planPresentation } from '@/lib/content/pricing';
 
+const lang = getLangFromUrl(Astro.url);
+const dictionary = getDictionary(lang);
+const t = dictionary.pricing.matrix;
+
+// Plan names are product names and stay in English in every language.
 const COLUMN_TITLES: Record<PlanCode, string> = {
   starter: 'Starter',
   growth: 'Growth',
+  scale: 'Scale',
   enterprise: 'Enterprise',
 };
+
+const groups = featureMatrix(lang);
+
+// A short form of the audience line under each column header. Splitting on
+// spaces suits the Latin and Cyrillic copy; Chinese has no spaces, so it is
+// truncated by character count instead.
+const AUDIENCE_WORDS = 3;
+const AUDIENCE_CHARS = 10;
+
+function shortAudience(code: PlanCode): string {
+  const full = planPresentation(lang, code).audience;
+  if (lang === 'zh') {
+    return full.length > AUDIENCE_CHARS ? `${full.slice(0, AUDIENCE_CHARS)}…` : full;
+  }
+  return full.split(' ').slice(0, AUDIENCE_WORDS).join(' ');
+}
 ---
 
 {/* Full comparison table for /pricing. It is a real <table> with scope-d
-    headers so a screen reader announces "Growth · Частота выгрузки · раз в час"
-    instead of reading a wall of disconnected cells. */}
+    headers so a screen reader announces "Growth · Delivery frequency · once an
+    hour" instead of reading a wall of disconnected cells. */}
 <section class="py-24 lg:py-28">
   <div class="shell">
     <p class="flex items-center gap-3">
-      <span class="eyebrow">Сравнение</span>
+      <span class="eyebrow">{t.eyebrow}</span>
       <span class="h-px w-12 bg-hairline-strong"></span>
     </p>
 
-    <h2 class="mt-6 max-w-2xl text-section-title">Что входит в каждый тариф</h2>
+    <h2 class="mt-6 max-w-2xl text-section-title">{t.title}</h2>
 
     <div class="mt-12 overflow-x-auto rounded-card border border-hairline">
-      <table class="w-full min-w-[44rem] border-collapse text-left">
-        <caption class="sr-only">Сравнение возможностей тарифов Starter, Growth и Enterprise</caption>
+      <table class="w-full min-w-[52rem] border-collapse text-left">
+        <caption class="sr-only">{t.caption}</caption>
 
         <thead>
           <tr class="border-b border-hairline bg-white/[0.02]">
-            <th scope="col" class="px-6 py-5 text-sm font-medium text-ink-faint">Возможность</th>
+            <th scope="col" class="px-6 py-5 text-sm font-medium text-ink-faint">{t.featureColumn}</th>
 
             {
               PLAN_ORDER.map((code) => (
                 <th scope="col" class="px-6 py-5 text-center font-display text-base text-ink">
                   {COLUMN_TITLES[code]}
                   <span class="mt-1 block font-sans text-xs font-normal text-ink-faint">
-                    {PLAN_PRESENTATION[code].audience.split(' ').slice(0, 3).join(' ')}
+                    {shortAudience(code)}
                   </span>
                 </th>
               ))
@@ -45,7 +68,7 @@ const COLUMN_TITLES: Record<PlanCode, string> = {
         </thead>
 
         {
-          FEATURE_MATRIX.map((group) => (
+          groups.map((group) => (
             <tbody>
               <tr class="border-b border-hairline bg-white/[0.015]">
                 <th
@@ -73,12 +96,12 @@ const COLUMN_TITLES: Record<PlanCode, string> = {
                             value === true ? (
                               <Fragment>
                                 <Check className="mx-auto h-4 w-4 text-mint-400" aria-hidden="true" />
-                                <span class="sr-only">Включено</span>
+                                <span class="sr-only">{dictionary.a11y.included}</span>
                               </Fragment>
                             ) : value === false ? (
                               <Fragment>
                                 <Minus className="mx-auto h-4 w-4 text-ink-faint" aria-hidden="true" />
-                                <span class="sr-only">Не включено</span>
+                                <span class="sr-only">{dictionary.a11y.notIncluded}</span>
                               </Fragment>
                             ) : (
                               <span class="text-sm text-ink-muted">{value}</span>

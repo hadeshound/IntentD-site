@@ -1,0 +1,28 @@
+---
+import { CheckoutView } from '@/components/checkout/CheckoutView';
+import AmbientGlow from '@/components/ui/AmbientGlow.astro';
+import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import { PLAN_ORDER } from '@/lib/content/pricing';
+import { buildLoginRedirect } from '@/lib/utils/redirect';
+
+const lang = getLangFromUrl(Astro.url);
+const t = getDictionary(lang).checkout;
+
+const raw = Astro.url.searchParams.get('plan');
+const planCode = PLAN_ORDER.find((code) => code === raw) ?? null;
+
+// An anonymous visitor is bounced to login and returned to this exact plan.
+const loginHref = planCode
+  ? buildLoginRedirect(planCode, lang)
+  : `${getLocalizedPath('/auth/login', lang)}?redirect=/checkout`;
+---
+
+<MarketingLayout title={t.metaTitle} description={t.metaDescription} noindex>
+  <section class="relative overflow-hidden py-16 lg:py-24">
+    <div class="hairline-grid-overlay"></div>
+    <AmbientGlow class="-left-28 top-0 h-96 w-96" drift />
+
+    <CheckoutView planCode={planCode} loginHref={loginHref} lang={lang} client:load />
+  </section>
+</MarketingLayout>

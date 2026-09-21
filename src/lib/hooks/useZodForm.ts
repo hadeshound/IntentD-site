@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState, type FormEvent } from 'react';
 import type { z } from 'zod';
 
 import { ApiError } from '@/lib/api/client';
+import { currentDictionary } from '@/i18n/runtime';
 
 export type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -112,7 +113,7 @@ export function useZodForm<TSchema extends z.ZodTypeAny>({
         setFormError(
           error instanceof ApiError
             ? error.message
-            : 'Что-то пошло не так. Попробуйте ещё раз.',
+            : currentDictionary().errors.formGeneric,
         );
       }
     },

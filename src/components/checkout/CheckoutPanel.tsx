@@ -8,39 +8,49 @@ import { Button, ButtonLink } from '@/components/ui/Button';
 import { TextAreaField, TextField } from '@/components/ui/Field';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
-import type { PlanCode } from '@/lib/api/plans';
+import { getDictionary, getLocalizedPath, type Lang } from '@/i18n';
+import { isSelfServePlan, type PlanCode, type SelfServePlanCode } from '@/lib/api/plans';
 import { createCheckoutIntent } from '@/lib/api/subscriptions';
-import { PLAN_PRESENTATION } from '@/lib/content/pricing';
+import { planPresentation } from '@/lib/content/pricing';
 import { findPlan, usePlans } from '@/lib/hooks/usePlans';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useZodForm } from '@/lib/hooks/useZodForm';
 import { checkoutSchema } from '@/lib/schemas/checkout';
-import { formatEventsLimit, formatPrice } from '@/lib/utils/format';
+import {
+  formatDelivery,
+  formatPrice,
+  formatSla,
+  formatSupport,
+  usersAllowance,
+} from '@/lib/utils/format';
 
 interface CheckoutPanelProps {
   /** Plan code taken from ?plan=, already narrowed by the page. */
   planCode: PlanCode | null;
+  lang: Lang;
 }
 
-const DELIVERY_BY_PLAN: Record<string, string> = {
-  starter: 'Ежедневная выгрузка в S3, Parquet + LZ4',
-  growth: 'Почасовая синхронизация S3 / MinIO, Parquet + LZ4',
-};
-
-export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
+export function CheckoutPanel({ planCode, lang }: CheckoutPanelProps) {
   const { user, reload } = useAuth();
-  const { plans, isLoading, error } = usePlans();
+  const { plans, isLoading, error } = usePlans(lang);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const t = getDictionary(lang).checkout;
+  const pricingHref = getLocalizedPath('/pricing', lang);
+
   const plan = useMemo(() => findPlan(plans, planCode), [plans, planCode]);
-  const presentation = planCode ? PLAN_PRESENTATION[planCode] : null;
+  const presentation = useMemo(
+    () => (planCode ? planPresentation(lang, planCode) : null),
+    [lang, planCode],
+  );
 
   const existingCompany = user?.company_name?.trim() ?? '';
+  const schema = useMemo(() => checkoutSchema(lang), [lang]);
 
   const form = useZodForm({
-    schema: checkoutSchema,
+    schema,
     initialValues: {
-      plan_code: (planCode === 'growth' ? 'growth' : 'starter') as 'starter' | 'growth',
+      plan_code: (isSelfServePlan(planCode) ? planCode : 'starter') as SelfServePlanCode,
       company_name: existingCompany,
       notes: '',
     },
@@ -67,7 +77,7 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
   }, [existingCompany, setValue]);
 
   useEffect(() => {
-    if (planCode === 'starter' || planCode === 'growth') {
+    if (isSelfServePlan(planCode)) {
       setValue('plan_code', planCode);
     }
   }, [planCode, setValue]);
@@ -76,13 +86,10 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
 
   if (planCode === 'enterprise') {
     return (
-      <Alert tone="info" title="Enterprise оформляется отдельно">
-        <p>
-          Raw Firehose, кастомные фильтры и SLA согласуются индивидуально, поэтому этот
-          тариф не проходит через самостоятельное оформление.
-        </p>
-        <ButtonLink href="/contact?topic=enterprise" className="mt-5">
-          Связаться с менеджером
+      <Alert tone="info" title={t.enterprise.title}>
+        <p>{t.enterprise.body}</p>
+        <ButtonLink href={getLocalizedPath('/contact?topic=enterprise', lang)} className="mt-5">
+          {t.enterprise.cta}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </ButtonLink>
       </Alert>
@@ -91,10 +98,10 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
 
   if (!planCode) {
     return (
-      <Alert tone="info" title="Тариф не выбран">
-        <p>Вернитесь к тарифам и выберите объём потока, который вам нужен.</p>
-        <ButtonLink href="/pricing" className="mt-5">
-          Перейти к тарифам
+      <Alert tone="info" title={t.noPlan.title}>
+        <p>{t.noPlan.body}</p>
+        <ButtonLink href={pricingHref} className="mt-5">
+          {t.noPlan.cta}
         </ButtonLink>
       </Alert>
     );
@@ -104,23 +111,25 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
     return (
       <p className="flex items-center gap-3 text-sm text-ink-muted" role="status" aria-live="polite">
         <Spinner className="h-4 w-4" />
-        Загружаем условия тарифа…
+        {t.loading}
       </p>
     );
   }
 
   if (error || !plan || !presentation) {
     return (
-      <Alert tone="error" title="Не удалось загрузить тариф">
-        <p>{error ?? 'Такого тарифа нет в каталоге. Выберите другой на странице тарифов.'}</p>
-        <ButtonLink href="/pricing" variant="secondary" className="mt-5">
-          К тарифам
+      <Alert tone="error" title={t.planError.title}>
+        <p>{error ?? t.planError.body}</p>
+        <ButtonLink href={pricingHref} variant="secondary" className="mt-5">
+          {t.planError.cta}
         </ButtonLink>
       </Alert>
     );
   }
 
   // --- main view ----------------------------------------------------------
+
+  const allowance = usersAllowance(plan.users_limit, lang);
 
   return (
     <>
@@ -132,7 +141,7 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-mint-400">
-                  Выбранный тариф
+                  {t.selectedPlan}
                 </p>
                 <h2 className="mt-3 font-display text-2xl text-ink">{plan.name}</h2>
               </div>
@@ -142,28 +151,57 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
 
             <p className="mt-7 flex items-baseline gap-2">
               <span className="font-display text-4xl tracking-tight text-ink">
-                {formatPrice(plan.price_cents, plan.currency)}
+                {formatPrice(plan.price_cents, plan.currency, lang)}
               </span>
-              <span className="text-sm text-ink-faint">/ мес</span>
+              <span className="text-sm text-ink-faint">{t.monthlyFee}</span>
             </p>
 
             <dl className="mt-8 space-y-4 border-t border-hairline pt-8 text-sm">
-              <div className="flex items-start justify-between gap-6">
-                <dt className="text-ink-muted">Объём</dt>
-                <dd className="text-right font-mono text-ink">
-                  {formatEventsLimit(plan.events_limit)} событий / мес
-                </dd>
-              </div>
+              {/* The setup fee is what makes the first invoice different from
+                  every later one, so it is the first line of the summary. */}
+              {plan.setup_price_cents > 0 ? (
+                <div className="flex items-start justify-between gap-6">
+                  <dt className="text-ink-muted">{t.setupFee}</dt>
+                  <dd className="text-right font-mono text-ink">
+                    {formatPrice(plan.setup_price_cents, plan.currency, lang)}
+                  </dd>
+                </div>
+              ) : null}
+
+              {/* Omitted, rather than guessed at, when the catalogue predates
+                  portal migration 000015 and carries no allowance. */}
+              {allowance.kind === 'unknown' ? null : (
+                <div className="flex items-start justify-between gap-6">
+                  <dt className="text-ink-muted">{t.volume}</dt>
+                  <dd className="text-right font-mono text-ink">
+                    {allowance.kind === 'unlimited'
+                      ? t.unlimited
+                      : `${allowance.text} ${t.usersPerMonth}`}
+                  </dd>
+                </div>
+              )}
 
               <div className="flex items-start justify-between gap-6">
-                <dt className="text-ink-muted">Формат доставки</dt>
+                <dt className="text-ink-muted">{t.delivery}</dt>
                 <dd className="max-w-[16rem] text-right text-ink">
-                  {DELIVERY_BY_PLAN[plan.code] ?? 'Parquet + LZ4 в AWS S3'}
+                  {formatDelivery(plan.delivery_frequency, lang)}
                 </dd>
               </div>
 
               <div className="flex items-start justify-between gap-6">
-                <dt className="text-ink-muted">Для кого</dt>
+                <dt className="text-ink-muted">{t.sla}</dt>
+                <dd className="text-right text-ink">{formatSla(plan.sla, lang)}</dd>
+              </div>
+
+              <div className="flex items-start justify-between gap-6">
+                <dt className="text-ink-muted">{t.support}</dt>
+                <dd className="max-w-[16rem] text-right text-ink">
+                  {formatSupport(plan.support_level, lang)}
+                </dd>
+              </div>
+
+              <div className="flex items-start justify-between gap-6">
+                <dt className="text-ink-muted">{t.audience}</dt>
                 <dd className="max-w-[16rem] text-right text-ink">{presentation.audience}</dd>
               </div>
             </dl>
@@ -178,10 +216,9 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
             </ul>
 
             <p className="mt-8 text-xs leading-relaxed text-ink-faint">
-              Оплата на этом шаге не списывается. Мы фиксируем заявку и связываемся с вами
-              для выдачи тестовых ключей.{' '}
-              <a href="/pricing" className="underline underline-offset-4">
-                Сменить тариф
+              {t.noCharge}{' '}
+              <a href={pricingHref} className="underline underline-offset-4">
+                {t.changePlan}
               </a>
             </p>
           </div>
@@ -189,35 +226,31 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
 
         <div className="lg:col-span-6">
           <div className="surface-card p-7 lg:p-9">
-            <h2 className="font-display text-xl text-ink">Данные для активации</h2>
+            <h2 className="font-display text-xl text-ink">{t.formTitle}</h2>
             <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-              Заявка привяжется к аккаунту{' '}
+              {t.formIntroPrefix}{' '}
               <span className="font-mono text-ink">{user?.email}</span>.
             </p>
 
             <form onSubmit={form.handleSubmit} noValidate className="mt-8 space-y-5">
               <TextField
-                label="Название компании"
+                label={t.companyLabel}
                 name="company_name"
                 autoComplete="organization"
                 value={form.values.company_name}
                 onChange={(event) => form.setValue('company_name', event.target.value)}
                 onBlur={() => form.markTouched('company_name')}
                 error={form.errorFor('company_name')}
-                hint={
-                  existingCompany
-                    ? 'Название сохранено в профиле — при необходимости поправьте.'
-                    : 'За компанией резервируется отдельный S3-бакет, поэтому поле обязательно.'
-                }
+                hint={existingCompany ? t.companyHintExisting : t.companyHintNew}
                 required
               />
 
               <TextAreaField
-                label="Комментарий для менеджера"
+                label={t.notesLabel}
                 name="notes"
                 rows={4}
                 optional
-                placeholder="Интересующие вертикали, желаемые сроки старта, требования к фильтрации."
+                placeholder={t.notesPlaceholder}
                 value={form.values.notes ?? ''}
                 onChange={(event) => form.setValue('notes', event.target.value)}
                 onBlur={() => form.markTouched('notes')}
@@ -231,22 +264,24 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
                 size="lg"
                 className="w-full"
                 isLoading={form.isSubmitting}
-                loadingLabel="Отправляем заявку…"
+                loadingLabel={t.submitting}
               >
-                Запросить активацию тарифа
+                {t.submit}
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
             </form>
 
             <ul className="mt-8 space-y-3 border-t border-hairline pt-7 text-xs leading-relaxed text-ink-faint">
-              <li className="flex gap-2.5">
-                <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-mint-500/70" aria-hidden="true" />
-                Платёжные данные на этом этапе не запрашиваются и не принимаются.
-              </li>
-              <li className="flex gap-2.5">
-                <Database className="mt-0.5 h-3.5 w-3.5 shrink-0 text-mint-500/70" aria-hidden="true" />
-                Повторная заявка на тот же тариф не создаёт дубликат — мы увидим исходную.
-              </li>
+              {t.guarantees.map((line, index) => (
+                <li key={line} className="flex gap-2.5">
+                  {index === 0 ? (
+                    <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-mint-500/70" aria-hidden="true" />
+                  ) : (
+                    <Database className="mt-0.5 h-3.5 w-3.5 shrink-0 text-mint-500/70" aria-hidden="true" />
+                  )}
+                  {line}
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -257,32 +292,32 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
         onClose={() => {
           setIsModalOpen(false);
           // No dashboard exists yet, so the flow returns to the landing page.
-          window.location.assign('/');
+          window.location.assign(getLocalizedPath('/', lang));
         }}
-        title="Заявка принята"
-        description="Наш менеджер свяжется с вами по указанному email в течение 15 минут для выдачи тестовых API-ключей и настройки выгрузки."
+        title={t.modal.title}
+        description={t.modal.description}
         footer={
           <>
             <Button
               onClick={() => {
                 setIsModalOpen(false);
-                window.location.assign('/');
+                window.location.assign(getLocalizedPath('/', lang));
               }}
             >
-              Вернуться на главную
+              {t.modal.home}
             </Button>
-            <ButtonLink href="/docs/api" variant="secondary">
-              Открыть документацию
+            <ButtonLink href={getLocalizedPath('/docs/api', lang)} variant="secondary">
+              {t.modal.docs}
             </ButtonLink>
           </>
         }
       >
         <div className="rounded-card border border-hairline bg-void/60 p-4 text-sm text-ink-muted">
           <p>
-            Тариф: <span className="font-mono text-ink">{plan.name}</span>
+            {t.modal.planLabel}: <span className="font-mono text-ink">{plan.name}</span>
           </p>
           <p className="mt-1.5">
-            Контакт: <span className="font-mono text-ink">{user?.email}</span>
+            {t.modal.contactLabel}: <span className="font-mono text-ink">{user?.email}</span>
           </p>
         </div>
       </Modal>

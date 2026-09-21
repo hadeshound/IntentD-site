@@ -1,63 +1,62 @@
 ---
 import AmbientGlow from '@/components/ui/AmbientGlow.astro';
+import { getDictionary, getLangFromUrl } from '@/i18n';
 
 export interface LegalSection {
   id: string;
   title: string;
+  /** Section body as HTML, authored in the dictionary. */
+  body: string;
 }
 
 interface Props {
   title: string;
   /** Human-readable date of the last substantive change. */
   updatedAt: string;
+  /** Lead paragraph, as HTML. */
+  intro: string;
+  /** Optional draft/notice callout, as HTML. */
+  notice?: string;
   sections: LegalSection[];
 }
 
-const { title, updatedAt, sections } = Astro.props;
+const { title, updatedAt, intro, notice, sections } = Astro.props;
 
-// Slot names have to be static in the template, so each body is rendered here
-// and injected below. The markup is authored in the page next door, not supplied
-// by a visitor, so set:html carries nothing a reader could inject.
-const rendered = await Promise.all(
-  sections.map(async (section) => ({
-    ...section,
-    body: await Astro.slots.render(`section-${section.id}`),
-  })),
-);
+const t = getDictionary(getLangFromUrl(Astro.url));
 ---
 
 {/* Shared shell for /terms and /privacy: numbered sections, a sticky contents
     list and a readable measure. Legal text still follows the site typography
     rather than dropping into an unstyled document.
 
-    The prose used to arrive as React nodes inside the `sections` array. Astro
-    cannot carry markup in a prop, so each body comes in through a named slot --
-    `slot="section-<id>"` -- while the array keeps the order, numbering and the
-    contents list. The `intro` and `notice` slots work the same way. */}
+    Every body arrives as an HTML string from the dictionary, because the
+    sections carry lists, inline links and <strong>. That markup is authored in
+    src/i18n, never supplied by a visitor, so set:html carries nothing a reader
+    could inject. */}
 <section class="relative overflow-hidden pb-12 pt-16 lg:pt-24">
   <div class="hairline-grid-overlay"></div>
   <AmbientGlow class="-left-28 top-0 h-80 w-80" />
 
   <div class="shell max-w-4xl">
     <p class="flex items-center gap-3">
-      <span class="eyebrow">Legal</span>
+      <span class="eyebrow">{t.legal.eyebrow}</span>
       <span class="h-px w-12 bg-hairline-strong"></span>
     </p>
 
     <h1 class="mt-7 text-section-title">{title}</h1>
 
     <p class="mt-6 font-mono text-xs uppercase tracking-[0.16em] text-ink-faint">
-      Последнее обновление: {updatedAt}
+      {t.legal.updatedAt} {updatedAt}
     </p>
 
     <div class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted text-pretty">
-      <slot name="intro" />
+      <Fragment set:html={intro} />
     </div>
 
     {
-      Astro.slots.has('notice') ? (
-        <div class="mt-8 rounded-card border border-violet-500/30 bg-violet-500/[0.06] p-5 text-sm leading-relaxed text-ink-muted">
-          <slot name="notice" />
+      notice ? (
+        <div class="mt-8 rounded-card border border-violet-500/30 bg-violet-500/[0.06] p-5 text-sm leading-relaxed text-ink-muted [&_a]:text-mint-400">
+          <strong class="text-ink">{t.legal.draftLabel}</strong> <Fragment set:html={notice} />
         </div>
       ) : null
     }
@@ -65,9 +64,9 @@ const rendered = await Promise.all(
 </section>
 
 <div class="shell grid gap-12 pb-24 lg:grid-cols-12 lg:gap-10 lg:pb-32">
-  <nav aria-label="Разделы документа" class="lg:col-span-3">
+  <nav aria-label={t.a11y.legalSections} class="lg:col-span-3">
     <div class="lg:sticky lg:top-28">
-      <p class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">Разделы</p>
+      <p class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">{t.legal.contents}</p>
 
       <ol class="mt-5 space-y-1">
         {
@@ -89,7 +88,7 @@ const rendered = await Promise.all(
 
   <article class="space-y-14 lg:col-span-8 lg:col-start-5">
     {
-      rendered.map((section, index) => (
+      sections.map((section, index) => (
         <section id={section.id} class="scroll-mt-28">
           <p class="font-mono text-xs uppercase tracking-[0.16em] text-mint-400">
             {String(index + 1).padStart(2, '0')}

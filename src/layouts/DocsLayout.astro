@@ -1,5 +1,6 @@
 ---
 import AmbientGlow from '@/components/ui/AmbientGlow.astro';
+import { getDictionary, getLangFromUrl } from '@/i18n';
 import MarketingLayout from './MarketingLayout.astro';
 
 export interface DocsSection {
@@ -20,7 +21,16 @@ interface Props {
   sections: DocsSection[];
 }
 
-const { title, description, heading, intro, eyebrow = 'Documentation', sections } = Astro.props;
+const t = getDictionary(getLangFromUrl(Astro.url));
+
+const {
+  title,
+  description,
+  heading,
+  intro,
+  eyebrow = t.docs.layout.eyebrow,
+  sections,
+} = Astro.props;
 ---
 
 {/* Documentation shell: a hero, a sticky contents column and the body. The
@@ -49,9 +59,11 @@ const { title, description, heading, intro, eyebrow = 'Documentation', sections 
   <div class="shell grid gap-12 pb-24 lg:grid-cols-12 lg:gap-10 lg:pb-32">
     {/* Sticky table of contents. Real anchors, so the page is usable with
         JavaScript disabled and each section is linkable. */}
-    <nav aria-label="Содержание документации" class="lg:col-span-3">
+    <nav aria-label={t.a11y.docsContents} class="lg:col-span-3">
       <div class="lg:sticky lg:top-28">
-        <p class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">Содержание</p>
+        <p class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">
+          {t.docs.layout.contents}
+        </p>
 
         <ol class="mt-5 space-y-1">
           {

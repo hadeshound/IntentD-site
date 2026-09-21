@@ -1,6 +1,7 @@
 ---
 import { Check, Copy } from 'lucide-react';
 
+import { getDictionary, getLangFromUrl } from '@/i18n';
 import { cn } from '@/lib/utils/cn';
 
 interface Props {
@@ -11,12 +12,17 @@ interface Props {
 }
 
 const { code, label, class: className } = Astro.props;
+
+// Rendered into data attributes so the script below carries no copy of its own.
+const t = getDictionary(getLangFromUrl(Astro.url)).common;
 ---
 
 {/* Monospaced snippet with a copy control. Wide lines scroll inside the block
     rather than widening the page. */}
 <figure
   data-code-block
+  data-label-copy={t.copy}
+  data-label-copied={t.copied}
   class={cn('overflow-hidden rounded-card border border-hairline bg-void-deep/80', className)}
 >
   <figcaption class="flex items-center justify-between border-b border-hairline px-4 py-2.5">
@@ -33,7 +39,7 @@ const { code, label, class: className } = Astro.props;
       <span data-icon-done class="contents" hidden>
         <Check className="h-3.5 w-3.5 text-mint-400" aria-hidden="true" />
       </span>
-      <span data-copy-label>Копировать</span>
+      <span data-copy-label>{t.copy}</span>
     </button>
   </figcaption>
 
@@ -46,6 +52,9 @@ const { code, label, class: className } = Astro.props;
   // One handler per block. Clipboard access can be denied, in which case the
   // snippet is still selectable -- the label simply does not change.
   document.querySelectorAll<HTMLElement>('[data-code-block]').forEach((block) => {
+    const idleLabel = block.dataset.labelCopy ?? '';
+    const doneLabel = block.dataset.labelCopied ?? '';
+
     const button = block.querySelector<HTMLButtonElement>('[data-copy]');
     const code = block.querySelector<HTMLElement>('[data-code]');
     const label = block.querySelector<HTMLElement>('[data-copy-label]');
@@ -65,13 +74,13 @@ const { code, label, class: className } = Astro.props;
         return;
       }
 
-      label.textContent = 'Скопировано';
+      label.textContent = doneLabel;
       idle.hidden = true;
       done.hidden = false;
 
       clearTimeout(timer);
       timer = setTimeout(() => {
-        label.textContent = 'Копировать';
+        label.textContent = idleLabel;
         idle.hidden = false;
         done.hidden = true;
       }, 2000);

@@ -1,4 +1,5 @@
 ---
+import { getDictionary, getLangFromUrl } from '@/i18n';
 import { cn } from '@/lib/utils/cn';
 
 interface Props {
@@ -6,6 +7,8 @@ interface Props {
 }
 
 const { class: className } = Astro.props;
+
+const t = getDictionary(getLangFromUrl(Astro.url)).flow;
 
 interface NodeSpec {
   x: number;
@@ -18,12 +21,19 @@ interface NodeSpec {
 
 // The chain steps down and to the right on purpose: a straight vertical stack
 // would read as a generic flowchart, the diagonal reads as a pipeline.
-const NODES: NodeSpec[] = [
-  { x: 8, y: 20, width: 226, title: 'Браузерное расширение', subtitle: 'background script', accent: 'neutral' },
-  { x: 62, y: 148, width: 246, title: '@intentd/edge-sdk', subtitle: '< 15 КБ · Manifest V3', accent: 'mint' },
-  { x: 116, y: 276, width: 266, title: 'IntentD Edge', subtitle: 'HMAC-хеш · PII-фильтр', accent: 'violet' },
-  { x: 170, y: 404, width: 242, title: 'AWS S3', subtitle: 'Parquet + LZ4', accent: 'mint' },
-];
+// Geometry stays here; the labels come from the dictionary in order.
+const GEOMETRY = [
+  { x: 8, y: 20, width: 226, accent: 'neutral' },
+  { x: 62, y: 148, width: 246, accent: 'mint' },
+  { x: 116, y: 276, width: 266, accent: 'violet' },
+  { x: 170, y: 404, width: 242, accent: 'mint' },
+] as const;
+
+const NODES: NodeSpec[] = GEOMETRY.map((node, index) => ({
+  ...node,
+  title: t.nodes[index]?.title ?? '',
+  subtitle: t.nodes[index]?.subtitle ?? '',
+}));
 
 const NODE_HEIGHT = 72;
 
@@ -44,14 +54,6 @@ function connectorPath(from: NodeSpec, to: NodeSpec): string {
   return `M ${startX} ${startY} L ${startX} ${midY - 12} Q ${startX} ${midY} ${startX + 12} ${midY} L ${endX - 12} ${midY} Q ${endX} ${midY} ${endX} ${midY + 12} L ${endX} ${endY}`;
 }
 
-const EDGE_LABELS = ['события', 'очистка', 'выгрузка'];
-
-const STATS = [
-  { label: 'PII в потоке', value: '0' },
-  { label: 'Размер SDK', value: '< 15 КБ' },
-  { label: 'Формат', value: 'Parquet' },
-];
-
 const EDGES = NODES.slice(0, -1).map((node, index) => ({
   node,
   index,
@@ -69,22 +71,17 @@ const EDGES = NODES.slice(0, -1).map((node, index) => ({
 
   <div class="glass-panel relative overflow-hidden rounded-card p-5">
     <div class="mb-4 flex items-center justify-between">
-      <span class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">Поток данных</span>
+      <span class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">{t.caption}</span>
       <span class="inline-flex items-center gap-2 font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-mint-400">
         <span class="relative flex h-1.5 w-1.5">
           <span class="absolute inline-flex h-full w-full animate-status-ping rounded-full bg-mint-400"></span>
           <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-mint-400"></span>
         </span>
-        live
+        {t.live}
       </span>
     </div>
 
-    <svg
-      viewBox="0 0 420 500"
-      class="h-auto w-full"
-      role="img"
-      aria-label="Схема потока: браузерное расширение отправляет события в SDK, SDK передаёт их в IntentD Edge, где происходит хеширование и очистка от персональных данных, затем очищенные события выгружаются в AWS S3 в формате Parquet."
-    >
+    <svg viewBox="0 0 420 500" class="h-auto w-full" role="img" aria-label={t.alt}>
       {
         EDGES.map(({ node, index, path, pathId }) => (
           <g>
@@ -98,7 +95,7 @@ const EDGES = NODES.slice(0, -1).map((node, index) => ({
               letter-spacing="1.4"
               fill="#6B7280"
             >
-              {EDGE_LABELS[index]?.toUpperCase()}
+              {t.edges[index]?.toUpperCase()}
             </text>
 
             {/* Two packets per edge, offset in time, so the line always
@@ -153,7 +150,7 @@ const EDGES = NODES.slice(0, -1).map((node, index) => ({
 
     <dl class="mt-4 grid grid-cols-3 gap-3 border-t border-hairline pt-4">
       {
-        STATS.map((stat) => (
+        t.stats.map((stat) => (
           <div>
             <dt class="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-ink-faint">{stat.label}</dt>
             <dd class="mt-1 font-display text-base text-ink">{stat.value}</dd>

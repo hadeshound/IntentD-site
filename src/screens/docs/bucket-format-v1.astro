@@ -1,0 +1,71 @@
+---
+import Badge from '@/components/ui/Badge.astro';
+import CodeBlock from '@/components/ui/CodeBlock.astro';
+import DocsTable from '@/components/ui/DocsTable.astro';
+import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+
+const lang = getLangFromUrl(Astro.url);
+const t = getDictionary(lang).docs.bucket;
+---
+
+<MarketingLayout title={t.metaTitle} description={t.metaDescription}>
+  <div class="shell pb-24 pt-16 lg:pb-32 lg:pt-24">
+    <div class="max-w-3xl">
+      <a
+        href={getLocalizedPath('/docs/api', lang)}
+        class="text-sm text-ink-muted transition-colors duration-200 hover:text-ink"
+      >
+        {t.backToApi}
+      </a>
+
+      <p class="mt-8 eyebrow">{t.eyebrow}</p>
+      <h1 class="mt-5 text-hero">{t.title}</h1>
+
+      <p class="mt-8 text-lg leading-relaxed text-ink-muted text-pretty">{t.intro}</p>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <Badge tone="mint">Stable</Badge>
+        <Badge>Big-endian</Badge>
+        <Badge>CRC-32/IEEE</Badge>
+        <Badge tone="violet">X25519 · HKDF · AES-256-GCM</Badge>
+      </div>
+
+      <section class="mt-16">
+        <h2 class="font-display text-3xl text-ink">{t.container.title}</h2>
+        <DocsTable
+          head={[...t.container.head]}
+          rows={t.container.rows.map((row) => [...row])}
+          mono
+        />
+        <p class="mt-4 text-sm text-ink-faint">{t.container.note}</p>
+      </section>
+
+      <section class="mt-16">
+        <h2 class="font-display text-3xl text-ink">{t.event.title}</h2>
+        <DocsTable head={[...t.event.head]} rows={t.event.rows.map((row) => [...row])} mono />
+        <p class="mt-4 prose-body">{t.event.note}</p>
+      </section>
+
+      <section class="mt-16">
+        <h2 class="font-display text-3xl text-ink">{t.server.title}</h2>
+        <ul class="mt-5 list-disc space-y-2 pl-5 prose-body">
+          {t.server.items.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      <section class="mt-16">
+        <h2 class="font-display text-3xl text-ink">{t.crypto.title}</h2>
+        <CodeBlock class="mt-5" label="envelope" code={t.crypto.envelope} />
+        <CodeBlock class="mt-4" label="signature" code={t.crypto.signature} />
+        <p class="mt-5 prose-body">{t.crypto.note}</p>
+      </section>
+
+      <section class="mt-16">
+        <h2 class="font-display text-3xl text-ink">{t.vectors.title}</h2>
+        <CodeBlock class="mt-5" label="bucket (hex)" code={t.vectors.bucket} />
+        <CodeBlock class="mt-4" label="hkdf" code={t.vectors.hkdf} />
+      </section>
+    </div>
+  </div>
+</MarketingLayout>

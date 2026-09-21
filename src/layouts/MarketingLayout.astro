@@ -1,6 +1,7 @@
 ---
 import Footer from '@/components/marketing/Footer.astro';
 import Navbar from '@/components/marketing/Navbar.astro';
+import { getDictionary, getLangFromUrl } from '@/i18n';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 }
 
 const props = Astro.props;
+const t = getDictionary(getLangFromUrl(Astro.url));
 ---
 
 {/* Header, main and footer -- what app/layout.tsx wrapped every route in. */}
@@ -22,7 +24,7 @@ const props = Astro.props;
     href="#main"
     class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-control focus:bg-mint-500 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-void-deep"
   >
-    Перейти к содержимому
+    {t.a11y.skipToContent}
   </a>
 
   <Navbar />

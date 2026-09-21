@@ -2,15 +2,20 @@
 import { Menu, X } from 'lucide-react';
 
 import Button from '@/components/ui/Button.astro';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher.astro';
 import Logo from '@/components/ui/Logo.astro';
+import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
 import { DASHBOARD_LINKS } from '@/lib/config/urls';
-import { PRIMARY_NAV } from '@/lib/content/navigation';
+import { primaryNav } from '@/lib/content/navigation';
 import { cn } from '@/lib/utils/cn';
 import { routePath } from '@/lib/utils/pathname';
 
 // Astro has no usePathname(); the current URL is on Astro.url, normalised to
-// the form the links in PRIMARY_NAV use.
-const pathname = routePath(Astro.url.pathname);
+// the form the links in the navigation table use.
+const lang = getLangFromUrl(Astro.url);
+const t = getDictionary(lang);
+const pathname = getLocalizedPath(routePath(Astro.url.pathname), lang);
+const links = primaryNav(lang);
 ---
 
 {/* Sticky glass header. It floats above the page instead of sitting in the
@@ -20,14 +25,14 @@ const pathname = routePath(Astro.url.pathname);
   data-navbar
   class="fixed inset-x-0 top-0 z-50 border-b border-transparent transition-[background-color,border-color,backdrop-filter] duration-300"
 >
-  <nav class="shell flex h-18 items-center justify-between gap-6" aria-label="Основная навигация">
-    <a href="/" class="rounded-control" aria-label="IntentD — на главную">
+  <nav class="shell flex h-18 items-center justify-between gap-6" aria-label={t.a11y.primaryNav}>
+    <a href={getLocalizedPath('/', lang)} class="rounded-control" aria-label={t.a11y.homeLink}>
       <Logo />
     </a>
 
     <ul class="hidden items-center gap-7 lg:flex">
       {
-        PRIMARY_NAV.map((link) => (
+        links.map((link) => (
           <li>
             <a
               href={link.href}
@@ -44,15 +49,17 @@ const pathname = routePath(Astro.url.pathname);
     </ul>
 
     <div class="hidden items-center gap-3 lg:flex">
+      <LanguageSwitcher lang={lang} />
+
       <div class="flex items-center gap-3" data-auth-when="authenticated" hidden>
         <span class="max-w-[12rem] truncate text-sm text-ink-muted" title="" data-auth-email></span>
-        <Button href={DASHBOARD_LINKS.home} size="sm">Кабинет</Button>
-        <Button variant="ghost" size="sm" data-auth-logout>Выйти</Button>
+        <Button href={DASHBOARD_LINKS.home} size="sm">{t.nav.dashboard}</Button>
+        <Button variant="ghost" size="sm" data-auth-logout>{t.nav.logout}</Button>
       </div>
 
       <div class="flex items-center gap-3" data-auth-when="anonymous">
-        <Button href={DASHBOARD_LINKS.login} variant="ghost" size="sm">Войти</Button>
-        <Button href={DASHBOARD_LINKS.register} size="sm">Подключить расширение</Button>
+        <Button href={DASHBOARD_LINKS.login} variant="ghost" size="sm">{t.nav.login}</Button>
+        <Button href={DASHBOARD_LINKS.register} size="sm">{t.nav.connectExtension}</Button>
       </div>
     </div>
 
@@ -61,7 +68,9 @@ const pathname = routePath(Astro.url.pathname);
       data-menu-toggle
       aria-expanded="false"
       aria-controls="mobile-navigation"
-      aria-label="Открыть меню"
+      aria-label={t.a11y.openMenu}
+      data-label-open={t.a11y.openMenu}
+      data-label-close={t.a11y.closeMenu}
       class="rounded-control p-2 text-ink transition-colors duration-200 hover:bg-white/5 lg:hidden"
     >
       <span data-icon-closed class="contents"><Menu className="h-5 w-5" aria-hidden="true" /></span>
@@ -73,7 +82,7 @@ const pathname = routePath(Astro.url.pathname);
     <div class="shell space-y-6 py-6">
       <ul class="space-y-1">
         {
-          PRIMARY_NAV.map((link) => (
+          links.map((link) => (
             <li>
               <a
                 href={link.href}
@@ -86,16 +95,20 @@ const pathname = routePath(Astro.url.pathname);
         }
       </ul>
 
+      <div class="border-t border-hairline pt-6">
+        <LanguageSwitcher lang={lang} variant="list" />
+      </div>
+
       <div class="flex flex-col gap-3 border-t border-hairline pt-6">
         <div class="flex flex-col gap-3" data-auth-when="authenticated" hidden>
           <p class="truncate px-3 text-sm text-ink-faint" data-auth-email></p>
-          <Button href={DASHBOARD_LINKS.home}>Кабинет</Button>
-          <Button variant="secondary" data-auth-logout>Выйти</Button>
+          <Button href={DASHBOARD_LINKS.home}>{t.nav.dashboard}</Button>
+          <Button variant="secondary" data-auth-logout>{t.nav.logout}</Button>
         </div>
 
         <div class="flex flex-col gap-3" data-auth-when="anonymous">
-          <Button href={DASHBOARD_LINKS.login} variant="secondary">Войти</Button>
-          <Button href={DASHBOARD_LINKS.register}>Создать аккаунт</Button>
+          <Button href={DASHBOARD_LINKS.login} variant="secondary">{t.nav.login}</Button>
+          <Button href={DASHBOARD_LINKS.register}>{t.nav.register}</Button>
         </div>
       </div>
     </div>
@@ -114,6 +127,11 @@ const pathname = routePath(Astro.url.pathname);
   if (header && toggle && sheet && iconClosed && iconOpen) {
     let isMenuOpen = false;
 
+    // The two aria-labels are rendered into the button by the server, so this
+    // script stays language-agnostic.
+    const labelOpen = toggle.dataset.labelOpen ?? 'Open menu';
+    const labelClose = toggle.dataset.labelClose ?? 'Close menu';
+
     const paintSurface = () => {
       // The header only grows a border once the page has moved, or while the
       // mobile sheet is open and needs to read as a solid panel.
@@ -127,7 +145,7 @@ const pathname = routePath(Astro.url.pathname);
       isMenuOpen = open;
       sheet.hidden = !open;
       toggle.setAttribute('aria-expanded', String(open));
-      toggle.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+      toggle.setAttribute('aria-label', open ? labelClose : labelOpen);
       iconClosed.hidden = open;
       iconOpen.hidden = !open;
       paintSurface();

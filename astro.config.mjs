@@ -10,6 +10,25 @@ export default defineConfig({
   site,
 
   /**
+   * Four languages, English unprefixed.
+   *
+   * This block does not generate the routes -- it makes the locale set known
+   * to Astro and keeps `prefixDefaultLocale: false` honest. The routes
+   * themselves are src/pages/[lang]/*, which render the shared screens under
+   * src/screens for ru, uk and zh, while src/pages/* is the English copy at
+   * the root. `redirectToDefaultLocale` stays off: /ru/pricing is a real page,
+   * not a redirect target.
+   */
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'ru', 'uk', 'zh'],
+    routing: {
+      prefixDefaultLocale: false,
+      redirectToDefaultLocale: false,
+    },
+  },
+
+  /**
    * Astro 5 dropped `output: 'hybrid'`: 'static' now *is* the hybrid mode --
    * every page is prerendered unless it opts out with `export const prerender
    * = false`. The auth screens and /checkout do exactly that, because they

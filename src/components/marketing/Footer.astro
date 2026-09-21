@@ -1,7 +1,12 @@
 ---
 import Logo from '@/components/ui/Logo.astro';
 import StatusIndicator from '@/components/ui/StatusIndicator.astro';
-import { FOOTER_COLUMNS, SUPPORT_EMAIL } from '@/lib/content/navigation';
+import { getDictionary, getLangFromUrl } from '@/i18n';
+import { footerColumns, SUPPORT_EMAIL } from '@/lib/content/navigation';
+
+const lang = getLangFromUrl(Astro.url);
+const t = getDictionary(lang);
+const columns = footerColumns(lang);
 
 const year = new Date().getFullYear();
 ---
@@ -11,17 +16,14 @@ const year = new Date().getFullYear();
     <div class="space-y-6">
       <Logo />
 
-      <p class="max-w-sm text-sm leading-relaxed text-ink-muted">
-        Инфраструктура intent-данных: SDK для разработчиков расширений и
-        чистый PII-free поток для аналитических команд.
-      </p>
+      <p class="max-w-sm text-sm leading-relaxed text-ink-muted">{t.footer.tagline}</p>
 
-      <StatusIndicator />
+      <StatusIndicator lang={lang} />
     </div>
 
     <div class="grid gap-10 sm:grid-cols-3">
       {
-        FOOTER_COLUMNS.map((column) => (
+        columns.map((column) => (
           <nav aria-label={column.title}>
             <h2 class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">{column.title}</h2>
 
@@ -42,13 +44,13 @@ const year = new Date().getFullYear();
 
   <div class="border-t border-hairline">
     <div class="shell flex flex-col gap-4 py-6 text-xs text-ink-faint sm:flex-row sm:items-center sm:justify-between">
-      <p>© {year} IntentD. Все права защищены.</p>
+      <p>© {year} {t.footer.copyright}</p>
 
       <p class="flex flex-wrap items-center gap-x-5 gap-y-2">
         <a href={`mailto:${SUPPORT_EMAIL}`} class="transition-colors duration-200 hover:text-mint-300">
           {SUPPORT_EMAIL}
         </a>
-        <span class="font-mono uppercase tracking-[0.14em]">PII-free · GDPR-safe</span>
+        <span class="font-mono uppercase tracking-[0.14em]">{t.footer.badge}</span>
       </p>
     </div>
   </div>

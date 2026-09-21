@@ -1,32 +1,8 @@
 ---
-import { CheckoutView } from '@/components/checkout/CheckoutView';
-import AmbientGlow from '@/components/ui/AmbientGlow.astro';
-import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import type { PlanCode } from '@/lib/api/plans';
-import { buildLoginRedirect } from '@/lib/utils/redirect';
-
-// Rendered per request: ?plan= decides where an anonymous visitor is sent back
-// to after signing in, the same as the Next page's searchParams.
+// English route. The page body lives in @/screens/checkout.astro and is shared
+// with the prefixed /ru, /uk and /zh copies under src/pages/[lang].
+import Screen from '@/screens/checkout.astro';
 export const prerender = false;
-
-const PLAN_CODES: PlanCode[] = ['starter', 'growth', 'enterprise'];
-
-const raw = Astro.url.searchParams.get('plan');
-const planCode = PLAN_CODES.find((code) => code === raw) ?? null;
-
-// An anonymous visitor is bounced to login and returned to this exact plan.
-const loginHref = planCode ? buildLoginRedirect(planCode) : '/auth/login?redirect=/checkout';
 ---
 
-<MarketingLayout
-  title="Оформление доступа"
-  description="Оформление доступа к IntentD Data Stream."
-  noindex
->
-  <section class="relative overflow-hidden py-16 lg:py-24">
-    <div class="hairline-grid-overlay"></div>
-    <AmbientGlow class="-left-28 top-0 h-96 w-96" drift />
-
-    <CheckoutView planCode={planCode} loginHref={loginHref} client:load />
-  </section>
-</MarketingLayout>
+<Screen />

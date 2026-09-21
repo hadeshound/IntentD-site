@@ -3,38 +3,30 @@ import { Ban, ShieldCheck, TrendingDown } from 'lucide-react';
 
 import Reveal from '@/components/ui/Reveal.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { getDictionary, getLangFromUrl } from '@/i18n';
 import { cn } from '@/lib/utils/cn';
 
-const CARDS = [
-  {
-    icon: TrendingDown,
-    title: 'Рекламный баннер отпугивает',
-    body: 'Внедрение рекламы в интерфейс расширения снижает retention и вызывает поток однозвёздочных отзывов.',
-    /** Vertical offset that breaks the row alignment on large screens. */
-    offset: 'lg:mt-0',
-    isSolution: false,
-  },
-  {
-    icon: Ban,
-    title: 'Модерация блокирует',
-    body: 'Chrome и Firefox жёстко пессимизируют или удаляют расширения с рекламными скриптами и инжектором ссылок.',
-    offset: 'lg:mt-16',
-    isSolution: false,
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Решение от IntentD',
-    body: 'Мы собираем обезличенные агрегированные сигналы в фоновом режиме. Интерфейс вашего расширения остаётся на 100% чистым.',
-    offset: 'lg:mt-32',
-    isSolution: true,
-  },
-];
+const t = getDictionary(getLangFromUrl(Astro.url)).advertising;
+
+// Icon, vertical offset and the solution flag belong to the layout, not to the
+// copy: two problem cards, then the answer.
+const LAYOUT = [
+  { icon: TrendingDown, offset: 'lg:mt-0', isSolution: false },
+  { icon: Ban, offset: 'lg:mt-16', isSolution: false },
+  { icon: ShieldCheck, offset: 'lg:mt-32', isSolution: true },
+] as const;
+
+const CARDS = LAYOUT.map((layout, index) => ({
+  ...layout,
+  title: t.cards[index]?.title ?? '',
+  body: t.cards[index]?.body ?? '',
+}));
 ---
 
 <section id="publishers" class="relative py-24 lg:py-32">
-  <SectionHeading class="shell" eyebrow="Для разработчиков расширений">
+  <SectionHeading class="shell" eyebrow={t.eyebrow}>
     <Fragment slot="title">
-      Перестаньте рисковать вашими пользователями <span class="text-ink-faint">ради баннеров</span>
+      {t.titleBefore} <span class="text-ink-faint">{t.titleMuted}</span>
     </Fragment>
   </SectionHeading>
 

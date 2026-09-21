@@ -1,12 +1,14 @@
 import { Send } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { SelectField, TextAreaField, TextField } from '@/components/ui/Field';
+import { getDictionary, type Lang } from '@/i18n';
+import { LangProvider } from '@/i18n/react';
 import { submitContactMessage } from '@/lib/api/contact';
 import { useZodForm } from '@/lib/hooks/useZodForm';
-import { CONTACT_TOPICS, contactSchema, type ContactValues } from '@/lib/schemas/contact';
+import { contactSchema, contactTopics, type ContactValues } from '@/lib/schemas/contact';
 
 const VALID_TOPICS = ['buy_data', 'monetize_extension', 'support', 'enterprise'] as const;
 
@@ -28,15 +30,35 @@ function topicFromLocation(): ContactValues['topic'] | undefined {
 }
 
 interface ContactFormProps {
+  /** The page language; islands cannot read it from the URL the way .astro can. */
+  lang: Lang;
   /** Pre-selects a topic. Falls back to ?topic= when not given. */
   defaultTopic?: ContactValues['topic'];
   /** Hides the optional company field on the compact landing variant. */
   showCompanyField?: boolean;
 }
 
-export function ContactForm({ defaultTopic, showCompanyField = true }: ContactFormProps) {
+/**
+ * Publishes the page language to the shared primitives below (fields, dialogs)
+ * so they do not each need it threaded through as a prop.
+ */
+export function ContactForm(props: ContactFormProps) {
+  return (
+    <LangProvider lang={props.lang}>
+      <ContactFormBody {...props} />
+    </LangProvider>
+  );
+}
+
+function ContactFormBody({ lang, defaultTopic, showCompanyField = true }: ContactFormProps) {
+  const t = getDictionary(lang).contact.form;
+
+  // The schema carries its messages, so it is rebuilt when the language does.
+  const schema = useMemo(() => contactSchema(lang), [lang]);
+  const topics = useMemo(() => contactTopics(lang), [lang]);
+
   const form = useZodForm({
-    schema: contactSchema,
+    schema,
     initialValues: {
       name: '',
       email: '',
@@ -69,17 +91,14 @@ export function ContactForm({ defaultTopic, showCompanyField = true }: ContactFo
 
   if (form.status === 'success') {
     return (
-      <Alert tone="success" title="Заявка отправлена">
-        <p>
-          Мы получили ваше сообщение и ответим на указанный email. По заявкам на доступ
-          к данным менеджер связывается в течение рабочего дня.
-        </p>
+      <Alert tone="success" title={t.successTitle}>
+        <p>{t.successBody}</p>
         <button
           type="button"
           onClick={form.reset}
           className="mt-3 text-sm underline underline-offset-4 transition-colors duration-200 hover:text-mint-200"
         >
-          Отправить ещё одно сообщение
+          {t.sendAnother}
         </button>
       </Alert>
     );
@@ -89,7 +108,7 @@ export function ContactForm({ defaultTopic, showCompanyField = true }: ContactFo
     <form onSubmit={form.handleSubmit} noValidate className="space-y-5">
       <div className="grid gap-5 sm:grid-cols-2">
         <TextField
-          label="Имя"
+          label={t.name}
           name="name"
           autoComplete="name"
           value={form.values.name}
@@ -100,12 +119,12 @@ export function ContactForm({ defaultTopic, showCompanyField = true }: ContactFo
         />
 
         <TextField
-          label="Рабочий email"
+          label={t.email}
           name="email"
           type="email"
           inputMode="email"
           autoComplete="email"
-          placeholder="you@company.com"
+          placeholder={t.emailPlaceholder}
           value={form.values.email}
           onChange={(event) => form.setValue('email', event.target.value)}
           onBlur={() => form.markTouched('email')}
@@ -116,7 +135,7 @@ export function ContactForm({ defaultTopic, showCompanyField = true }: ContactFo
 
       {showCompanyField ? (
         <TextField
-          label="Компания"
+          label={t.company}
           name="company"
           autoComplete="organization"
           optional
@@ -128,21 +147,21 @@ export function ContactForm({ defaultTopic, showCompanyField = true }: ContactFo
       ) : null}
 
       <SelectField
-        label="Тип запроса"
+        label={t.topic}
         name="topic"
         value={form.values.topic}
         onChange={(value) => form.setValue('topic', value as ContactValues['topic'])}
         onBlur={() => form.markTouched('topic')}
-        options={CONTACT_TOPICS}
+        options={topics}
         error={form.errorFor('topic')}
         required
       />
 
       <TextAreaField
-        label="Сообщение"
+        label={t.message}
         name="message"
         rows={5}
-        placeholder="Опишите задачу: интересующие вертикали, объём, сроки."
+        placeholder={t.messagePlaceholder}
         value={form.values.message}
         onChange={(event) => form.setValue('message', event.target.value)}
         onBlur={() => form.markTouched('message')}
@@ -153,7 +172,7 @@ export function ContactForm({ defaultTopic, showCompanyField = true }: ContactFo
       {/* Honeypot. Off-screen rather than display:none so naive bots still fill
           it in, and hidden from assistive tech and the tab order. */}
       <div className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
-        <label htmlFor="contact-website">Не заполняйте это поле</label>
+        <label htmlFor="contact-website">{t.honeypotLabel}</label>
         <input
           id="contact-website"
           name="website"
@@ -168,15 +187,12 @@ export function ContactForm({ defaultTopic, showCompanyField = true }: ContactFo
       {form.formError ? <Alert tone="error">{form.formError}</Alert> : null}
 
       <div className="flex flex-wrap items-center gap-4 pt-1">
-        <Button type="submit" size="lg" isLoading={form.isSubmitting} loadingLabel="Отправляем…">
-          Отправить запрос
+        <Button type="submit" size="lg" isLoading={form.isSubmitting} loadingLabel={t.submitting}>
+          {t.submit}
           <Send className="h-4 w-4" aria-hidden="true" />
         </Button>
 
-        <p className="text-xs leading-relaxed text-ink-faint">
-          Отправляя форму, вы соглашаетесь с обработкой контактных данных
-          <br className="hidden sm:block" /> в соответствии с нашей политикой конфиденциальности.
-        </p>
+        <p className="text-xs leading-relaxed text-ink-faint">{t.consent}</p>
       </div>
     </form>
   );

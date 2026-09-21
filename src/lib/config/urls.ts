@@ -32,8 +32,3 @@ export const DASHBOARD_LINKS = {
   login: `${DASHBOARD_URL}/login`,
   register: `${DASHBOARD_URL}/register`,
 } as const;
-
-/** Builds a register link that remembers which plan the visitor came from. */
-export function dashboardRegisterFor(planCode: string): string {
-  return `${DASHBOARD_LINKS.register}?plan=${encodeURIComponent(planCode)}`;
-}

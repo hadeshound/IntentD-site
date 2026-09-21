@@ -1,64 +1,90 @@
 import { z } from 'zod';
 
+import { getDictionary, type Lang } from '@/i18n';
+
 /**
  * These rules mirror internal/auth/password.go and the `validate` tags on the
  * Go request structs one-for-one. The browser copy exists to give instant
  * feedback; the server remains the authority and re-checks everything.
+ *
+ * The schemas are built per language rather than declared once: a Zod message
+ * is baked into the schema at construction time, so a shared instance could
+ * only ever speak one language.
  */
 
-const emailField = z
-  .string()
-  .trim()
-  .min(1, 'Укажите рабочий email')
-  .max(255, 'Email не длиннее 255 символов')
-  .email('Похоже, в адресе опечатка');
+type AuthErrors = ReturnType<typeof getDictionary>['auth']['errors'];
 
-const passwordField = z
-  .string()
-  .min(10, 'Минимум 10 символов')
-  .max(72, 'Не длиннее 72 символов')
-  .refine((value) => /\p{L}/u.test(value), 'Добавьте хотя бы одну букву')
-  .refine((value) => /\d/.test(value), 'Добавьте хотя бы одну цифру');
+function errorsFor(lang: Lang): AuthErrors {
+  return getDictionary(lang).auth.errors;
+}
 
-export const loginSchema = z.object({
-  email: emailField,
-  password: z.string().min(1, 'Введите пароль').max(72, 'Не длиннее 72 символов'),
-  remember_me: z.boolean().default(false),
-});
+function emailField(e: AuthErrors) {
+  return z
+    .string()
+    .trim()
+    .min(1, e.emailRequired)
+    .max(255, e.emailMax)
+    .email(e.emailInvalid);
+}
 
-export type LoginValues = z.infer<typeof loginSchema>;
+function passwordField(e: AuthErrors) {
+  return z
+    .string()
+    .min(10, e.passwordMin)
+    .max(72, e.passwordMax)
+    .refine((value) => /\p{L}/u.test(value), e.passwordLetter)
+    .refine((value) => /\d/.test(value), e.passwordDigit);
+}
 
-export const registerSchema = z.object({
-  email: emailField,
-  password: passwordField,
-  company_name: z.string().trim().max(255, 'Не длиннее 255 символов').optional(),
-  role: z.enum(['buyer', 'publisher'], {
-    errorMap: () => ({ message: 'Выберите, зачем вы пришли' }),
-  }),
-  // A refined boolean rather than z.literal(true): the checkbox starts as
-  // false, and the literal form would make the initial state a type error.
-  accept_terms: z
-    .boolean()
-    .refine((accepted) => accepted, 'Без согласия с условиями мы не сможем создать аккаунт'),
-});
+export function loginSchema(lang: Lang) {
+  const e = errorsFor(lang);
 
-export type RegisterValues = z.infer<typeof registerSchema>;
-
-export const forgotPasswordSchema = z.object({
-  email: emailField,
-});
-
-export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
-
-export const resetPasswordSchema = z
-  .object({
-    token: z.string().min(16, 'Ссылка повреждена — запросите новую'),
-    new_password: passwordField,
-    confirm_password: z.string(),
-  })
-  .refine((values) => values.new_password === values.confirm_password, {
-    path: ['confirm_password'],
-    message: 'Пароли не совпадают',
+  return z.object({
+    email: emailField(e),
+    password: z.string().min(1, e.passwordRequired).max(72, e.passwordMax),
+    remember_me: z.boolean().default(false),
   });
+}
 
-export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+export type LoginValues = z.infer<ReturnType<typeof loginSchema>>;
+
+export function registerSchema(lang: Lang) {
+  const e = errorsFor(lang);
+
+  return z.object({
+    email: emailField(e),
+    password: passwordField(e),
+    company_name: z.string().trim().max(255, e.max255).optional(),
+    role: z.enum(['buyer', 'publisher'], {
+      errorMap: () => ({ message: e.roleRequired }),
+    }),
+    // A refined boolean rather than z.literal(true): the checkbox starts as
+    // false, and the literal form would make the initial state a type error.
+    accept_terms: z.boolean().refine((accepted) => accepted, e.termsRequired),
+  });
+}
+
+export type RegisterValues = z.infer<ReturnType<typeof registerSchema>>;
+
+export function forgotPasswordSchema(lang: Lang) {
+  return z.object({ email: emailField(errorsFor(lang)) });
+}
+
+export type ForgotPasswordValues = z.infer<ReturnType<typeof forgotPasswordSchema>>;
+
+export function resetPasswordSchema(lang: Lang) {
+  const e = errorsFor(lang);
+
+  return z
+    .object({
+      token: z.string().min(16, e.tokenInvalid),
+      new_password: passwordField(e),
+      confirm_password: z.string(),
+    })
+    .refine((values) => values.new_password === values.confirm_password, {
+      path: ['confirm_password'],
+      message: e.passwordsMismatch,
+    });
+}
+
+export type ResetPasswordValues = z.infer<ReturnType<typeof resetPasswordSchema>>;

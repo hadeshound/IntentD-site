@@ -1,0 +1,44 @@
+---
+import AmbientGlow from '@/components/ui/AmbientGlow.astro';
+import Button from '@/components/ui/Button.astro';
+import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+
+const lang = getLangFromUrl(Astro.url);
+const t = getDictionary(lang).notFound;
+
+const SUGGESTIONS = [
+  { href: getLocalizedPath('/pricing', lang), label: t.suggestions.pricing },
+  { href: getLocalizedPath('/docs/api', lang), label: t.suggestions.api },
+  { href: getLocalizedPath('/contact', lang), label: t.suggestions.contact },
+];
+---
+
+<MarketingLayout title={t.metaTitle} description={t.metaDescription} noindex>
+  <section class="relative overflow-hidden py-28 lg:py-38">
+    <div class="hairline-grid-overlay"></div>
+    <AmbientGlow class="-left-24 top-0 h-80 w-80" drift />
+
+    <div class="shell grid gap-12 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        <p class="font-mono text-eyebrow uppercase tracking-[0.22em] text-mint-400">{t.label}</p>
+
+        <h1 class="mt-7 text-hero">{t.title}</h1>
+
+        <p class="mt-8 max-w-lg text-lg leading-relaxed text-ink-muted text-pretty">{t.body}</p>
+
+        <div class="mt-10 flex flex-wrap gap-3">
+          <Button href={getLocalizedPath('/', lang)} size="lg">{t.home}</Button>
+
+          {
+            SUGGESTIONS.map((item) => (
+              <Button href={item.href} variant="secondary" size="lg">
+                {item.label}
+              </Button>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</MarketingLayout>

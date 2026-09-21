@@ -1,41 +1,7 @@
 ---
-import AdvertisingIsDead from '@/components/marketing/AdvertisingIsDead.astro';
-import ContactSection from '@/components/marketing/ContactSection.astro';
-import DataBuyerUseCases from '@/components/marketing/DataBuyerUseCases.astro';
-import FaqSection from '@/components/marketing/FaqSection.astro';
-import Hero from '@/components/marketing/Hero.astro';
-import HowItWorks from '@/components/marketing/HowItWorks.astro';
-import PricingGrid from '@/components/marketing/PricingGrid.astro';
-import WhyIntentD from '@/components/marketing/WhyIntentD.astro';
-import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import { fetchPlansSafe } from '@/lib/api/plans';
-import { LANDING_FAQ } from '@/lib/content/faq';
-
-// The catalogue is read once, when the page is built, so a visit never waits on
-// the API. `revalidate = 300` in the Next version served the same purpose; here
-// a price change is picked up by the next deploy.
-const { plans, isFallback } = await fetchPlansSafe();
-
-const title = 'IntentD — монетизация браузерных расширений без рекламы';
-const description =
-  'IntentD превращает анонимный пользовательский кликстрим в стабильный доход. Безопасный SDK для разработчиков расширений и PII-free поток intent-данных для аналитических команд.';
-const keywords = [
-  'intent data',
-  'монетизация расширений',
-  'browser extension SDK',
-  'clickstream',
-  'PII-free',
-  'Parquet',
-];
+// English route. The page body lives in @/screens/index.astro and is shared
+// with the prefixed /ru, /uk and /zh copies under src/pages/[lang].
+import Screen from '@/screens/index.astro';
 ---
 
-<MarketingLayout title={title} titleTemplate={false} description={description} keywords={keywords}>
-  <Hero />
-  <AdvertisingIsDead />
-  <HowItWorks />
-  <DataBuyerUseCases />
-  <WhyIntentD />
-  <PricingGrid plans={plans} isFallback={isFallback} />
-  <FaqSection items={LANDING_FAQ} />
-  <ContactSection />
-</MarketingLayout>
+<Screen />

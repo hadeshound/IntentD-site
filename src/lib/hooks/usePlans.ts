@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { DEFAULT_LANG, getDictionary, type Lang } from '@/i18n';
 import { fetchPlans, type Plan, type PlanCode } from '@/lib/api/plans';
 
 interface UsePlansResult {
@@ -12,7 +13,7 @@ interface UsePlansResult {
  * Client-side catalogue read, used by /checkout where the plan comes from a
  * query parameter. Marketing pages render plans on the server instead.
  */
-export function usePlans(): UsePlansResult {
+export function usePlans(lang: Lang = DEFAULT_LANG): UsePlansResult {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +31,7 @@ export function usePlans(): UsePlansResult {
       })
       .catch(() => {
         if (!cancelled) {
-          setError('Не удалось загрузить тарифы. Обновите страницу.');
+          setError(getDictionary(lang).checkout.planError.loadFailed);
         }
       })
       .finally(() => {
@@ -43,7 +44,7 @@ export function usePlans(): UsePlansResult {
       cancelled = true;
       controller.abort();
     };
-  }, []);
+  }, [lang]);
 
   return { plans, isLoading, error };
 }

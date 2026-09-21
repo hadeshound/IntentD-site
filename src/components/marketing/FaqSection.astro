@@ -1,5 +1,6 @@
 ---
 import Accordion from '@/components/ui/Accordion.astro';
+import { getDictionary, getLangFromUrl, getLocalizedPath } from '@/i18n';
 import type { FaqEntry } from '@/lib/content/faq';
 
 interface Props {
@@ -9,7 +10,10 @@ interface Props {
   id?: string;
 }
 
-const { items, eyebrow = 'FAQ', title = 'Частые вопросы', id = 'faq' } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = getDictionary(lang).faq;
+
+const { items, eyebrow = t.eyebrow, title = t.title, id = 'faq' } = Astro.props;
 ---
 
 {/* Heading and answers sit in separate columns rather than stacked, so the
@@ -26,11 +30,14 @@ const { items, eyebrow = 'FAQ', title = 'Частые вопросы', id = 'faq
         <h2 class="mt-6 text-section-title">{title}</h2>
 
         <p class="mt-6 max-w-sm text-[0.9375rem] leading-relaxed text-ink-muted">
-          Не нашли ответ?{' '}
-          <a href="/contact" class="link-underline underline underline-offset-4 decoration-hairline-strong">
-            Напишите нам
+          {t.notFoundPrefix}{' '}
+          <a
+            href={getLocalizedPath('/contact', lang)}
+            class="link-underline underline underline-offset-4 decoration-hairline-strong"
+          >
+            {t.writeUs}
           </a>{' '}
-          — отвечаем в течение рабочего дня.
+          {t.notFoundSuffix}
         </p>
       </div>
     </div>

@@ -1,6 +1,7 @@
 ---
 import Reveal from '@/components/ui/Reveal.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { getDictionary, getLangFromUrl } from '@/i18n';
 import { cn } from '@/lib/utils/cn';
 
 interface Track {
@@ -11,47 +12,11 @@ interface Track {
   steps: Array<{ title: string; body: string }>;
 }
 
+const t = getDictionary(getLangFromUrl(Astro.url)).howItWorks;
+
 const TRACKS: Track[] = [
-  {
-    id: 'publishers-track',
-    label: 'Publishers',
-    audience: 'Для разработчиков расширений',
-    accent: 'mint',
-    steps: [
-      {
-        title: 'Интеграция за 5 минут',
-        body: 'Вставьте лёгкий SDK (< 15 КБ) в background script расширения.',
-      },
-      {
-        title: 'Фоновый сбор сигналов',
-        body: 'SDK агрегирует паттерны посещений и поисковые интенты, исключая PII.',
-      },
-      {
-        title: 'Пассивный доход',
-        body: 'Получайте регулярные выплаты за объём сгенерированных данных.',
-      },
-    ],
-  },
-  {
-    id: 'buyers-track',
-    label: 'Data Buyers',
-    audience: 'Для покупателей данных',
-    accent: 'violet',
-    steps: [
-      {
-        title: 'Свежие сигналы',
-        body: 'Доступ к паттернам коммерческого поведения в реальном времени.',
-      },
-      {
-        title: 'Чистота данных',
-        body: 'Автофильтрация банков, паролей, email и идентификаторов на edge-уровне.',
-      },
-      {
-        title: 'Удобный формат',
-        body: 'Parquet + LZ4 в AWS S3 или синхронизация в ваш bucket.',
-      },
-    ],
-  },
+  { id: 'publishers-track', accent: 'mint', ...t.publishers, steps: [...t.publishers.steps] },
+  { id: 'buyers-track', accent: 'violet', ...t.buyers, steps: [...t.buyers.steps] },
 ];
 ---
 
@@ -59,9 +24,9 @@ const TRACKS: Track[] = [
   <SectionHeading
     class="shell"
     align="right"
-    eyebrow="Как это работает"
-    title="Одна интеграция, две стороны рынка"
-    description="Разработчики подключают SDK и зарабатывают. Аналитические команды получают готовый поток. Между ними — наша инфраструктура очистки."
+    eyebrow={t.eyebrow}
+    title={t.title}
+    description={t.description}
   />
 
   <div class="shell mt-16 grid gap-px overflow-hidden rounded-card border border-hairline bg-hairline lg:mt-20 lg:grid-cols-2">

@@ -1,8 +1,11 @@
 import { Check } from 'lucide-react';
+import { useMemo } from 'react';
 
 import { Alert } from '@/components/ui/Alert';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/Field';
+import { getDictionary, getLocalizedPath, type Lang } from '@/i18n';
+import { LangProvider } from '@/i18n/react';
 import { resetPassword } from '@/lib/api/auth';
 import { useZodForm } from '@/lib/hooks/useZodForm';
 import { resetPasswordSchema } from '@/lib/schemas/auth';
@@ -10,11 +13,27 @@ import { resetPasswordSchema } from '@/lib/schemas/auth';
 interface ResetPasswordFormProps {
   /** Token taken from the emailed link. */
   token: string;
+  lang: Lang;
 }
 
-export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
+/**
+ * Publishes the page language to the shared primitives below (fields, dialogs)
+ * so they do not each need it threaded through as a prop.
+ */
+export function ResetPasswordForm(props: ResetPasswordFormProps) {
+  return (
+    <LangProvider lang={props.lang}>
+      <ResetPasswordFormBody {...props} />
+    </LangProvider>
+  );
+}
+
+function ResetPasswordFormBody({ token, lang }: ResetPasswordFormProps) {
+  const t = getDictionary(lang).auth.reset.form;
+  const schema = useMemo(() => resetPasswordSchema(lang), [lang]);
+
   const form = useZodForm({
-    schema: resetPasswordSchema,
+    schema,
     initialValues: { token, new_password: '', confirm_password: '' },
     onSubmit: async (values) => {
       await resetPassword(values.token, values.new_password);
@@ -23,10 +42,10 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
   if (!token) {
     return (
-      <Alert tone="error" title="Ссылка неполная">
+      <Alert tone="error" title={t.incompleteTitle}>
         <p>
-          В ссылке отсутствует токен восстановления. Запросите новое письмо на странице{' '}
-          <a href="/auth/forgot-password">восстановления пароля</a>.
+          {t.incompleteBodyBefore}{' '}
+          <a href={getLocalizedPath('/auth/forgot-password', lang)}>{t.incompleteLink}</a>.
         </p>
       </Alert>
     );
@@ -35,14 +54,12 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   if (form.status === 'success') {
     return (
       <div className="space-y-5">
-        <Alert tone="success" title="Пароль обновлён">
-          <p>
-            Все активные сессии этого аккаунта завершены. Войдите с новым паролем.
-          </p>
+        <Alert tone="success" title={t.successTitle}>
+          <p>{t.successBody}</p>
         </Alert>
 
-        <ButtonLink href="/auth/login" size="lg" className="w-full">
-          Перейти ко входу
+        <ButtonLink href={getLocalizedPath('/auth/login', lang)} size="lg" className="w-full">
+          {t.goToLogin}
           <Check className="h-4 w-4" aria-hidden="true" />
         </ButtonLink>
       </div>
@@ -52,7 +69,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   return (
     <form onSubmit={form.handleSubmit} noValidate className="space-y-5">
       <TextField
-        label="Новый пароль"
+        label={t.newPassword}
         name="new_password"
         type="password"
         autoComplete="new-password"
@@ -61,12 +78,12 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         onChange={(event) => form.setValue('new_password', event.target.value)}
         onBlur={() => form.markTouched('new_password')}
         error={form.errorFor('new_password')}
-        hint="Минимум 10 символов, хотя бы одна буква и одна цифра."
+        hint={t.passwordHint}
         required
       />
 
       <TextField
-        label="Повторите пароль"
+        label={t.confirmPassword}
         name="confirm_password"
         type="password"
         autoComplete="new-password"
@@ -84,9 +101,9 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         size="lg"
         className="w-full"
         isLoading={form.isSubmitting}
-        loadingLabel="Сохраняем…"
+        loadingLabel={t.submitting}
       >
-        Установить новый пароль
+        {t.submit}
       </Button>
     </form>
   );

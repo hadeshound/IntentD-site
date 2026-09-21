@@ -1,0 +1,18 @@
+---
+import LegalDocument from '@/components/marketing/LegalDocument.astro';
+import { getLangFromUrl } from '@/i18n';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import { legalDocument } from '@/lib/content/legal';
+
+const document = legalDocument(getLangFromUrl(Astro.url), 'privacy');
+---
+
+<MarketingLayout title={document.metaTitle} description={document.metaDescription}>
+  <LegalDocument
+    title={document.title}
+    updatedAt={document.updatedAt}
+    intro={document.intro}
+    notice={document.notice}
+    sections={document.sections}
+  />
+</MarketingLayout>
