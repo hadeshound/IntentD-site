@@ -37,15 +37,20 @@ export default defineConfig({
   output: 'static',
 
   /**
-   * Keep the Next URL shape. Astro's default directory format would publish
-   * /pricing/index.html, and Cloudflare Pages would then 308 /pricing to
-   * /pricing/ -- a different canonical for every page on the site, against the
-   * sitemap and every internal link. 'file' publishes /pricing.html, which
-   * Pages serves at /pricing with no redirect.
+   * Directory format for two reasons:
+   *
+   * 1. Locale home pages. With 'file', /ru is emitted as ru.html at the repo
+   *    root, and Cloudflare does not resolve /ru to /ru.html -- the request
+   *    404s or loops. With 'directory', /ru becomes ru/index.html and Cloudflare
+   *    serves it on the /ru path with no extra configuration.
+   *
+   * 2. Canonical URLs stay clean. trailingSlash: 'never' stops Cloudflare from
+   *    redirecting /pricing to /pricing/, so the URL shape stays the same as
+   *    the Next site and matches the sitemap.
    */
   trailingSlash: 'never',
   build: {
-    format: 'file',
+    format: 'directory',
   },
 
   adapter: cloudflare({
