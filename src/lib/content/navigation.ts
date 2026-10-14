@@ -21,6 +21,7 @@ export function primaryNav(): NavLink[] {
     { label: t.docs, href: '/docs/api' },
     { label: t.forPublishers, href: '/#publishers' },
     { label: t.forBuyers, href: '/#data-buyers' },
+    { label: t.contact, href: '/contact' },
   ];
 }
 

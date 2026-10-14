@@ -13,10 +13,22 @@ interface Props {
 const t = getDictionary().faq;
 
 const { items, eyebrow = t.eyebrow, title = t.title, id = 'faq' } = Astro.props;
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+  })),
+};
 ---
 
 {/* Heading and answers sit in separate columns rather than stacked, so the
     section reads as a two-track layout like the rest of the page. */}
+<script type="application/ld+json" set:html={JSON.stringify(faqLd)} />
+
 <section id={id} class="py-24 lg:py-32">
   <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-10">
     <div class="lg:col-span-4">

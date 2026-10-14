@@ -28,7 +28,10 @@ const TOTAL = String(USE_CASES.length).padStart(2, '0');
 
 <section id="data-buyers" class="relative overflow-hidden py-24 lg:py-32">
   <SectionHeading class="shell" eyebrow={t.eyebrow} title={t.title}>
-    <Button slot="aside" href="/docs/api" variant="secondary">{t.cta}</Button>
+    <div slot="aside" class="flex flex-wrap gap-3">
+      <Button href="/contact?topic=buy_data">{t.ctaSample}</Button>
+      <Button href="/docs/api" variant="secondary">{t.cta}</Button>
+    </div>
   </SectionHeading>
 
   <!-- The track bleeds past the right edge of the shell so the row visibly

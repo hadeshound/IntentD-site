@@ -5,9 +5,9 @@
  */
 export const pricing = {
   pricing: {
-    metaTitle: 'Pricing',
+    metaTitle: 'Intent data stream pricing',
     metaDescription:
-      'Transparent pricing for the IntentD intent data stream: Starter, Growth, Scale and Enterprise. Compare user allowances, delivery cadence and field coverage.',
+      'Transparent pricing for the IntentD PII-free intent data stream: Starter, Growth, Scale and Enterprise plans. Compare user allowances, delivery cadence and field coverage, or talk to sales for a sample.',
     eyebrow: 'Pricing',
     titleBefore: 'Transparent pricing for access to the',
     titleAccent: 'data stream',

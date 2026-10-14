@@ -29,12 +29,9 @@ const PUBLIC_ROUTES: Array<{
 ];
 
 export const GET: APIRoute = () => {
-  const lastModified = new Date().toISOString();
-
   const entries = PUBLIC_ROUTES.map(
     (route) => `  <url>
     <loc>${new URL(route.path, SITE_URL).href}</loc>
-    <lastmod>${lastModified}</lastmod>
     <changefreq>${route.changeFrequency}</changefreq>
     <priority>${route.priority}</priority>
   </url>`,

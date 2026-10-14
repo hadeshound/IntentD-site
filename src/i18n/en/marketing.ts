@@ -22,7 +22,7 @@ export const marketing = {
     subtitle:
       'IntentD turns anonymous clickstream into steady revenue. A safe SDK, full privacy (PII-free) and a ready market for the data — in a single integration.',
     ctaPrimary: 'Connect your extension',
-    ctaSecondary: 'Buy data',
+    ctaSecondary: 'Talk to sales',
     trust: ['Five-minute integration', 'Manifest V3', 'Chrome Web Store safe'],
   },
 
@@ -111,6 +111,7 @@ export const marketing = {
     eyebrow: 'For data buyers',
     title: 'Top-quality intent signals for your business',
     cta: 'See the data schema',
+    ctaSample: 'Request a sample',
     items: [
       {
         segment: 'E-commerce & Retail',
@@ -190,9 +191,9 @@ export const marketing = {
   },
 
   contact: {
-    metaTitle: 'Contact',
+    metaTitle: 'Contact sales and support',
     metaDescription:
-      'Get in touch with the IntentD team: data stream access, connecting an extension, technical support and data processing questions.',
+      'Talk to the IntentD team: request a sample Parquet extract, get data stream access, connect your browser extension or ask a technical question. Replies within one business day.',
     eyebrow: 'Contact',
     heading: 'Write to us',
     intro:

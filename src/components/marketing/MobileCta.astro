@@ -1,0 +1,44 @@
+---
+import { MessageSquare } from 'lucide-react';
+
+import Button from '@/components/ui/Button.astro';
+import { getDictionary } from '@/i18n';
+import { routePath } from '@/lib/utils/pathname';
+
+const t = getDictionary().nav;
+
+// The contact page and the auth/checkout flows already are the destination.
+const route = routePath(Astro.url.pathname);
+const hidden = route.startsWith('/contact') || route.startsWith('/auth') || route.startsWith('/checkout');
+---
+
+{
+  !hidden && (
+    <>
+      {/* Spacer so the fixed bar never covers the footer's last line. */}
+      <div class="h-20 lg:hidden" aria-hidden="true" />
+      <div
+        data-mobile-cta
+        class="fixed inset-x-0 bottom-0 z-40 border-t border-hairline bg-void/90 px-4 py-3 backdrop-blur-xl transition-transform duration-300 lg:hidden"
+      >
+        <Button href="/contact" class="w-full justify-center">
+          <MessageSquare className="h-4 w-4" aria-hidden="true" />
+          {t.talkToUs}
+        </Button>
+      </div>
+    </>
+  )
+}
+
+<script>
+  // Slide the bar away while the on-page contact form is on screen.
+  const bar = document.querySelector<HTMLElement>('[data-mobile-cta]');
+  const target = document.getElementById('contact');
+
+  if (bar && target && typeof IntersectionObserver !== 'undefined') {
+    new IntersectionObserver(
+      (entries) => bar.classList.toggle("translate-y-full", Boolean(entries[0]?.isIntersecting)),
+      { threshold: 0.2 },
+    ).observe(target);
+  }
+</script>
