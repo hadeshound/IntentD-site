@@ -18,7 +18,7 @@ export function contactSchema() {
     topic: z.enum(['buy_data', 'monetize_extension', 'support', 'enterprise'], {
       errorMap: () => ({ message: e.topicRequired }),
     }),
-    message: z.string().trim().min(10, e.messageMin).max(5000, e.messageMax),
+    message: z.string().trim().min(1, e.messageMin).max(5000, e.messageMax),
     // Honeypot: rendered off-screen and hidden from assistive tech.
     website: z.string().max(255).optional(),
   });

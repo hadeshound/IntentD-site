@@ -265,7 +265,7 @@ export const marketing = {
         emailInvalid: 'That address looks like a typo',
         max255: '255 characters or fewer',
         topicRequired: 'Pick a request type',
-        messageMin: 'Tell us a little more — at least 10 characters',
+        messageMin: 'Please enter a message',
         messageMax: '5000 characters or fewer',
       },
     },
