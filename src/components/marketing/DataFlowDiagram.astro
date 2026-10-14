@@ -38,9 +38,9 @@ const NODES: NodeSpec[] = GEOMETRY.map((node, index) => ({
 const NODE_HEIGHT = 72;
 
 const ACCENTS = {
-  neutral: { stroke: 'rgba(255,255,255,0.14)', fill: 'rgba(31,41,55,0.75)', dot: '#9CA3AF' },
-  mint: { stroke: 'rgba(16,185,129,0.38)', fill: 'rgba(16,185,129,0.07)', dot: '#34D399' },
-  violet: { stroke: 'rgba(99,102,241,0.38)', fill: 'rgba(99,102,241,0.07)', dot: '#818CF8' },
+  neutral: { stroke: 'rgba(255,255,255,0.12)', fill: 'rgba(255,255,255,0.03)', dot: '#98A2B3' },
+  mint: { stroke: 'rgba(53,196,166,0.35)', fill: 'rgba(53,196,166,0.06)', dot: '#52CDB2' },
+  violet: { stroke: 'rgba(58,143,203,0.4)', fill: 'rgba(58,143,203,0.07)', dot: '#6BAEE3' },
 } as const;
 
 /** Connector geometry between consecutive nodes: down, across, down. */
@@ -66,12 +66,9 @@ const EDGES = NODES.slice(0, -1).map((node, index) => ({
     illustrated. Packets move along the connectors with SMIL so the animation
     costs no JavaScript and pauses with the rest of the page. */}
 <div class={cn('relative', className)}>
-  <div class="ambient-glow -left-10 top-10 h-72 w-72 bg-mint-500/25 animate-glow-drift"></div>
-  <div class="ambient-glow -right-16 bottom-0 h-64 w-64 bg-violet-500/20"></div>
-
   <div class="glass-panel relative overflow-hidden rounded-card p-5">
     <div class="mb-4 flex items-center justify-between">
-      <span class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">{t.caption}</span>
+      <span class="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-ink-faint">{t.caption}</span>
       <span class="inline-flex items-center gap-2 font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-mint-400">
         <span class="relative flex h-1.5 w-1.5">
           <span class="absolute inline-flex h-full w-full animate-status-ping rounded-full bg-mint-400"></span>
@@ -101,7 +98,7 @@ const EDGES = NODES.slice(0, -1).map((node, index) => ({
             {/* Two packets per edge, offset in time, so the line always
                 reads as moving without becoming a busy stream. */}
             {[0, 1.6].map((offset) => (
-              <circle r="3" fill="#34D399">
+              <circle r="3" fill="#52CDB2">
                 <animateMotion dur="3.2s" repeatCount="indefinite" begin={`${index * 0.5 + offset}s`}>
                   <mpath href={`#${pathId}`} />
                 </animateMotion>

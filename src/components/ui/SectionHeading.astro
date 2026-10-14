@@ -14,7 +14,9 @@ interface Props {
 
 const { eyebrow, title, description, align = 'left', class: className, id } = Astro.props;
 
-const isRight = align === 'right';
+// The alternating left/right headings were retired in the redesign: everything aligns left.
+void align;
+const isRight = false;
 const hasDescription = Boolean(description) || Astro.slots.has('description');
 ---
 

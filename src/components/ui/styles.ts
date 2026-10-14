@@ -21,9 +21,9 @@ const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
   // Mint is the only solid fill on the site: it marks the one action that moves
   // the visitor forward on a given screen.
   primary:
-    'bg-mint-500 text-void-deep hover:bg-mint-400 hover:-translate-y-0.5 hover:shadow-mint-glow active:translate-y-0',
+    'bg-gradient-to-br from-mint-500 to-violet-500 text-void-deep shadow-mint-glow hover:brightness-110 active:brightness-95',
   secondary:
-    'border border-hairline-strong bg-white/5 text-ink backdrop-blur hover:-translate-y-0.5 hover:border-mint-500/40 hover:bg-white/[0.08] active:translate-y-0',
+    'border border-hairline-strong bg-white/[0.03] text-ink hover:border-white/25 hover:bg-white/[0.07]',
   ghost: 'text-ink-muted hover:bg-white/5 hover:text-ink',
   danger: 'border border-red-500/40 bg-red-500/10 text-red-200 hover:bg-red-500/20',
 };
@@ -54,7 +54,7 @@ const BADGE_TONES: Record<BadgeTone, string> = {
 
 export function badgeStyles(tone: BadgeTone = 'neutral', className?: string): string {
   return cn(
-    'inline-flex items-center gap-1.5 rounded-pill border px-3 py-1 font-mono text-[0.6875rem] uppercase tracking-[0.14em]',
+    'inline-flex items-center gap-1.5 rounded-pill border px-2.5 py-1 text-xs font-medium',
     BADGE_TONES[tone],
     className,
   );
@@ -83,18 +83,16 @@ export function alertStyles(tone: AlertTone = 'info', className?: string): strin
 export type GlowTone = 'mint' | 'violet';
 
 export function glowStyles(tone: GlowTone = 'mint', drift = false, className?: string): string {
-  return cn(
-    'ambient-glow',
-    tone === 'mint' ? 'bg-mint-500/20' : 'bg-violet-500/20',
-    drift && 'animate-glow-drift',
-    className,
-  );
+  // Decorative glows were retired in the redesign; callers still pass their props.
+  void tone;
+  void drift;
+  return cn('hidden', className);
 }
 
 // --- Form controls ----------------------------------------------------------
 
 const CONTROL_BASE =
-  'w-full rounded-control border bg-void/60 px-3.5 text-[0.9375rem] text-ink placeholder:text-ink-faint ' +
+  'w-full rounded-control border bg-white/[0.03] px-3.5 text-[0.9375rem] text-ink placeholder:text-ink-faint ' +
   'transition-[border-color,box-shadow,background-color] duration-200 ' +
   'focus:outline-none focus:ring-2 focus:ring-mint-400/70 focus:ring-offset-0 ' +
   'disabled:cursor-not-allowed disabled:opacity-60';

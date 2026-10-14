@@ -12,9 +12,9 @@ const t = getDictionary().why;
 // the wide accented one, and the rest alternate around it.
 const LAYOUT = [
   { icon: Lock, layout: 'lg:col-span-7', accent: true },
-  { icon: Gauge, layout: 'lg:col-span-5 lg:mt-12', accent: false },
-  { icon: ShieldCheck, layout: 'lg:col-span-5 lg:-mt-4', accent: false },
-  { icon: Database, layout: 'lg:col-span-7 lg:mt-8', accent: false },
+  { icon: Gauge, layout: 'lg:col-span-5', accent: false },
+  { icon: ShieldCheck, layout: 'lg:col-span-5', accent: false },
+  { icon: Database, layout: 'lg:col-span-7', accent: false },
 ] as const;
 
 const ADVANTAGES = LAYOUT.map((entry, index) => ({

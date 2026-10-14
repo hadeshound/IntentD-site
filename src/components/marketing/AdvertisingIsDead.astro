@@ -12,8 +12,8 @@ const t = getDictionary().advertising;
 // copy: two problem cards, then the answer.
 const LAYOUT = [
   { icon: TrendingDown, offset: 'lg:mt-0', isSolution: false },
-  { icon: Ban, offset: 'lg:mt-16', isSolution: false },
-  { icon: ShieldCheck, offset: 'lg:mt-32', isSolution: true },
+  { icon: Ban, offset: 'lg:mt-0', isSolution: false },
+  { icon: ShieldCheck, offset: 'lg:mt-0', isSolution: true },
 ] as const;
 
 const CARDS = LAYOUT.map((layout, index) => ({
@@ -26,7 +26,7 @@ const CARDS = LAYOUT.map((layout, index) => ({
 <section id="publishers" class="relative py-24 lg:py-32">
   <SectionHeading class="shell" eyebrow={t.eyebrow}>
     <Fragment slot="title">
-      {t.titleBefore} <span class="text-ink-faint">{t.titleMuted}</span>
+      {t.titleBefore}{' '}<span class="text-ink-faint">{t.titleMuted}</span>
     </Fragment>
   </SectionHeading>
 

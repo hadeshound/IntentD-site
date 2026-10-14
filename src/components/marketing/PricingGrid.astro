@@ -46,7 +46,7 @@ const ordered = [...plans].sort((a, b) => PLAN_ORDER.indexOf(a.code) - PLAN_ORDE
 
   {/* Four tiers: two columns on a tablet, four on a wide screen. Three-up
       would leave Enterprise orphaned on its own row. */}
-  <div class="shell mt-16 grid items-start gap-6 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4 lg:gap-5">
+  <div class="shell mt-16 grid items-stretch gap-6 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4 lg:gap-5">
     {ordered.map((plan, index) => <PlanCard plan={plan} index={index} />)}
   </div>
 

@@ -39,7 +39,7 @@ const isHighlighted = presentation.highlighted;
 const ctaLabel = plan.is_custom_priced ? t.cta.contactSales : t.cta.subscribe;
 
 // The grid holds four cards; the last one keeps the staggered rhythm.
-const offsetClass = !isHighlighted && index === 3 ? 'lg:mt-8' : undefined;
+const offsetClass = undefined;
 
 // A plan quoted per deal has no published allowance; a catalogue that predates
 // migration 000015 has none either, and that line is simply left out rather
@@ -57,7 +57,7 @@ const volumeLabel = plan.is_custom_priced
 <article
   class={cn(
     'surface-card surface-card-interactive flex flex-col p-7 lg:p-8',
-    isHighlighted && 'surface-card-accent lg:-mt-6 lg:mb-6',
+    isHighlighted && 'surface-card-accent',
     offsetClass,
   )}
 >

@@ -1,14 +1,10 @@
 import type { Config } from 'tailwindcss';
 
 /**
- * The palette is defined here in full rather than leaning on Tailwind's
- * defaults, so the product has a recognisable surface instead of the
- * blue-violet look every starter template ships with.
- *
- * void      — page background, a deep navy rather than pure black
- * carbon    — card layers, two steps above the background
- * mint      — the single accent: money, and a green light on privacy
- * violet    — used only for ambient glow, never as a button fill
+ * Palette. A near-black neutral surface, one brand gradient taken from the
+ * logo mark (teal to blue), and nothing else. The `mint` and `violet` token
+ * names are kept so every component carries over; their values are the
+ * brand teal and brand blue.
  */
 const config: Config = {
   content: ['./src/**/*.{astro,html,ts,tsx,js,jsx,md,mdx}'],
@@ -16,37 +12,38 @@ const config: Config = {
     extend: {
       colors: {
         void: {
-          DEFAULT: '#0B0F17',
-          deep: '#070A10',
+          DEFAULT: '#080B10',
+          deep: '#05070A',
         },
         carbon: {
-          800: '#111827',
-          700: '#1F2937',
-          600: '#2A3644',
+          800: '#0E1218',
+          700: '#161B23',
+          600: '#222934',
         },
         mint: {
-          300: '#6EE7B7',
-          400: '#34D399',
-          500: '#10B981',
-          600: '#059669',
-          700: '#047857',
+          200: '#B4EEE1',
+          300: '#8CE3D0',
+          400: '#52CDB2',
+          500: '#35C4A6',
+          600: '#2A9FA0',
+          700: '#217D96',
         },
         violet: {
-          400: '#818CF8',
-          500: '#6366F1',
+          400: '#6BAEE3',
+          500: '#3A8FCB',
         },
         ink: {
           DEFAULT: '#FFFFFF',
-          muted: '#9CA3AF',
-          faint: '#6B7280',
+          muted: '#98A2B3',
+          faint: '#667085',
         },
-        hairline: 'rgba(255, 255, 255, 0.08)',
-        'hairline-strong': 'rgba(255, 255, 255, 0.16)',
+        hairline: 'rgba(255, 255, 255, 0.07)',
+        'hairline-strong': 'rgba(255, 255, 255, 0.14)',
       },
       fontFamily: {
-        display: ['var(--font-golos)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        sans: ['var(--font-manrope)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        mono: ['var(--font-jetbrains-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        display: ['var(--font-geist)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-geist)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-geist-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       fontSize: {
         // Hero type scales with the viewport instead of snapping between
@@ -54,10 +51,10 @@ const config: Config = {
         hero: ['clamp(2.5rem, 5.4vw, 5.5rem)', { lineHeight: '0.98', letterSpacing: '-0.035em' }],
         'section-title': ['clamp(2rem, 4.2vw, 3.75rem)', { lineHeight: '1.02', letterSpacing: '-0.03em' }],
         'card-title': ['1.375rem', { lineHeight: '1.25', letterSpacing: '-0.015em' }],
-        eyebrow: ['0.75rem', { lineHeight: '1', letterSpacing: '0.22em' }],
+        eyebrow: ['0.8125rem', { lineHeight: '1', letterSpacing: '0.01em' }],
       },
       borderRadius: {
-        card: '12px',
+        card: '14px',
         control: '10px',
         pill: '999px',
       },
@@ -93,8 +90,8 @@ const config: Config = {
         'caret-blink': 'caret-blink 1.1s steps(1) infinite',
       },
       boxShadow: {
-        lift: '0 24px 60px -32px rgba(0, 0, 0, 0.9)',
-        'mint-glow': '0 0 0 1px rgba(16, 185, 129, 0.35), 0 24px 70px -40px rgba(16, 185, 129, 0.6)',
+        lift: '0 16px 40px -24px rgba(0, 0, 0, 0.8)',
+        'mint-glow': '0 8px 24px -12px rgba(53, 196, 166, 0.5)',
       },
       backgroundImage: {
         'hairline-grid':

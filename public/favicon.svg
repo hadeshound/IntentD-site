@@ -1,8 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" fill="none">
-  <rect width="28" height="28" rx="8" fill="#0B0F17" />
-  <rect x="0.75" y="0.75" width="26.5" height="26.5" rx="7.25" stroke="rgba(255,255,255,0.14)" />
-  <path d="M7 9h7" stroke="#34D399" stroke-width="2" stroke-linecap="round" />
-  <path d="M7 14h11" stroke="#10B981" stroke-width="2" stroke-linecap="round" />
-  <path d="M7 19h5" stroke="#059669" stroke-width="2" stroke-linecap="round" />
-  <circle cx="20.5" cy="19" r="2" fill="#6366F1" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="idg" x1="6" y1="0" x2="94" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#35C4A6" />
+      <stop offset="1" stop-color="#3A8FCB" />
+    </linearGradient>
+    <clipPath id="idt"><rect x="-2" y="0" width="110" height="39.4" /></clipPath>
+    <clipPath id="idb"><rect x="-2" y="60.4" width="110" height="50" /></clipPath>
+    <mask id="idm" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+      <rect width="100" height="100" rx="22" fill="#fff" />
+      <g stroke="#000" stroke-width="7.2" fill="none">
+        <path d="M-2 49.9H67.8" />
+        <g clip-path="url(#idt)"><path d="M-2 28.6H40C49 28.6 53 31.5 62 42" /></g>
+        <g clip-path="url(#idb)"><path d="M-2 71.2H40C49 71.2 53 68.3 62 57.8" /></g>
+      </g>
+      <circle cx="82.1" cy="49.9" r="7.2" fill="#000" />
+    </mask>
+  </defs>
+  <rect width="100" height="100" fill="url(#idg)" mask="url(#idm)" />
 </svg>
