@@ -207,7 +207,7 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
 
             <ul className="mt-8 space-y-3 border-t border-hairline pt-8">
               {presentation.features.map((feature) => (
-                <li key={feature} className="flex gap-3 text-[0.9375rem] leading-relaxed text-ink-muted">
+                <li key={feature} className="flex gap-3 text-base leading-relaxed text-ink-muted">
                   <Check className="mt-1 h-4 w-4 shrink-0 text-mint-400" aria-hidden="true" />
                   <span>{feature}</span>
                 </li>

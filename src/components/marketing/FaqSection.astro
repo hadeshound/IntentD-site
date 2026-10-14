@@ -29,7 +29,7 @@ const faqLd = {
     section reads as a two-track layout like the rest of the page. */}
 <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />
 
-<section id={id} class="py-24 lg:py-32">
+<section id={id} class="py-20 lg:py-32">
   <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-10">
     <div class="lg:col-span-4">
       <div class="lg:sticky lg:top-28">
@@ -40,7 +40,7 @@ const faqLd = {
 
         <h2 class="mt-6 text-section-title">{title}</h2>
 
-        <p class="mt-6 max-w-sm text-[0.9375rem] leading-relaxed text-ink-muted">
+        <p class="mt-6 max-w-sm text-base leading-relaxed text-ink-muted">
           {t.notFoundPrefix}{' '}
           <a
             href="/contact"

@@ -20,7 +20,7 @@ const TRACKS: Track[] = [
 ];
 ---
 
-<section id="how-it-works" class="relative py-24 lg:py-32">
+<section id="how-it-works" class="relative border-t border-hairline py-20 lg:py-32">
   <SectionHeading
     class="shell"
     align="right"
@@ -29,12 +29,13 @@ const TRACKS: Track[] = [
     description={t.description}
   />
 
-  <div class="shell mt-16 grid gap-px overflow-hidden rounded-card border border-hairline bg-hairline lg:mt-20 lg:grid-cols-2">
+  <div class="shell mt-14 lg:mt-16">
+  <div class="grid gap-px overflow-hidden rounded-card border border-hairline bg-hairline lg:grid-cols-2">
     {
       TRACKS.map((track, trackIndex) => (
         <div
           class={cn(
-            'relative bg-void/80 p-8 lg:p-10',
+            'relative bg-carbon-800 p-8 lg:p-10',
             /* Each half carries its own glow so the two audiences read as
                distinct without splitting the section into two components. */
             track.accent === 'mint' ? 'lg:pr-12' : 'lg:pl-12',
@@ -71,7 +72,7 @@ const TRACKS: Track[] = [
 
                   <div>
                     <h4 class="text-lg text-ink">{step.title}</h4>
-                    <p class="mt-2 text-[0.9375rem] leading-relaxed text-ink-muted">{step.body}</p>
+                    <p class="mt-2 text-base leading-relaxed text-ink-muted">{step.body}</p>
                   </div>
                 </div>
               </Reveal>
@@ -80,5 +81,6 @@ const TRACKS: Track[] = [
         </div>
       ))
     }
+  </div>
   </div>
 </section>

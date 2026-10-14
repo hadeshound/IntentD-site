@@ -1,7 +1,6 @@
 ---
 import { ArrowRight, Check, Zap } from 'lucide-react';
 
-import AmbientGlow from '@/components/ui/AmbientGlow.astro';
 import Button from '@/components/ui/Button.astro';
 import { getDictionary } from '@/i18n';
 import { DASHBOARD_LINKS } from '@/lib/config/urls';
@@ -13,29 +12,20 @@ const t = getDictionary().hero;
 const TRUST_ICONS = [Zap, Check, Check];
 ---
 
-{/* Asymmetric hero: copy holds seven of twelve columns on the left, the flow
-    diagram takes five on the right and is pushed down so it breaks the top
-    alignment instead of sitting in a tidy 50/50 split. */}
-<section class="relative overflow-hidden pb-24 pt-16 lg:pb-28 lg:pt-24">
-  <div class="hairline-grid-overlay"></div>
-  <AmbientGlow class="-left-32 top-0 h-[28rem] w-[28rem]" drift />
-  <AmbientGlow tone="violet" class="right-0 top-40 h-[22rem] w-[22rem]" />
-
-  <div class="shell grid items-start gap-16 lg:grid-cols-12 lg:gap-10">
+{/* First viewport: the promise and its two actions on the left, the actual
+    path a signal takes on the right. The diagram is the proof, so it holds half
+    the width and aligns to the headline instead of floating below it. */}
+<section class="relative overflow-hidden pb-16 pt-12 lg:pb-32 lg:pt-24">
+  <div class="shell grid items-center gap-14 lg:grid-cols-12 lg:gap-12">
     <div class="lg:col-span-7">
-      <p class="flex items-center gap-3">
-        <span class="eyebrow">{t.eyebrow}</span>
-        <span class="h-px w-12 bg-hairline-strong"></span>
-      </p>
-
-      <h1 class="mt-7 text-hero">
+      <h1 class="text-hero">
         {t.titleBefore} <span class="text-mint-400">{t.titleAccent}</span> {t.titleAfter}
       </h1>
 
-      <p class="mt-8 max-w-xl text-lg leading-relaxed text-ink-muted text-pretty">{t.subtitle}</p>
+      <p class="mt-7 max-w-[34rem] text-lead text-ink-muted text-pretty">{t.subtitle}</p>
 
       <div class="mt-10 flex flex-col gap-3 sm:flex-row">
-        <Button href={`${DASHBOARD_LINKS.register}?role=publisher`} size="lg">
+        <Button href={`${DASHBOARD_LINKS.register}?role=publisher`} size="lg" class="sm:min-w-[15rem]">
           {t.ctaPrimary}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Button>
@@ -43,13 +33,13 @@ const TRUST_ICONS = [Zap, Check, Check];
         <Button href="/contact?topic=buy_data" variant="secondary" size="lg">{t.ctaSecondary}</Button>
       </div>
 
-      <ul class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
+      <ul class="mt-10 flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-hairline pt-8">
         {
           t.trust.map((label, index) => {
             const Icon = TRUST_ICONS[index] ?? Check;
 
             return (
-              <li class="flex items-center gap-2 text-sm text-ink-muted">
+              <li class="flex items-center gap-2.5 text-sm text-ink-muted">
                 <Icon className="h-4 w-4 text-mint-400" aria-hidden="true" />
                 {label}
               </li>
@@ -59,9 +49,7 @@ const TRUST_ICONS = [Zap, Check, Check];
       </ul>
     </div>
 
-    {/* Pulled down and slightly out of the grid so the two halves never
-        line up on a single baseline. */}
-    <div class="lg:col-span-5 lg:mt-14 lg:-mr-4 xl:-mr-10">
+    <div class="lg:col-span-5">
       <DataFlowDiagram />
     </div>
   </div>

@@ -35,7 +35,7 @@ const config: Config = {
         ink: {
           DEFAULT: '#FFFFFF',
           muted: '#98A2B3',
-          faint: '#667085',
+          faint: '#7D8797',
         },
         hairline: 'rgba(255, 255, 255, 0.07)',
         'hairline-strong': 'rgba(255, 255, 255, 0.14)',
@@ -46,11 +46,12 @@ const config: Config = {
         mono: ['var(--font-geist-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       fontSize: {
-        // Hero type scales with the viewport instead of snapping between
-        // breakpoints, which is what keeps 80-120px readable on a laptop.
-        hero: ['clamp(2.5rem, 5.4vw, 5.5rem)', { lineHeight: '0.98', letterSpacing: '-0.035em' }],
-        'section-title': ['clamp(2rem, 4.2vw, 3.75rem)', { lineHeight: '1.02', letterSpacing: '-0.03em' }],
-        'card-title': ['1.375rem', { lineHeight: '1.25', letterSpacing: '-0.015em' }],
+        // Role scale (Geist, one family). Display is capped at 5rem; every
+        // role scales with the viewport between a phone and a wide desktop.
+        hero: ['clamp(2.5rem, 1rem + 4.4vw, 4.5rem)', { lineHeight: '1.02', letterSpacing: '-0.035em' }],
+        'section-title': ['clamp(2rem, 1.3rem + 2.6vw, 3.25rem)', { lineHeight: '1.08', letterSpacing: '-0.03em' }],
+        'card-title': ['1.25rem', { lineHeight: '1.3', letterSpacing: '-0.012em' }],
+        lead: ['clamp(1.0625rem, 1rem + 0.3vw, 1.25rem)', { lineHeight: '1.6' }],
         eyebrow: ['0.8125rem', { lineHeight: '1', letterSpacing: '0.01em' }],
       },
       borderRadius: {

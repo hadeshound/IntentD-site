@@ -88,9 +88,9 @@ const EDGES = NODES.slice(0, -1).map((node, index) => ({
               x={node.x + 70}
               y={node.y + NODE_HEIGHT + 34}
               class="font-mono"
-              font-size="9"
+              font-size="10"
               letter-spacing="1.4"
-              fill="#6B7280"
+              fill="#7D8797"
             >
               {t.edges[index]?.toUpperCase()}
             </text>
@@ -133,10 +133,10 @@ const EDGES = NODES.slice(0, -1).map((node, index) => ({
                 stroke-width="1"
               />
               <circle cx={node.x + 22} cy={node.y + 36} r="3.5" fill={accent.dot} />
-              <text x={node.x + 40} y={node.y + 31} font-size="14" fill="#FFFFFF" class="font-display">
+              <text x={node.x + 40} y={node.y + 31} font-size="15" fill="#FFFFFF" class="font-display">
                 {node.title}
               </text>
-              <text x={node.x + 40} y={node.y + 50} font-size="11" fill="#9CA3AF" class="font-mono">
+              <text x={node.x + 40} y={node.y + 50} font-size="12" fill="#98A2B3" class="font-mono">
                 {node.subtitle}
               </text>
             </g>
@@ -145,15 +145,5 @@ const EDGES = NODES.slice(0, -1).map((node, index) => ({
       }
     </svg>
 
-    <dl class="mt-4 grid grid-cols-3 gap-3 border-t border-hairline pt-4">
-      {
-        t.stats.map((stat) => (
-          <div>
-            <dt class="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-ink-faint">{stat.label}</dt>
-            <dd class="mt-1 font-display text-base text-ink">{stat.value}</dd>
-          </div>
-        ))
-      }
-    </dl>
   </div>
 </div>

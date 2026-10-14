@@ -133,7 +133,7 @@ export function Modal({
         </h2>
 
         {description ? (
-          <p id="modal-description" className="mt-3 text-[0.9375rem] leading-relaxed text-ink-muted">
+          <p id="modal-description" className="mt-3 text-base leading-relaxed text-ink-muted">
             {description}
           </p>
         ) : null}

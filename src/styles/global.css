@@ -21,6 +21,11 @@
   body {
     @apply bg-void text-ink-muted font-sans antialiased;
     text-rendering: optimizeLegibility;
+    font-size: 1rem;
+    line-height: 1.65;
+    /* Light type on a dark ground reads tighter than it is: a touch of air. */
+    letter-spacing: 0.005em;
+    font-feature-settings: 'ss01', 'cv11';
   }
 
   /* The `hidden` attribute has to win over a display utility. Several controls
@@ -45,6 +50,14 @@
      from the keyboard, and the indicator must survive the dark background. */
   :focus-visible {
     @apply outline-none ring-2 ring-mint-400 ring-offset-2 ring-offset-void;
+  }
+
+  html {
+    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
   }
 
   ::selection {
@@ -98,8 +111,9 @@
     @apply border border-hairline bg-carbon-800;
   }
 
+  /* Kickers above headings were retired in the redesign. */
   .eyebrow {
-    @apply font-sans text-eyebrow font-medium text-mint-400;
+    display: none;
   }
 
   .prose-body {
@@ -126,16 +140,32 @@
     display: none;
   }
 
-  /* Brand gradient, the same one as in the logo mark. */
-  .text-brand-gradient {
-    background-image: linear-gradient(100deg, #52cdb2 0%, #3a8fcb 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
+
 }
 
 @layer utilities {
+  /* Accordion panel: animates its real height through grid rows, so the open
+     and close are smooth for any content length. */
+  [data-accordion-panel] {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 360ms cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 240ms ease-out;
+  }
+
+  [data-accordion-panel][data-open='true'] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transition-delay: 0ms, 60ms;
+  }
+
+  [data-accordion-panel] > div {
+    min-height: 0;
+    overflow: hidden;
+  }
+
   .text-balance {
     text-wrap: balance;
   }
@@ -147,10 +177,10 @@
   /* Scroll-reveal pair driven by IntersectionObserver in useReveal(). */
   .reveal {
     opacity: 0;
-    transform: translate3d(0, 18px, 0);
+    transform: translate3d(0, 10px, 0);
     transition:
-      opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+      opacity 520ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
   }
 
