@@ -231,10 +231,8 @@ export const marketing = {
       eyebrow: 'Contact',
       title: 'Let us talk through your scenario',
       body: 'Tell us what you need: connecting an extension, getting a sample extract, or discussing Enterprise volumes. We will answer on the substance.',
-      salesTitle: 'Sales',
-      salesBody: 'Stream access, test extracts, Enterprise terms.',
-      supportTitle: 'Technical support',
-      supportBody: 'SDK integration, keys, questions about the Parquet format.',
+      cta: 'Talk to sales',
+      ctaSupport: 'Technical support',
     },
     form: {
       name: 'Name',

@@ -1,69 +1,37 @@
 ---
-import { Mail, MessageSquare, Users } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 import AmbientGlow from '@/components/ui/AmbientGlow.astro';
+import Button from '@/components/ui/Button.astro';
 import { getDictionary } from '@/i18n';
-import { SALES_EMAIL, SUPPORT_EMAIL } from '@/lib/content/navigation';
-import { ContactForm } from './ContactForm';
 
 const t = getDictionary().contact.section;
-
-const CHANNELS = [
-  { icon: Users, title: t.salesTitle, body: t.salesBody, email: SALES_EMAIL },
-  { icon: MessageSquare, title: t.supportTitle, body: t.supportBody, email: SUPPORT_EMAIL },
-];
 ---
 
-{/* Landing contact block. The form takes the wider column and the channel list
-    sits beside it, so the section keeps the asymmetric rhythm of the page. */}
+{/* Closing call to action of the landing page. The form itself lives only on
+    /contact, so there is one place to write to us and no repeated copy here. */}
 <section id="contact" class="relative py-24 lg:py-32">
-  <AmbientGlow tone="violet" class="-left-24 top-20 h-80 w-80" />
+  <AmbientGlow tone="violet" class="-left-24 top-10 h-80 w-80" />
 
-  <div class="shell grid gap-14 lg:grid-cols-12 lg:gap-12">
-    <div class="lg:col-span-5">
-      <p class="flex items-center gap-3">
-        <span class="eyebrow">{t.eyebrow}</span>
-        <span class="h-px w-12 bg-hairline-strong"></span>
-      </p>
+  <div class="shell">
+    <div class="surface-card flex flex-col gap-8 p-8 lg:flex-row lg:items-center lg:justify-between lg:p-12">
+      <div class="max-w-xl">
+        <p class="flex items-center gap-3">
+          <span class="eyebrow">{t.eyebrow}</span>
+          <span class="h-px w-12 bg-hairline-strong"></span>
+        </p>
 
-      <h2 class="mt-6 text-section-title">{t.title}</h2>
+        <h2 class="mt-6 text-section-title">{t.title}</h2>
 
-      <p class="mt-6 max-w-md text-lg leading-relaxed text-ink-muted text-pretty">{t.body}</p>
+        <p class="mt-5 text-lg leading-relaxed text-ink-muted text-pretty">{t.body}</p>
+      </div>
 
-      <ul class="mt-10 space-y-4">
-        {
-          CHANNELS.map((channel) => {
-            const Icon = channel.icon;
-
-            return (
-              <li class="surface-card p-5">
-                <div class="flex gap-4">
-                  <span class="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-hairline bg-white/[0.03] text-mint-400">
-                    <Icon className="h-4 w-4" aria-hidden="true" />
-                  </span>
-
-                  <div>
-                    <h3 class="text-base text-ink">{channel.title}</h3>
-                    <p class="mt-1 text-sm leading-relaxed text-ink-muted">{channel.body}</p>
-                    <a
-                      href={`mailto:${channel.email}`}
-                      class="mt-2.5 inline-flex items-center gap-1.5 font-mono text-xs text-mint-400 transition-colors duration-200 hover:text-mint-300"
-                    >
-                      <Mail className="h-3.5 w-3.5" aria-hidden="true" />
-                      {channel.email}
-                    </a>
-                  </div>
-                </div>
-              </li>
-            );
-          })
-        }
-      </ul>
-    </div>
-
-    <div class="lg:col-span-6 lg:col-start-7">
-      <div class="surface-card p-7 lg:p-9">
-        <ContactForm client:load />
+      <div class="flex flex-col gap-3 sm:flex-row lg:shrink-0">
+        <Button href="/contact?topic=buy_data" size="lg">
+          {t.cta}
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Button>
+        <Button href="/contact?topic=support" variant="secondary" size="lg">{t.ctaSupport}</Button>
       </div>
     </div>
   </div>

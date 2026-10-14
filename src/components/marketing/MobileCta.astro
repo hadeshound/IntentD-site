@@ -29,16 +29,3 @@ const hidden = route.startsWith('/contact') || route.startsWith('/auth') || rout
     </>
   )
 }
-
-<script>
-  // Slide the bar away while the on-page contact form is on screen.
-  const bar = document.querySelector<HTMLElement>('[data-mobile-cta]');
-  const target = document.getElementById('contact');
-
-  if (bar && target && typeof IntersectionObserver !== 'undefined') {
-    new IntersectionObserver(
-      (entries) => bar.classList.toggle("translate-y-full", Boolean(entries[0]?.isIntersecting)),
-      { threshold: 0.2 },
-    ).observe(target);
-  }
-</script>
