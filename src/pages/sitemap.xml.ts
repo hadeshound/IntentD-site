@@ -23,6 +23,7 @@ const PUBLIC_ROUTES: Array<{
   { path: '/docs/api', priority: 0.8, changeFrequency: 'weekly' },
   { path: '/docs/sdk', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/docs/bucket-format-v1', priority: 0.5, changeFrequency: 'monthly' },
+  { path: '/calculator', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/contact', priority: 0.6, changeFrequency: 'monthly' },
   { path: '/terms', priority: 0.3, changeFrequency: 'monthly' },
   { path: '/privacy', priority: 0.3, changeFrequency: 'monthly' },

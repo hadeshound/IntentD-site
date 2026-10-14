@@ -56,6 +56,7 @@ export const common = {
       api: 'API and data format',
       sdk: 'SDK and consent',
       howItWorks: 'How it works',
+      calculator: 'Earnings calculator',
       faq: 'FAQ',
     },
     company: {

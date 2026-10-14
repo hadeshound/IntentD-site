@@ -1,0 +1,21 @@
+---
+import EarningsCalculator from '@/components/marketing/EarningsCalculator.astro';
+import FaqSection from '@/components/marketing/FaqSection.astro';
+import { getDictionary } from '@/i18n';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+
+const t = getDictionary().calculator;
+---
+
+<MarketingLayout title={t.metaTitle} description={t.metaDescription}>
+  <section class="relative pb-12 pt-14 lg:pb-16 lg:pt-24">
+    <div class="shell">
+      <h1 class="max-w-[20ch] text-hero text-balance">{t.pageTitle}</h1>
+      <p class="mt-7 max-w-[40rem] text-lead text-ink-muted text-pretty">{t.description}</p>
+    </div>
+  </section>
+
+  <EarningsCalculator showHeading={false} />
+
+  <FaqSection items={[...t.faq]} id="calculator-faq" />
+</MarketingLayout>

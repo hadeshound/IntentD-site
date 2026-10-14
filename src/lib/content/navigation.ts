@@ -42,6 +42,7 @@ export function footerColumns(): FooterColumn[] {
         { label: t.product.api, href: path('/docs/api') },
         { label: t.product.sdk, href: path('/docs/sdk') },
         { label: t.product.howItWorks, href: path('/#how-it-works') },
+        { label: t.product.calculator, href: path('/calculator') },
         { label: t.product.faq, href: path('/#faq') },
       ],
     },

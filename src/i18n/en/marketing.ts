@@ -15,6 +15,27 @@ export const marketing = {
   },
 
   calculator: {
+    metaTitle: 'Earnings calculator for browser extensions',
+    metaDescription:
+      'Estimate how much a browser extension can earn from consented, PII-free data: set your monthly active users, the consent rate and the payout rate, and get a monthly and yearly figure.',
+    pageTitle: 'How much can your extension earn?',
+    faq: [
+      {
+        question: 'Where does the income come from?',
+        answer:
+          'From the anonymised, PII-free signals of users who accept the consent prompt. Users who decline send nothing and earn you nothing.',
+      },
+      {
+        question: 'Is this figure guaranteed?',
+        answer:
+          'No. It is a planning estimate. The payout rate shown is an example you can change, and the final rate is confirmed when you connect an extension.',
+      },
+      {
+        question: 'What share of users usually accept?',
+        answer:
+          'It depends on how the consent prompt is presented. The calculator starts at 40 percent and lets you test lower and higher values.',
+      },
+    ],
     title: 'Estimate what your users can earn you',
     description:
       'Move the sliders to see a monthly figure for your extension. Revenue only comes from users who accept the consent prompt.',
@@ -73,6 +94,7 @@ export const marketing = {
     eyebrow: 'For extension developers',
     titleBefore: 'Stop risking your users',
     titleMuted: 'for the sake of banners',
+    cta: 'See how it works',
     cards: [
       {
         title: 'Banners drive users away',
@@ -90,6 +112,7 @@ export const marketing = {
   },
 
   howItWorks: {
+    calculatorCta: 'Calculate your earnings',
     eyebrow: 'How it works',
     title: 'One integration, two sides of the market',
     description:

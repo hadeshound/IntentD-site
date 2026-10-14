@@ -1,4 +1,5 @@
 ---
+import Button from '@/components/ui/Button.astro';
 import Reveal from '@/components/ui/Reveal.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
 import { getDictionary } from '@/i18n';
@@ -27,7 +28,9 @@ const TRACKS: Track[] = [
     eyebrow={t.eyebrow}
     title={t.title}
     description={t.description}
-  />
+  >
+    <Button slot="aside" href="/calculator" variant="secondary">{t.calculatorCta}</Button>
+  </SectionHeading>
 
   <div class="shell mt-14 lg:mt-16">
   <div class="grid gap-px overflow-hidden rounded-card border border-hairline bg-hairline lg:grid-cols-2">

@@ -1,66 +1,64 @@
 ---
-import { Ban, ShieldCheck, TrendingDown } from 'lucide-react';
+import { ArrowRight, Ban, ShieldCheck, TrendingDown } from 'lucide-react';
 
+import Button from '@/components/ui/Button.astro';
 import Reveal from '@/components/ui/Reveal.astro';
 import { getDictionary } from '@/i18n';
-import { cn } from '@/lib/utils/cn';
 
 const t = getDictionary().advertising;
 
-// Icon and the solution flag belong to the layout, not to the copy: two
-// problems, then the answer.
-const LAYOUT = [
-  { icon: TrendingDown, isSolution: false },
-  { icon: Ban, isSolution: false },
-  { icon: ShieldCheck, isSolution: true },
-] as const;
-
-const ROWS = LAYOUT.map((layout, index) => ({
-  ...layout,
+const PROBLEMS = [TrendingDown, Ban].map((icon, index) => ({
+  icon,
   title: t.cards[index]?.title ?? '',
   body: t.cards[index]?.body ?? '',
 }));
+const ANSWER = { title: t.cards[2]?.title ?? '', body: t.cards[2]?.body ?? '' };
 ---
 
-{/* Problem and answer as one reading list, not three cards: the heading holds
-    the left column, and each statement is a row separated by a hairline. The
-    last row is the answer and carries the only tint. */}
+{/* Problem and answer side by side: what goes wrong with ads in an extension
+    on the left, what IntentD does instead on the right. Two blocks of equal
+    height read as a before and after, with the heading above both. */}
 <section id="publishers" class="relative border-t border-hairline py-20 lg:py-32">
-  <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-16">
-    <div class="lg:col-span-5">
-      <h2 class="text-section-title text-balance lg:sticky lg:top-28">
-        {t.titleBefore}{' '}<span class="text-ink-faint">{t.titleMuted}</span>
-      </h2>
-    </div>
+  <div class="shell">
+    <h2 class="max-w-[22ch] text-section-title text-balance">
+      {t.titleBefore}{' '}<span class="text-ink-faint">{t.titleMuted}</span>
+    </h2>
 
-    <ol class="divide-y divide-hairline border-y border-hairline lg:col-span-7">
-      {
-        ROWS.map((row, index) => {
-          const Icon = row.icon;
+    <div class="mt-12 grid gap-5 lg:mt-16 lg:grid-cols-2 lg:gap-6">
+      <Reveal class="flex">
+        <div class="surface-card flex w-full flex-col divide-y divide-hairline p-2">
+          {
+            PROBLEMS.map((problem) => {
+              const Icon = problem.icon;
 
-          return (
-            <Reveal as="li" delay={index * 80}>
-              <div class={cn('flex gap-5 py-8 sm:gap-6', row.isSolution && '-mx-5 bg-mint-500/[0.05] px-5 sm:-mx-7 sm:px-7')}>
-                <span
-                  class={cn(
-                    'mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-control border',
-                    row.isSolution
-                      ? 'border-mint-500/40 bg-mint-500/10 text-mint-400'
-                      : 'border-hairline bg-white/[0.03] text-ink-muted',
-                  )}
-                >
-                  <Icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-
-                <div class="min-w-0">
-                  <h3 class="text-card-title">{row.title}</h3>
-                  <p class="mt-2.5 max-w-[52ch] text-ink-muted">{row.body}</p>
+              return (
+                <div class="flex gap-5 p-6 lg:p-7">
+                  <Icon className="mt-1 h-6 w-6 shrink-0 text-ink-faint" aria-hidden="true" />
+                  <div>
+                    <h3 class="text-card-title">{problem.title}</h3>
+                    <p class="mt-2.5 text-ink-muted">{problem.body}</p>
+                  </div>
                 </div>
-              </div>
-            </Reveal>
-          );
-        })
-      }
-    </ol>
+              );
+            })
+          }
+        </div>
+      </Reveal>
+
+      <Reveal delay={90} class="flex">
+        <div class="surface-card surface-card-accent flex w-full flex-col p-7 lg:p-9">
+          <ShieldCheck className="h-8 w-8 text-mint-400" aria-hidden="true" />
+          <h3 class="mt-6 text-[1.625rem] leading-tight tracking-tight">{ANSWER.title}</h3>
+          <p class="mt-3.5 max-w-[44ch] text-ink-muted">{ANSWER.body}</p>
+
+          <div class="mt-auto pt-8">
+            <Button href="#how-it-works" variant="secondary">
+              {t.cta}
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Button>
+          </div>
+        </div>
+      </Reveal>
+    </div>
   </div>
 </section>

@@ -8,28 +8,27 @@ const t = getDictionary().hero;
 
 const ICONS = { shield: ShieldCheck, chrome: Globe, store: Store, zap: Zap, timer: Timer } as const;
 
-// One hue per fact, so the strip reads at a glance instead of as five identical ticks.
+// One hue per fact, on the bare icon: no tile, no frame.
 const TONES = {
-  teal: 'bg-mint-500/20 text-mint-300',
-  amber: 'bg-amber-400/20 text-amber-300',
-  blue: 'bg-violet-500/25 text-violet-400',
-  cyan: 'bg-cyan-400/20 text-cyan-300',
-  violet: 'bg-indigo-400/22 text-indigo-300',
+  teal: 'text-mint-400',
+  amber: 'text-amber-300',
+  blue: 'text-violet-400',
+  cyan: 'text-cyan-300',
+  violet: 'text-indigo-300',
 } as const;
 ---
 
-{/* Proof points under the hero: short, factual, each with its own icon colour. */}
+{/* Proof points under the hero. Two columns on a phone, three on a tablet and a
+    single row from 1024px up, where each item holds its text on one line. */}
 <section aria-label="Key facts" class="border-y border-hairline bg-white/[0.015]">
-  <ul class="shell flex flex-wrap items-center justify-center gap-x-10 gap-y-5 py-7">
+  <ul class="shell grid grid-cols-2 gap-x-6 gap-y-5 py-7 sm:grid-cols-3 lg:flex lg:items-center lg:justify-between lg:gap-x-6">
     {
       t.strip.map((item) => {
         const Icon = ICONS[item.icon as keyof typeof ICONS];
 
         return (
-          <li class="flex items-center gap-3 text-[0.9375rem] font-medium text-ink/90">
-            <span class={cn('inline-flex h-10 w-10 items-center justify-center rounded-control', TONES[item.tone as keyof typeof TONES])}>
-              <Icon className="h-[1.15rem] w-[1.15rem]" aria-hidden="true" />
-            </span>
+          <li class="flex items-center gap-2.5 text-sm font-medium text-ink/90 lg:whitespace-nowrap">
+            <Icon className={cn('h-5 w-5 shrink-0', TONES[item.tone as keyof typeof TONES])} aria-hidden="true" />
             {item.label}
           </li>
         );
