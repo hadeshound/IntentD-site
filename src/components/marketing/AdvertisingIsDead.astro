@@ -40,7 +40,7 @@ const ROWS = LAYOUT.map((layout, index) => ({
 
           return (
             <Reveal as="li" delay={index * 80}>
-              <div class={cn('flex gap-5 py-8 sm:gap-6', row.isSolution && 'bg-mint-500/[0.05] px-5 sm:px-7')}>
+              <div class={cn('flex gap-5 py-8 sm:gap-6', row.isSolution && '-mx-5 bg-mint-500/[0.05] px-5 sm:-mx-7 sm:px-7')}>
                 <span
                   class={cn(
                     'mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-control border',

@@ -54,7 +54,7 @@ const BADGE_TONES: Record<BadgeTone, string> = {
 
 export function badgeStyles(tone: BadgeTone = 'neutral', className?: string): string {
   return cn(
-    'inline-flex items-center gap-1.5 rounded-pill border px-2.5 py-1 text-xs font-medium',
+    'inline-flex items-center gap-1.5 whitespace-nowrap rounded-pill border px-2.5 py-1 text-xs font-medium',
     BADGE_TONES[tone],
     className,
   );

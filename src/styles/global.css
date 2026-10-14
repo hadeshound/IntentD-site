@@ -61,7 +61,7 @@
   }
 
   ::selection {
-    background-color: rgba(53, 196, 166, 0.3);
+    background-color: #1d6b62;
     color: #ffffff;
   }
 
@@ -104,7 +104,19 @@
   }
 
   .surface-card-accent {
-    @apply border-mint-500/40 bg-carbon-800;
+    @apply border-mint-500/35;
+    background:
+      radial-gradient(120% 100% at 0% 0%, rgba(53, 196, 166, 0.13), transparent 62%),
+      linear-gradient(165deg, #0f1b21 0%, #0c1218 100%);
+  }
+
+  /* The closing call to action. */
+  .cta-panel {
+    @apply rounded-card border border-hairline-strong;
+    background:
+      radial-gradient(90% 140% at 0% 0%, rgba(53, 196, 166, 0.18), transparent 60%),
+      radial-gradient(70% 120% at 100% 100%, rgba(58, 143, 203, 0.16), transparent 62%),
+      #0b1117;
   }
 
   .glass-panel {

@@ -63,17 +63,18 @@ const volumeLabel = plan.is_custom_priced
 >
   {isHighlighted ? <div class="ambient-glow -right-14 -top-16 h-56 w-56 bg-mint-500/25" /> : null}
 
-  <div class="flex items-start justify-between gap-4">
-    <div>
+  <div>
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
       <h3 class="font-display text-xl text-ink">{plan.name}</h3>
-      <p class="mt-2 max-w-[16rem] text-sm leading-relaxed text-ink-faint">{presentation.audience}</p>
+
+      {
+        isHighlighted && presentation.highlightLabel ? (
+          <Badge tone="mint" class="whitespace-nowrap">{presentation.highlightLabel}</Badge>
+        ) : null
+      }
     </div>
 
-    {
-      isHighlighted && presentation.highlightLabel ? (
-        <Badge tone="mint">{presentation.highlightLabel}</Badge>
-      ) : null
-    }
+    <p class="mt-2 text-sm leading-relaxed text-ink-faint">{presentation.audience}</p>
   </div>
 
   <p class="mt-8 flex items-baseline gap-2">

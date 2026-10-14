@@ -10,140 +10,127 @@ const { class: className } = Astro.props;
 
 const t = getDictionary().flow;
 
-interface NodeSpec {
-  x: number;
-  y: number;
-  width: number;
-  title: string;
-  subtitle: string;
-  accent: 'neutral' | 'mint' | 'violet';
-}
+// Stage copy comes from the dictionary: the extension, the edge filter and the
+// delivery target. The SDK sits inside the extension, so it is not drawn twice.
+const SOURCE = t.nodes[0];
+const FILTER = t.nodes[2];
+const TARGET = t.nodes[3];
 
-// The chain steps down and to the right on purpose: a straight vertical stack
-// would read as a generic flowchart, the diagonal reads as a pipeline.
-// Geometry stays here; the labels come from the dictionary in order.
-const GEOMETRY = [
-  { x: 8, y: 20, width: 226, accent: 'neutral' },
-  { x: 62, y: 148, width: 246, accent: 'mint' },
-  { x: 116, y: 276, width: 266, accent: 'violet' },
-  { x: 170, y: 404, width: 242, accent: 'mint' },
-] as const;
+// Geometry. Six sessions enter on the left, pass through the filter bar and the
+// surviving lines converge on a single point, which is the logo mark as a map of
+// the product: many sources, one clean stream.
+const SOURCE_X = 32;
+const BAR_X = 214;
+const BAR_W = 8;
+const HUB_X = 452;
+const HUB_Y = 232;
+const HUB_R = 16;
+const COUNT = 6;
+// Sessions whose payload carries something the edge removes: their packet stops
+// at the filter and never reaches the other side.
+const BLOCKED = new Set([1, 4]);
+const PERIOD = 4.4;
 
-const NODES: NodeSpec[] = GEOMETRY.map((node, index) => ({
-  ...node,
-  title: t.nodes[index]?.title ?? '',
-  subtitle: t.nodes[index]?.subtitle ?? '',
-}));
+const lines = Array.from({ length: COUNT }, (_, i) => {
+  const y = 112 + i * 48;
+  const gateY = HUB_Y + (i - (COUNT - 1) / 2) * 28;
+  const hubY = HUB_Y + (i - (COUNT - 1) / 2) * 4.5;
+  const into = `M${SOURCE_X} ${y} C${SOURCE_X + 96} ${y} ${BAR_X - 96} ${gateY} ${BAR_X} ${gateY}`;
+  const out = `M${BAR_X + BAR_W} ${gateY} C${BAR_X + BAR_W + 112} ${gateY} ${HUB_X - HUB_R - 112} ${hubY} ${HUB_X - HUB_R} ${hubY}`;
+  const blocked = BLOCKED.has(i);
 
-const NODE_HEIGHT = 72;
+  return {
+    i,
+    y,
+    gateY,
+    blocked,
+    into,
+    out,
+    // One path per packet: in through the filter, and on if it is let through.
+    travel: blocked ? into : `${into} L${BAR_X + BAR_W} ${gateY} ${out.replace(/^M[^C]+/, '')}`.replace(/^/, ''),
+    begin: `${(i * 0.62).toFixed(2)}s`,
+  };
+});
 
-const ACCENTS = {
-  neutral: { stroke: 'rgba(255,255,255,0.12)', fill: 'rgba(255,255,255,0.03)', dot: '#98A2B3' },
-  mint: { stroke: 'rgba(53,196,166,0.35)', fill: 'rgba(53,196,166,0.06)', dot: '#52CDB2' },
-  violet: { stroke: 'rgba(58,143,203,0.4)', fill: 'rgba(58,143,203,0.07)', dot: '#6BAEE3' },
-} as const;
-
-/** Connector geometry between consecutive nodes: down, across, down. */
-function connectorPath(from: NodeSpec, to: NodeSpec): string {
-  const startX = from.x + 56;
-  const startY = from.y + NODE_HEIGHT;
-  const endX = to.x + 56;
-  const endY = to.y;
-  const midY = startY + (endY - startY) / 2;
-
-  return `M ${startX} ${startY} L ${startX} ${midY - 12} Q ${startX} ${midY} ${startX + 12} ${midY} L ${endX - 12} ${midY} Q ${endX} ${midY} ${endX} ${midY + 12} L ${endX} ${endY}`;
-}
-
-const EDGES = NODES.slice(0, -1).map((node, index) => ({
-  node,
-  index,
-  path: connectorPath(node, NODES[index + 1]!),
-  pathId: `flow-edge-${index}`,
-}));
+const barTop = HUB_Y - 112;
+const barHeight = 224;
 ---
 
-{/* The hero visual: the actual path a signal takes, drawn rather than
-    illustrated. Packets move along the connectors with SMIL so the animation
-    costs no JavaScript and pauses with the rest of the page. */}
-<div class={cn('relative', className)}>
-  <div class="glass-panel relative overflow-hidden rounded-card p-5">
-    <div class="mb-4 flex items-center justify-between">
-      <span class="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-ink-faint">{t.caption}</span>
-      <span class="inline-flex items-center gap-2 font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-mint-400">
-        <span class="relative flex h-1.5 w-1.5">
-          <span class="absolute inline-flex h-full w-full animate-status-ping rounded-full bg-mint-400"></span>
-          <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-mint-400"></span>
-        </span>
-        {t.live}
-      </span>
-    </div>
+{/* The hero visual. Packets travel along the lines with SMIL, so it costs no
+    JavaScript; they are hidden entirely when the visitor asks for reduced motion. */}
+<figure class={cn('relative m-0', className)}>
+  <div class="glass-panel overflow-hidden rounded-card p-4 sm:p-6">
+    <svg viewBox="0 0 520 460" class="h-auto w-full" role="img" aria-label={t.alt}>
+      <defs>
+        <linearGradient id="flow-out" x1={BAR_X + BAR_W} y1="0" x2={HUB_X - HUB_R} y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#35C4A6" stop-opacity="0.55" />
+          <stop offset="1" stop-color="#3A8FCB" stop-opacity="0.85" />
+        </linearGradient>
+      </defs>
 
-    <svg viewBox="0 0 420 500" class="h-auto w-full" role="img" aria-label={t.alt}>
-      {
-        EDGES.map(({ node, index, path, pathId }) => (
-          <g>
-            <path id={pathId} d={path} fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 5" />
+      {/* Stage labels, set once along the top. */}
+      <g font-family="var(--font-geist), system-ui, sans-serif">
+        <text x={SOURCE_X} y="34" font-size="15" font-weight="500" fill="#F5F7FA">{SOURCE?.title}</text>
+        <text x={SOURCE_X} y="54" font-size="12.5" fill="#98A2B3">{SOURCE?.subtitle}</text>
 
-            <text
-              x={node.x + 70}
-              y={node.y + NODE_HEIGHT + 34}
-              class="font-mono"
-              font-size="10"
-              letter-spacing="1.4"
-              fill="#7D8797"
-            >
-              {t.edges[index]?.toUpperCase()}
-            </text>
+        <text x={BAR_X - 18} y="34" font-size="15" font-weight="500" fill="#F5F7FA">{FILTER?.title}</text>
+        <text x={BAR_X - 18} y="54" font-size="12.5" fill="#98A2B3">{FILTER?.subtitle}</text>
 
-            {/* Two packets per edge, offset in time, so the line always
-                reads as moving without becoming a busy stream. */}
-            {[0, 1.6].map((offset) => (
-              <circle r="3" fill="#52CDB2">
-                <animateMotion dur="3.2s" repeatCount="indefinite" begin={`${index * 0.5 + offset}s`}>
-                  <mpath href={`#${pathId}`} />
-                </animateMotion>
-                <animate
-                  attributeName="opacity"
-                  values="0;1;1;0"
-                  keyTimes="0;0.12;0.88;1"
-                  dur="3.2s"
-                  repeatCount="indefinite"
-                  begin={`${index * 0.5 + offset}s`}
-                />
-              </circle>
-            ))}
-          </g>
-        ))
-      }
+        <text x={HUB_X + HUB_R + 12} y="34" text-anchor="end" font-size="15" font-weight="500" fill="#F5F7FA">{TARGET?.title}</text>
+        <text x={HUB_X + HUB_R + 12} y="54" text-anchor="end" font-size="12.5" fill="#98A2B3">{TARGET?.subtitle}</text>
+      </g>
 
-      {
-        NODES.map((node) => {
-          const accent = ACCENTS[node.accent];
+      {/* Lines in: raw sessions, neutral. */}
+      {lines.map((line) => <path d={line.into} fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="1.5" stroke-linecap="round" />)}
 
-          return (
-            <g>
-              <rect
-                x={node.x}
-                y={node.y}
-                width={node.width}
-                height={NODE_HEIGHT}
-                rx="12"
-                fill={accent.fill}
-                stroke={accent.stroke}
-                stroke-width="1"
-              />
-              <circle cx={node.x + 22} cy={node.y + 36} r="3.5" fill={accent.dot} />
-              <text x={node.x + 40} y={node.y + 31} font-size="15" fill="#FFFFFF" class="font-display">
-                {node.title}
-              </text>
-              <text x={node.x + 40} y={node.y + 50} font-size="12" fill="#98A2B3" class="font-mono">
-                {node.subtitle}
-              </text>
-            </g>
-          );
-        })
-      }
+      {/* Lines out: only what the filter lets through, in the brand gradient. */}
+      {lines.filter((line) => !line.blocked).map((line) => <path d={line.out} fill="none" stroke="url(#flow-out)" stroke-width="1.5" stroke-linecap="round" />)}
+
+      {/* Sources. */}
+      {lines.map((line) => <circle cx={SOURCE_X} cy={line.y} r="4" fill="#0E1218" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" />)}
+
+      {/* The filter bar. */}
+      <rect x={BAR_X} y={barTop} width={BAR_W} height={barHeight} rx="4" fill="#0E1218" stroke="rgba(255,255,255,0.22)" />
+      {lines.map((line) => <rect x={BAR_X + 1.5} y={line.gateY - 5} width={BAR_W - 3} height="10" rx="2" fill={line.blocked ? 'rgba(255,255,255,0.1)' : 'rgba(53,196,166,0.75)'} />)}
+
+      {/* The hub: the single point the stream resolves into. */}
+      <circle cx={HUB_X} cy={HUB_Y} r={HUB_R} fill="#0E1218" stroke="url(#flow-out)" stroke-width="1.5" />
+      <circle cx={HUB_X} cy={HUB_Y} r="5.5" fill="#52CDB2" />
+
+      {/* Packets. */}
+      <g class="flow-packets">
+        {
+          lines.map((line) => (
+            <circle r="3.4" fill="#98A2B3" opacity="0">
+              <animateMotion dur={`${PERIOD}s`} repeatCount="indefinite" begin={line.begin} path={line.travel} />
+              {line.blocked ? (
+                <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.06;0.46;0.5;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={line.begin} />
+              ) : (
+                <>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.06;0.94;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={line.begin} />
+                  <animate attributeName="fill" values="#98A2B3;#98A2B3;#52CDB2;#52CDB2" keyTimes="0;0.44;0.5;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={line.begin} />
+                </>
+              )}
+            </circle>
+          ))
+        }
+      </g>
+
+      {/* Legend. */}
+      <g font-family="var(--font-geist), system-ui, sans-serif" font-size="12.5" fill="#98A2B3">
+        <circle cx={SOURCE_X + 4} cy="424" r="3.4" fill="#98A2B3" />
+        <text x={SOURCE_X + 16} y="428.5">Raw events</text>
+        <circle cx={SOURCE_X + 120} cy="424" r="3.4" fill="#52CDB2" />
+        <text x={SOURCE_X + 132} y="428.5">Clean stream</text>
+      </g>
     </svg>
-
   </div>
-</div>
+</figure>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    .flow-packets {
+      display: none;
+    }
+  }
+</style>

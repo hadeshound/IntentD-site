@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Check, Zap } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 import Button from '@/components/ui/Button.astro';
 import { getDictionary } from '@/i18n';
@@ -8,8 +8,6 @@ import DataFlowDiagram from './DataFlowDiagram.astro';
 
 const t = getDictionary().hero;
 
-// The first point is the speed claim; the other two are compliance marks.
-const TRUST_ICONS = [Zap, Check, Check];
 ---
 
 {/* First viewport: the promise and its two actions on the left, the actual
@@ -33,20 +31,6 @@ const TRUST_ICONS = [Zap, Check, Check];
         <Button href="/contact?topic=buy_data" variant="secondary" size="lg">{t.ctaSecondary}</Button>
       </div>
 
-      <ul class="mt-10 flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-hairline pt-8">
-        {
-          t.trust.map((label, index) => {
-            const Icon = TRUST_ICONS[index] ?? Check;
-
-            return (
-              <li class="flex items-center gap-2.5 text-sm text-ink-muted">
-                <Icon className="h-4 w-4 text-mint-400" aria-hidden="true" />
-                {label}
-              </li>
-            );
-          })
-        }
-      </ul>
     </div>
 
     <div class="lg:col-span-5">

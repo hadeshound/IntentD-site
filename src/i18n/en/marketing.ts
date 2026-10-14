@@ -14,6 +14,24 @@ export const marketing = {
     ],
   },
 
+  calculator: {
+    title: 'Estimate what your users can earn you',
+    description:
+      'Move the sliders to see a monthly figure for your extension. Revenue only comes from users who accept the consent prompt.',
+    users: 'Monthly active users',
+    consent: 'Users who accept the consent prompt',
+    consentHint: 'Most extensions see between a third and a half of users opt in.',
+    rate: 'Payout rate',
+    rateUnit: 'per 1,000 consenting users per month',
+    rateNote: 'Example rate: edit it to match your agreement. Your final rate is confirmed when you connect an extension.',
+    resultLabel: 'Estimated earnings',
+    perMonth: 'per month',
+    perYear: 'Per year',
+    consenting: 'Consenting users',
+    disclaimer: 'An estimate for planning, not a guarantee. Actual payouts depend on the volume and quality of the data your users generate.',
+    cta: 'Get your SDK key',
+  },
+
   hero: {
     eyebrow: 'Infrastructure for intent data',
     titleBefore: 'Monetize browser extensions',
@@ -24,6 +42,13 @@ export const marketing = {
     ctaPrimary: 'Connect your extension',
     ctaSecondary: 'Talk to sales',
     trust: ['Five-minute integration', 'Manifest V3', 'Chrome Web Store safe'],
+    strip: [
+      { label: 'PII-free and GDPR-safe', tone: 'teal', icon: 'shield' },
+      { label: 'Manifest V3 ready', tone: 'amber', icon: 'chrome' },
+      { label: 'Chrome Web Store safe', tone: 'blue', icon: 'store' },
+      { label: '< 15 KB SDK', tone: 'cyan', icon: 'zap' },
+      { label: 'Five-minute integration', tone: 'violet', icon: 'timer' },
+    ],
   },
 
   flow: {

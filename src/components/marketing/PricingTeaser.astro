@@ -1,0 +1,65 @@
+---
+import Button from '@/components/ui/Button.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { getDictionary } from '@/i18n';
+import type { Plan } from '@/lib/api/plans';
+import { PLAN_ORDER, planPresentation } from '@/lib/content/pricing';
+import { formatPrice } from '@/lib/utils/format';
+
+interface Props {
+  plans: Plan[];
+}
+
+const { plans } = Astro.props;
+
+const dictionary = getDictionary();
+const t = dictionary.pricing;
+
+const ordered = [...plans].sort((a, b) => PLAN_ORDER.indexOf(a.code) - PLAN_ORDER.indexOf(b.code));
+---
+
+{/* The landing page only introduces the plans. The full cards, allowances and
+    the feature matrix live on /pricing, so the page that ranks for pricing
+    queries is the one place that carries them. */}
+<section id="pricing" class="relative border-t border-hairline py-20 lg:py-32">
+  <SectionHeading
+    class="shell"
+    title={`${t.titleBefore} ${t.titleAccent}`}
+    description={t.subtitle}
+  >
+    <div slot="aside" class="grid w-full gap-3 sm:grid-cols-2">
+      <Button href="/pricing">{t.compareAll}</Button>
+      <Button href="/contact?topic=enterprise" variant="secondary">{dictionary.nav.talkToSales}</Button>
+    </div>
+  </SectionHeading>
+
+  <div class="shell mt-14 lg:mt-16">
+    <div class="grid gap-px overflow-hidden rounded-card border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+      {
+        ordered.map((plan, index) => {
+          const presentation = planPresentation(plan.code);
+
+          return (
+            <Reveal delay={index * 70} class="bg-carbon-800">
+              <a
+                href="/pricing"
+                class="group flex h-full flex-col p-7 transition-colors duration-200 hover:bg-carbon-700/60 lg:p-8"
+              >
+                <h3 class="text-card-title">{plan.name}</h3>
+                <p class="mt-2 text-sm text-ink-muted">{presentation.audience}</p>
+
+                <p class="mt-8 flex items-baseline gap-2">
+                  <span class="font-display text-4xl font-semibold tracking-tight text-ink">
+                    {formatPrice(plan.price_cents, plan.currency)}
+                  </span>
+                  {plan.is_custom_priced ? null : <span class="text-sm text-ink-faint">{t.perMonth ?? '/ mo'}</span>}
+                </p>
+              </a>
+            </Reveal>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>

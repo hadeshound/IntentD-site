@@ -1,0 +1,199 @@
+---
+import { ArrowRight } from 'lucide-react';
+
+import Button from '@/components/ui/Button.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { getDictionary } from '@/i18n';
+import { DASHBOARD_LINKS } from '@/lib/config/urls';
+import { EARNINGS } from '@/lib/content/earnings';
+
+const t = getDictionary().calculator;
+---
+
+{/* Estimate only: the payout rate is an editable assumption, never a promise. */}
+<section id="calculator" class="relative border-t border-hairline py-20 lg:py-32">
+  <SectionHeading class="shell" title={t.title} description={t.description} />
+
+  <div
+    class="shell mt-14 lg:mt-16"
+    data-calculator
+    data-min-users={EARNINGS.MIN_USERS}
+    data-max-users={EARNINGS.MAX_USERS}
+    data-default-users={EARNINGS.DEFAULT_USERS}
+  >
+    <div class="grid gap-5 lg:grid-cols-12 lg:gap-6">
+      <div class="surface-card p-7 lg:col-span-7 lg:p-9">
+        <div class="space-y-9">
+          <div>
+            <div class="flex items-baseline justify-between gap-4">
+              <label for="calc-users" class="font-medium text-ink">{t.users}</label>
+              <output data-out-users class="font-display text-xl font-semibold text-ink tabular"></output>
+            </div>
+            <input id="calc-users" type="range" min="0" max="1000" step="1" data-in-users class="calc-range mt-4 w-full" />
+            <div class="mt-2 flex justify-between text-xs text-ink-faint">
+              <span>1K</span><span>10K</span><span>100K</span><span>1M</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-baseline justify-between gap-4">
+              <label for="calc-consent" class="font-medium text-ink">{t.consent}</label>
+              <output data-out-consent class="font-display text-xl font-semibold text-ink tabular"></output>
+            </div>
+            <input
+              id="calc-consent"
+              type="range"
+              min={EARNINGS.MIN_CONSENT}
+              max={EARNINGS.MAX_CONSENT}
+              step="1"
+              value={EARNINGS.DEFAULT_CONSENT}
+              data-in-consent
+              class="calc-range mt-4 w-full"
+            />
+            <p class="mt-3 text-sm text-ink-muted">{t.consentHint}</p>
+          </div>
+
+          <div>
+            <label for="calc-rate" class="font-medium text-ink">{t.rate}</label>
+            <div class="mt-3 flex items-center gap-3">
+              <span class="text-ink-muted">$</span>
+              <input
+                id="calc-rate"
+                type="number"
+                min="0"
+                step="0.1"
+                inputmode="decimal"
+                value={EARNINGS.RATE_PER_1000}
+                data-in-rate
+                class="w-28 rounded-control border border-hairline bg-white/[0.03] px-3.5 py-2.5 text-ink tabular focus:border-mint-500/60 focus:outline-none focus:ring-2 focus:ring-mint-400/50"
+              />
+              <span class="text-sm text-ink-muted">{t.rateUnit}</span>
+            </div>
+            <p class="mt-3 text-sm text-ink-faint">{t.rateNote}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-result flex flex-col rounded-card border border-mint-500/30 p-7 lg:col-span-5 lg:p-9">
+        <p class="text-sm font-medium text-mint-300">{t.resultLabel}</p>
+        <p class="mt-3 font-display text-5xl font-semibold tracking-tight text-ink tabular lg:text-6xl" data-out-month>$0</p>
+        <p class="mt-1 text-ink-muted">{t.perMonth}</p>
+
+        <dl class="mt-8 grid grid-cols-2 gap-6 border-t border-white/10 pt-7">
+          <div>
+            <dt class="text-sm text-ink-muted">{t.perYear}</dt>
+            <dd class="mt-1 font-display text-2xl font-semibold text-ink tabular" data-out-year>$0</dd>
+          </div>
+          <div>
+            <dt class="text-sm text-ink-muted">{t.consenting}</dt>
+            <dd class="mt-1 font-display text-2xl font-semibold text-ink tabular" data-out-consenting>0</dd>
+          </div>
+        </dl>
+
+        <p class="mt-6 text-sm text-ink-muted">{t.disclaimer}</p>
+
+        <div class="mt-auto pt-8">
+          <Button href={`${DASHBOARD_LINKS.register}?role=publisher`} size="lg" class="w-full">
+            {t.cta}
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .calc-result {
+    background:
+      radial-gradient(120% 90% at 0% 0%, rgba(53, 196, 166, 0.16), transparent 60%),
+      linear-gradient(160deg, #0f1c22 0%, #0b1118 100%);
+  }
+
+  .calc-range {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #35c4a6 var(--fill, 0%), rgba(255, 255, 255, 0.12) var(--fill, 0%));
+    outline: none;
+    cursor: pointer;
+  }
+
+  .calc-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 22px;
+    width: 22px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid #35c4a6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  .calc-range::-moz-range-thumb {
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid #35c4a6;
+  }
+
+  .calc-range:focus-visible {
+    outline: 2px solid #52cdb2;
+    outline-offset: 6px;
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-calculator]');
+
+  if (root) {
+    const minUsers = Number(root.dataset.minUsers);
+    const maxUsers = Number(root.dataset.maxUsers);
+    const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+
+    const usersIn = q<HTMLInputElement>('[data-in-users]');
+    const consentIn = q<HTMLInputElement>('[data-in-consent]');
+    const rateIn = q<HTMLInputElement>('[data-in-rate]');
+
+    const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+    const int = new Intl.NumberFormat('en-US');
+
+    // The slider is logarithmic: 1K to 1M reads evenly, and values snap to
+    // round numbers so the label never shows 47,318 users.
+    const toUsers = (pos: number) => {
+      const raw = minUsers * Math.pow(maxUsers / minUsers, pos / 1000);
+      const step = raw < 10_000 ? 500 : raw < 100_000 ? 5_000 : 25_000;
+      return Math.min(maxUsers, Math.max(minUsers, Math.round(raw / step) * step));
+    };
+    const toPos = (users: number) => Math.round((Math.log(users / minUsers) / Math.log(maxUsers / minUsers)) * 1000);
+
+    const fill = (el: HTMLInputElement) => {
+      const pct = ((Number(el.value) - Number(el.min)) / (Number(el.max) - Number(el.min))) * 100;
+      el.style.setProperty('--fill', `${pct}%`);
+    };
+
+    const compact = (n: number) => (n >= 1_000_000 ? '1M' : n >= 1000 ? `${n / 1000}K` : String(n));
+
+    const render = () => {
+      const users = toUsers(Number(usersIn.value));
+      const consent = Number(consentIn.value);
+      const rate = Math.max(0, Number(rateIn.value) || 0);
+      const consenting = Math.round((users * consent) / 100);
+      const month = (consenting / 1000) * rate;
+
+      q('[data-out-users]').textContent = int.format(users);
+      q('[data-out-consent]').textContent = `${consent}%`;
+      q('[data-out-month]').textContent = usd.format(month);
+      q('[data-out-year]').textContent = usd.format(month * 12);
+      q('[data-out-consenting]').textContent = int.format(consenting);
+      fill(usersIn);
+      fill(consentIn);
+      usersIn.setAttribute('aria-valuetext', `${compact(users)} users`);
+    };
+
+    usersIn.value = String(toPos(Number(root.dataset.defaultUsers) || 50_000));
+    [usersIn, consentIn, rateIn].forEach((el) => el.addEventListener('input', render));
+    render();
+  }
+</script>

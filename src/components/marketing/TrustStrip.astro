@@ -1,0 +1,39 @@
+---
+import { Globe, ShieldCheck, Store, Timer, Zap } from 'lucide-react';
+
+import { getDictionary } from '@/i18n';
+import { cn } from '@/lib/utils/cn';
+
+const t = getDictionary().hero;
+
+const ICONS = { shield: ShieldCheck, chrome: Globe, store: Store, zap: Zap, timer: Timer } as const;
+
+// One hue per fact, so the strip reads at a glance instead of as five identical ticks.
+const TONES = {
+  teal: 'bg-mint-500/20 text-mint-300',
+  amber: 'bg-amber-400/20 text-amber-300',
+  blue: 'bg-violet-500/25 text-violet-400',
+  cyan: 'bg-cyan-400/20 text-cyan-300',
+  violet: 'bg-indigo-400/22 text-indigo-300',
+} as const;
+---
+
+{/* Proof points under the hero: short, factual, each with its own icon colour. */}
+<section aria-label="Key facts" class="border-y border-hairline bg-white/[0.015]">
+  <ul class="shell flex flex-wrap items-center justify-center gap-x-10 gap-y-5 py-7">
+    {
+      t.strip.map((item) => {
+        const Icon = ICONS[item.icon as keyof typeof ICONS];
+
+        return (
+          <li class="flex items-center gap-3 text-[0.9375rem] font-medium text-ink/90">
+            <span class={cn('inline-flex h-10 w-10 items-center justify-center rounded-control', TONES[item.tone as keyof typeof TONES])}>
+              <Icon className="h-[1.15rem] w-[1.15rem]" aria-hidden="true" />
+            </span>
+            {item.label}
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>

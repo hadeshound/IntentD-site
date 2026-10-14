@@ -22,7 +22,7 @@ const hasDescription = Boolean(description) || Astro.slots.has('description');
     weight, the lead sits under it at a readable measure, and an optional aside
     (a pair of actions) aligns to the baseline on wide screens. */}
 <div class={cn('grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-12', className)}>
-  <div class="lg:col-span-8">
+  <div class="lg:col-span-7">
     <h2 id={id} class="text-section-title text-balance">
       {Astro.slots.has('title') ? <slot name="title" /> : title}
     </h2>
@@ -36,5 +36,5 @@ const hasDescription = Boolean(description) || Astro.slots.has('description');
     }
   </div>
 
-  {Astro.slots.has('aside') ? <div class="lg:col-span-4 lg:justify-self-end"><slot name="aside" /></div> : null}
+  {Astro.slots.has('aside') ? <div class="lg:col-span-5 lg:justify-self-end"><slot name="aside" /></div> : null}
 </div>
