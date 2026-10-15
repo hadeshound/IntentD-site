@@ -38,15 +38,9 @@ const wholeLine = `M${X1 + GAP} ${CY} H${X3 - GAP}`;
 
 const PERIOD = 4.4;
 
-// Packets cross the whole line. Some carry something the edge removes, so they
-// stop at the filter and never appear on the other side.
-const packets = [
-  { begin: 0, blocked: false },
-  { begin: 1.1, blocked: true },
-  { begin: 2.2, blocked: false },
-  { begin: 3.3, blocked: true },
-  { begin: 3.9, blocked: false },
-];
+// Every packet crosses the whole line: nothing is lost on the way. The filter
+// cleans the data, and that shows as the packet changing colour at the shield.
+const packets = [0, 0.9, 1.8, 2.7, 3.6];
 ---
 
 {/* The hero visual. Packets travel along the line with SMIL, so it costs no
@@ -72,17 +66,11 @@ const packets = [
     {/* Packets. */}
     <g class="flow-packets">
       {
-        packets.map((packet) => (
+        packets.map((begin) => (
           <circle r="4.5" fill="#E3EAF2" opacity="0">
-            <animateMotion dur={`${PERIOD}s`} repeatCount="indefinite" begin={`${packet.begin}s`} path={wholeLine} />
-            {packet.blocked ? (
-              <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.06;0.44;0.48;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={`${packet.begin}s`} />
-            ) : (
-              <>
-                <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.06;0.9;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={`${packet.begin}s`} />
-                <animate attributeName="fill" values="#E3EAF2;#E3EAF2;#7DF0D8;#7DF0D8" keyTimes="0;0.46;0.52;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={`${packet.begin}s`} />
-              </>
-            )}
+            <animateMotion dur={`${PERIOD}s`} repeatCount="indefinite" begin={`${begin}s`} path={wholeLine} />
+            <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.06;0.9;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={`${begin}s`} />
+            <animate attributeName="fill" values="#E3EAF2;#E3EAF2;#7DF0D8;#7DF0D8" keyTimes="0;0.46;0.52;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={`${begin}s`} />
           </circle>
         ))
       }
@@ -113,7 +101,7 @@ const packets = [
 <style>
   /* The drawing keeps its left edge and grows to the right, into the free space
      beside the shell, as far as the screen allows (never past the viewport). */
-  @media (min-width: 1024px) {
+  @media (min-width: 900px) {
     .flow-figure {
       width: calc(100% * 600 / 560);
       max-width: calc(100% + (100vw - min(84rem, 100vw)) / 2 + var(--shell-padding) - 1rem);

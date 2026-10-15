@@ -10,6 +10,10 @@ const config: Config = {
   content: ['./src/**/*.{astro,html,ts,tsx,js,jsx,md,mdx}'],
   theme: {
     extend: {
+      // The desktop layout starts at 900px, so a laptop zoomed to 200% still gets it.
+      screens: {
+        lg: '900px',
+      },
       colors: {
         void: {
           DEFAULT: '#080B10',

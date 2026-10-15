@@ -21,11 +21,18 @@
     scroll-padding-top: 6.5rem;
   }
 
+  /* While the mobile menu is open the page behind it stays put. */
+  html.menu-open,
+  html.menu-open body {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
   /* Small laptops: the interface scales with the screen instead of showing a
      desktop layout at a laptop's size. Everything is rem-based, so one rule
      resizes type and spacing together: 16px from 1920x1080 down to ~14.4px at
-     1213x555, never below 90%. Phones and tablets keep 16px. */
-  @media (min-width: 1024px) {
+     1213x555, never below 90%. Phones and small tablets keep 16px. */
+  @media (min-width: 900px) {
     html {
       font-size: clamp(90%, min(calc(72.9% + 0.226vw), 2.6vh), 100%);
     }

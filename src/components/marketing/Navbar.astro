@@ -128,56 +128,76 @@ const isActive = (href: string) => pathname === href;
       aria-label={t.a11y.openMenu}
       data-label-open={t.a11y.openMenu}
       data-label-close={t.a11y.closeMenu}
-      class="inline-flex h-11 w-11 items-center justify-center rounded-control text-ink transition-colors duration-200 hover:bg-white/5 lg:hidden"
+      class="-mr-2 inline-flex h-11 w-11 items-center justify-center text-ink transition-colors duration-200 hover:text-mint-300 focus-visible:text-mint-300 focus-visible:ring-0 focus-visible:ring-offset-0 lg:hidden"
     >
       <span data-icon-closed class="contents"><Menu className="h-5 w-5" aria-hidden="true" /></span>
       <span data-icon-open class="contents" hidden><X className="h-5 w-5" aria-hidden="true" /></span>
     </button>
   </nav>
 
-  <div id="mobile-navigation" data-mobile-nav hidden class="max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-hairline bg-void/95 backdrop-blur-xl lg:hidden">
-    <div class="shell space-y-6 py-6">
-      <ul class="space-y-6">
+  <div
+    id="mobile-navigation"
+    data-mobile-nav
+    hidden
+    class="fixed inset-x-0 top-[calc(4.5rem+1px)] flex h-[calc(100dvh-4.5rem-1px)] flex-col bg-void lg:hidden"
+  >
+    {/* The list scrolls by itself; the page behind it does not. */}
+    <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+      <ul class="shell divide-y divide-hairline py-2">
         {
           entries.map((entry) =>
             entry.kind === 'link' ? (
               <li>
-                <a
-                  href={entry.href}
-                  class="block rounded-control px-3 py-2.5 text-base font-medium text-ink transition-colors duration-200 hover:bg-white/5"
-                >
+                <a href={entry.href} class="flex min-h-14 items-center text-lg font-medium text-ink transition-colors duration-200 hover:text-mint-300">
                   {entry.label}
                 </a>
               </li>
             ) : (
-              <li>
-                <p class="px-3 text-sm font-medium text-ink-faint">{entry.label}</p>
-                <ul class="mt-2 space-y-1">
-                  {entry.items.map((item) => {
-                    const Icon = ICONS[item.icon];
+              <li data-mobile-group>
+                <button
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls={`mobile-${entry.id}`}
+                  data-mobile-trigger
+                  class="flex min-h-14 w-full items-center justify-between text-left text-lg font-medium text-ink transition-colors duration-200 hover:text-mint-300"
+                >
+                  {entry.label}
+                  <ChevronDown className="h-5 w-5 text-ink-muted transition-transform duration-300" data-mobile-chevron aria-hidden="true" />
+                </button>
 
-                    return (
-                      <li>
-                        <a href={item.href} class="flex items-start gap-3.5 rounded-control px-3 py-2.5 transition-colors duration-200 hover:bg-white/5">
-                          <Icon className={cn('mt-0.5 h-5 w-5 shrink-0', TONES[item.tone])} aria-hidden="true" />
-                          <span>
-                            <span class="block text-base text-ink">{item.title}</span>
-                            <span class="block text-sm text-ink-muted">{item.description}</span>
-                          </span>
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
+                <div id={`mobile-${entry.id}`} data-accordion-panel data-open="false" inert>
+                  <div>
+                    <ul class="space-y-1 pb-3">
+                      {entry.items.map((item) => {
+                        const Icon = ICONS[item.icon];
+
+                        return (
+                          <li>
+                            <a href={item.href} class="flex items-start gap-3.5 py-2.5 transition-colors duration-200 hover:text-mint-300">
+                              <Icon className={cn('mt-0.5 h-5 w-5 shrink-0', TONES[item.tone])} aria-hidden="true" />
+                              <span>
+                                <span class="block text-base text-ink">{item.title}</span>
+                                <span class="block text-sm text-ink-muted">{item.description}</span>
+                              </span>
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </div>
               </li>
             ),
           )
         }
       </ul>
+    </div>
 
-      <div class="flex flex-col gap-3 border-t border-hairline pt-6">
+    {/* The two account buttons stay pinned to the bottom of the sheet. */}
+    <div class="shrink-0 border-t border-hairline bg-void">
+      <div class="shell pb-[max(1rem,env(safe-area-inset-bottom))] pt-4">
         <div class="flex flex-col gap-3" data-auth-when="authenticated" hidden>
-          <p class="truncate px-3 text-sm text-ink-faint" data-auth-email></p>
+          <p class="truncate text-sm text-ink-faint" data-auth-email></p>
           <Button href={DASHBOARD_LINKS.home}>{t.nav.dashboard}</Button>
           <Button variant="secondary" data-auth-logout>{t.nav.logout}</Button>
         </div>
@@ -202,6 +222,9 @@ const isActive = (href: string) => pathname === href;
   const iconOpen = document.querySelector<HTMLElement>('[data-icon-open]');
 
   const SCROLLED = ['border-hairline', 'bg-void/70', 'backdrop-blur-xl'];
+  // While the sheet is open the header is solid and has no backdrop filter: a
+  // filter would turn the fixed sheet into a child of the header's box.
+  const SOLID = ['border-hairline', 'bg-void'];
 
   let closeMenus: () => void = () => {};
 
@@ -217,10 +240,12 @@ const isActive = (href: string) => pathname === href;
       // The header only grows a border once the page has moved, or while a
       // dropdown or the mobile sheet is open and needs a solid backdrop.
       const dropdownOpen = Boolean(header.querySelector('[data-nav-group][data-open="true"]'));
-      const isLifted = window.scrollY > 12 || isMenuOpen || dropdownOpen;
+      const isLifted = window.scrollY > 12 || dropdownOpen;
 
-      header.classList.toggle('border-transparent', !isLifted);
-      SCROLLED.forEach((token) => header.classList.toggle(token, isLifted));
+      header.classList.toggle('border-transparent', !(isLifted || isMenuOpen));
+      header.classList.remove(...SCROLLED, ...SOLID);
+      if (isMenuOpen) header.classList.add(...SOLID);
+      else if (isLifted) header.classList.add(...SCROLLED);
     };
 
     const setMenu = (open: boolean) => {
@@ -230,10 +255,32 @@ const isActive = (href: string) => pathname === href;
       toggle.setAttribute('aria-label', open ? labelClose : labelOpen);
       iconClosed.hidden = open;
       iconOpen.hidden = !open;
+      // The page behind the sheet must not scroll.
+      document.documentElement.classList.toggle('menu-open', open);
       paintSurface();
     };
 
     toggle.addEventListener('click', () => setMenu(!isMenuOpen));
+
+    // Groups in the sheet: closed by default, each opens and closes on its own.
+    header.querySelectorAll<HTMLElement>('[data-mobile-group]').forEach((group) => {
+      const trigger = group.querySelector<HTMLButtonElement>('[data-mobile-trigger]')!;
+      const panel = group.querySelector<HTMLElement>('[data-accordion-panel]')!;
+      const chevron = group.querySelector<HTMLElement>('[data-mobile-chevron]');
+
+      trigger.addEventListener('click', () => {
+        const open = trigger.getAttribute('aria-expanded') !== 'true';
+        trigger.setAttribute('aria-expanded', String(open));
+        panel.dataset.open = String(open);
+        panel.inert = !open;
+        chevron?.classList.toggle('rotate-180', open);
+      });
+    });
+
+    // Growing past the phone layout closes the sheet and frees the page.
+    window.matchMedia('(min-width: 900px)').addEventListener('change', (event) => {
+      if (event.matches) setMenu(false);
+    });
 
     // Desktop dropdowns.
     const groups = Array.from(header.querySelectorAll<HTMLElement>('[data-nav-group]'));
