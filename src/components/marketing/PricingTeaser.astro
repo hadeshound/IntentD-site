@@ -4,7 +4,7 @@ import Reveal from '@/components/ui/Reveal.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
 import { getDictionary } from '@/i18n';
 import type { Plan } from '@/lib/api/plans';
-import { PLAN_ORDER, planPresentation } from '@/lib/content/pricing';
+import { PLAN_ORDER } from '@/lib/content/pricing';
 import { formatPrice } from '@/lib/utils/format';
 
 interface Props {
@@ -26,7 +26,7 @@ const ordered = [...plans].sort((a, b) => PLAN_ORDER.indexOf(a.code) - PLAN_ORDE
   <SectionHeading
     class="shell"
     title={t.teaserTitle}
-    description={t.subtitle}
+    description={t.teaserBody}
   >
     <div slot="aside" class="grid w-full gap-3 sm:grid-cols-2">
       <Button href="/pricing">{t.compareAll}</Button>
@@ -38,7 +38,6 @@ const ordered = [...plans].sort((a, b) => PLAN_ORDER.indexOf(a.code) - PLAN_ORDE
     <div class="grid gap-px overflow-hidden rounded-card border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
       {
         ordered.map((plan, index) => {
-          const presentation = planPresentation(plan.code);
 
           return (
             <Reveal delay={index * 70} class="bg-carbon-800">
@@ -47,7 +46,9 @@ const ordered = [...plans].sort((a, b) => PLAN_ORDER.indexOf(a.code) - PLAN_ORDE
                 class="group flex h-full flex-col p-7 transition-colors duration-200 hover:bg-carbon-700/60 lg:p-8"
               >
                 <h3 class="text-card-title">{plan.name}</h3>
-                <p class="mt-2 text-sm text-ink-muted">{presentation.audience}</p>
+                <p class="mt-2 text-sm text-ink-muted">
+                  {plan.users_limit ? t.teaserAllowance.replace('{users}', plan.users_limit.toLocaleString('en-US')) : null}
+                </p>
 
                 <p class="mt-8 flex items-baseline gap-2">
                   <span class="font-display text-4xl font-semibold tracking-tight text-ink">

@@ -1,20 +1,21 @@
 /**
- * Assumptions behind the earnings calculator.
+ * Assumptions behind the profit calculator.
  *
- * Earnings are derived from the real subscription catalogue: each buyer plan
- * costs `price / active-user allowance` per user per month, and the publisher
- * earns a share of that for every consenting user.
+ * A developer pays a monthly subscription (Starter, Growth or Scale, priced by
+ * the number of monthly active users the extension may have) and earns from the
+ * consented data its users generate. The calculator shows income minus the plan.
  *
- * IMPORTANT: `DEFAULT_SHARE` is an EXAMPLE, not a published revenue share.
- * Replace it with the share from the publisher agreement before relying on the
- * calculator in marketing. The visitor can move it, and the page says the
- * result is an estimate.
+ * IMPORTANT: `DEFAULT_REVENUE_PER_USER` is an EXAMPLE, not a published figure.
+ * What a consenting user is worth depends on the developer's agreement, so the
+ * visitor sets it themselves, as with the subscription price in the Seadevil
+ * calculator. Replace the default with a realistic figure before relying on the
+ * calculator in marketing.
  */
 export const EARNINGS = {
-  /** Example publisher revenue share, in percent of the plan price per user. */
-  DEFAULT_SHARE: 50,
-  MIN_SHARE: 10,
-  MAX_SHARE: 90,
+  /** Example monthly income per consenting user, in USD. */
+  DEFAULT_REVENUE_PER_USER: 0.15,
+  MIN_REVENUE_PER_USER: 0,
+  MAX_REVENUE_PER_USER: 1,
   /** Share of active users who accept the consent prompt, in percent. */
   DEFAULT_CONSENT: 40,
   MIN_CONSENT: 10,

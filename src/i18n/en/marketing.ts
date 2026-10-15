@@ -24,12 +24,12 @@ export const marketing = {
       {
         question: 'Where does the income come from?',
         answer:
-          'From the subscriptions data buyers pay for access to the stream. You earn a share for every user of yours who accepts the consent prompt; users who decline send nothing and earn you nothing.',
+          'From the anonymised, consented signals your extension collects. The calculator asks for the income you expect per consenting user, because the final figure depends on your agreement. Users who decline send nothing.',
       },
       {
         question: 'Is this figure guaranteed?',
         answer:
-          'No. It is a planning estimate built from the current subscription prices. The revenue share shown is an example you can change, and the final share is confirmed when you connect an extension.',
+          'No. It is a planning tool. The plan prices are the current ones; the income per consenting user is your own assumption, and with a large plan and few users the result can be a loss.',
       },
       {
         question: 'What share of users usually accept?',
@@ -39,20 +39,24 @@ export const marketing = {
     ],
     title: 'Estimate what your users can earn you',
     description:
-      'Move the sliders to see a monthly figure for your extension. Revenue only comes from users who accept the consent prompt.',
+      'Pick a plan, set your active users, the consent rate and what a consenting user is worth to you, and see whether your extension makes a profit or a loss each month.',
     users: 'Monthly active users',
     consent: 'Users who accept the consent prompt',
     consentHint: 'Most extensions see between a third and a half of users opt in.',
-    plan: 'Data buyer subscription',
-    planHint: 'Buyers pay for access by subscription. Smaller plans cost more per user, so the same audience earns more on them.',
-    share: 'Your revenue share',
-    shareHint: 'Example share: move it to match your agreement. The final share is confirmed when you connect an extension.',
-    compareTitle: 'The same audience on each plan',
-    resultLabel: 'Estimated earnings',
+    plan: 'Your plan',
+    revenue: 'Income per consenting user',
+    revenueHint: 'Per month. An example figure: set what a consenting user is worth to you under your agreement.',
+    income: 'Income',
+    planCost: 'Plan',
+    firstYear: 'First year, after setup',
+    breakEven: 'Break-even',
+    payback: 'Setup pays back in',
+    compareTitle: 'Net result on each plan',
+    resultLabel: 'Estimated net result',
     perMonth: 'per month',
     perYear: 'Per year',
     consenting: 'Consenting users',
-    disclaimer: 'An estimate for planning, not a guarantee. Actual payouts depend on the volume and quality of the data your users generate.',
+    disclaimer: 'An estimate for planning, not a guarantee. Plan prices are current; the income per user is your own assumption, so the result can be a loss.',
     cta: 'Get your SDK key',
   },
 
@@ -120,13 +124,13 @@ export const marketing = {
       title: 'For extension developers',
       body: 'Earn from your users without banners. Add the lightweight SDK, collect consented signals in the background and get regular payouts.',
       cta: 'Explore the developer path',
-      secondary: 'Calculate earnings',
+      secondary: 'See plans',
     },
     buyers: {
       title: 'For data buyers',
       body: 'A PII-free stream of intent signals delivered as Parquet to your own bucket. Ask for a sample extract before you commit.',
       cta: 'Explore the data stream',
-      secondary: 'See pricing',
+      secondary: 'See the data schema',
     },
   },
 
@@ -145,8 +149,8 @@ export const marketing = {
     howTitle: 'How it works for developers',
     faqTitle: 'Questions from extension developers',
     band: {
-      title: 'See what your users could earn',
-      body: 'Estimate monthly revenue from your active users and the share who accept the consent prompt.',
+      title: 'Will a plan pay off for you?',
+      body: 'Pick a plan, set your active users and the consent rate, and see your monthly profit or loss.',
       cta: 'Open the calculator',
     },
     closing: {
@@ -162,7 +166,7 @@ export const marketing = {
     metaDescription:
       'A PII-free stream of anonymous intent signals from browser extensions, delivered as Parquet to your S3 or GCS bucket. See the use cases, plans and request a sample extract.',
     subtitle:
-      'Anonymous, aggregated intent signals from consented extension users, cleaned at the edge and delivered as Parquet to your own bucket.',
+      'Anonymous, aggregated intent signals from consented extension users, cleaned at the edge and delivered as Parquet to your own bucket. Data access is arranged individually with our team, not sold in fixed packages.',
     ctaPrimary: 'Request a sample',
     ctaSecondary: 'See the data schema',
     deliveryTitle: 'What you receive',
@@ -178,7 +182,7 @@ export const marketing = {
       title: 'Want to see the data first?',
       body: 'Tell us which verticals and what volume you care about, and we will prepare a sample Parquet file with the production structure.',
       primary: 'Request a sample',
-      secondary: 'Discuss Enterprise',
+      secondary: 'Talk to a manager',
     },
   },
 

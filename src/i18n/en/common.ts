@@ -36,7 +36,7 @@ export const common = {
       docs: 'Docs',
       developers: { title: 'For developers', description: 'Monetize your extension without ads' },
       buyers: { title: 'For data buyers', description: 'A PII-free intent data stream' },
-      calculator: { title: 'Earnings calculator', description: 'Estimate what your users can earn' },
+      calculator: { title: 'Profit calculator', description: 'Check whether a plan pays off' },
       api: { title: 'API and data format', description: 'Ingest API, event schema and delivery' },
       sdk: { title: 'SDK and consent', description: 'Integrate the SDK and the consent prompt' },
       bucket: { title: 'Bucket format v1', description: 'The open binary bucket specification' },
@@ -90,9 +90,4 @@ export const common = {
     formGeneric: 'Something went wrong. Please try again.',
   },
 
-  status: {
-    checking: 'Checking status',
-    operational: 'All systems operational',
-    degraded: 'Elevated response times',
-  },
 };

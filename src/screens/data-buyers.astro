@@ -3,13 +3,9 @@ import ContactSection from '@/components/marketing/ContactSection.astro';
 import DataBuyerUseCases from '@/components/marketing/DataBuyerUseCases.astro';
 import FaqSection from '@/components/marketing/FaqSection.astro';
 import HowItWorks from '@/components/marketing/HowItWorks.astro';
-import PricingTeaser from '@/components/marketing/PricingTeaser.astro';
 import Button from '@/components/ui/Button.astro';
 import { getDictionary } from '@/i18n';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import { fetchPlansSafe } from '@/lib/api/plans';
-
-const { plans } = await fetchPlansSafe();
 
 const dictionary = getDictionary();
 const t = dictionary.buyersPage;
@@ -68,7 +64,6 @@ const FIELDS = ['search_query', 'domain', 'clean_url', 'anon_uid', 'geo_country'
 
   <DataBuyerUseCases />
   <HowItWorks track="buyers" />
-  <PricingTeaser plans={plans} />
   <FaqSection items={questions} id="faq" title={t.faqTitle} />
 
   <ContactSection

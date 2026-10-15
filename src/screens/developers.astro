@@ -5,10 +5,14 @@ import AdvertisingIsDead from '@/components/marketing/AdvertisingIsDead.astro';
 import ContactSection from '@/components/marketing/ContactSection.astro';
 import FaqSection from '@/components/marketing/FaqSection.astro';
 import HowItWorks from '@/components/marketing/HowItWorks.astro';
+import PricingTeaser from '@/components/marketing/PricingTeaser.astro';
 import Button from '@/components/ui/Button.astro';
 import { getDictionary } from '@/i18n';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import { fetchPlansSafe } from '@/lib/api/plans';
 import { DASHBOARD_LINKS } from '@/lib/config/urls';
+
+const { plans } = await fetchPlansSafe();
 
 const dictionary = getDictionary();
 const t = dictionary.developersPage;
@@ -52,6 +56,7 @@ import './intentd.min.js';`;
 
   <AdvertisingIsDead />
   <HowItWorks track="publishers" />
+  <PricingTeaser plans={plans} />
 
   <ContactSection
     id="calculator-cta"
