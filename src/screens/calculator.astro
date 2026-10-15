@@ -2,7 +2,10 @@
 import EarningsCalculator from '@/components/marketing/EarningsCalculator.astro';
 import FaqSection from '@/components/marketing/FaqSection.astro';
 import { getDictionary } from '@/i18n';
+import { fetchPlansSafe } from '@/lib/api/plans';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+
+const { plans } = await fetchPlansSafe();
 
 const t = getDictionary().calculator;
 ---
@@ -15,7 +18,7 @@ const t = getDictionary().calculator;
     </div>
   </section>
 
-  <EarningsCalculator showHeading={false} />
+  <EarningsCalculator plans={plans} showHeading={false} />
 
   <FaqSection items={[...t.faq]} id="calculator-faq" title={t.faqTitle} />
 </MarketingLayout>

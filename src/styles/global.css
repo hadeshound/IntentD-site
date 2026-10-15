@@ -156,6 +156,30 @@
 }
 
 @layer utilities {
+  /* Header dropdowns: open on hover or focus, close on leave, Escape or an
+     outside click. The panel keeps a transparent bridge so the pointer can
+     travel from the trigger to the menu without it closing. */
+  [data-nav-panel] {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+      opacity 160ms ease-out,
+      transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s linear 220ms;
+  }
+
+  [data-nav-group][data-open='true'] [data-nav-panel] {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition-delay: 0s;
+  }
+
+  [data-nav-group][data-open='true'] [data-nav-chevron] {
+    transform: rotate(180deg);
+  }
+
   /* Accordion panel: animates its real height through grid rows, so the open
      and close are smooth for any content length. */
   [data-accordion-panel] {

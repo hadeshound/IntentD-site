@@ -1,19 +1,37 @@
 ---
-import { Menu, X } from 'lucide-react';
+import { Calculator, ChevronDown, Code2, Database, FileText, Menu, Package, Plug, Puzzle, X } from 'lucide-react';
 
 import Button from '@/components/ui/Button.astro';
 import Logo from '@/components/ui/Logo.astro';
 import { getDictionary } from '@/i18n';
 import { DASHBOARD_LINKS } from '@/lib/config/urls';
-import { primaryNav } from '@/lib/content/navigation';
+import { primaryNav, type NavIcon, type NavTone } from '@/lib/content/navigation';
 import { cn } from '@/lib/utils/cn';
 import { routePath } from '@/lib/utils/pathname';
 
-// Astro has no usePathname(); the current URL is on Astro.url, normalised to
-// the form the links in the navigation table use.
 const t = getDictionary();
 const pathname = routePath(Astro.url.pathname);
-const links = primaryNav();
+const entries = primaryNav();
+
+const ICONS: Record<NavIcon, typeof Puzzle> = {
+  puzzle: Puzzle,
+  database: Database,
+  calculator: Calculator,
+  code: Code2,
+  package: Package,
+  file: FileText,
+};
+
+// One hue per destination, on the bare icon.
+const TONES: Record<NavTone, string> = {
+  teal: 'text-mint-400',
+  blue: 'text-violet-400',
+  amber: 'text-amber-300',
+  cyan: 'text-cyan-300',
+};
+
+const linkBase = 'rounded-control px-3 py-2 text-[0.9375rem] transition-colors duration-200 hover:text-ink';
+const isActive = (href: string) => pathname === href;
 ---
 
 {/* Sticky glass header. It floats above the page instead of sitting in the
@@ -28,21 +46,61 @@ const links = primaryNav();
       <Logo />
     </a>
 
-    <ul class="hidden items-center gap-7 lg:flex">
+    <ul class="hidden items-center gap-1 lg:flex">
       {
-        links.map((link) => (
-          <li>
-            <a
-              href={link.href}
-              class={cn(
-                'text-sm transition-colors duration-200 hover:text-ink',
-                pathname === link.href ? 'text-ink' : 'text-ink-muted',
-              )}
-            >
-              {link.label}
-            </a>
-          </li>
-        ))
+        entries.map((entry) =>
+          entry.kind === 'link' ? (
+            <li>
+              <a
+                href={entry.href}
+                class={cn(linkBase, isActive(entry.href) ? 'text-ink' : 'text-ink-muted')}
+                aria-current={isActive(entry.href) ? 'page' : undefined}
+              >
+                {entry.label}
+              </a>
+            </li>
+          ) : (
+            <li class="relative" data-nav-group>
+              <button
+                type="button"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls={`menu-${entry.id}`}
+                data-nav-trigger
+                class={cn(
+                  linkBase,
+                  'inline-flex items-center gap-1.5',
+                  entry.items.some((item) => isActive(item.href)) ? 'text-ink' : 'text-ink-muted',
+                )}
+              >
+                {entry.label}
+                <ChevronDown className="h-4 w-4 transition-transform duration-200" data-nav-chevron aria-hidden="true" />
+              </button>
+
+              <div id={`menu-${entry.id}`} data-nav-panel class="absolute left-0 top-full z-10 pt-3">
+                <div class="w-[22rem] rounded-card border border-hairline-strong bg-carbon-800 p-2 shadow-lift">
+                  {entry.items.map((item) => {
+                    const Icon = ICONS[item.icon];
+
+                    return (
+                      <a
+                        href={item.href}
+                        class="group flex items-start gap-3.5 rounded-control p-3 transition-colors duration-150 hover:bg-white/[0.06] focus-visible:bg-white/[0.06]"
+                        aria-current={isActive(item.href) ? 'page' : undefined}
+                      >
+                        <Icon className={cn('mt-0.5 h-5 w-5 shrink-0', TONES[item.tone])} aria-hidden="true" />
+                        <span>
+                          <span class="block font-medium text-ink">{item.title}</span>
+                          <span class="mt-0.5 block text-sm text-ink-muted">{item.description}</span>
+                        </span>
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            </li>
+          ),
+        )
       }
     </ul>
 
@@ -55,7 +113,10 @@ const links = primaryNav();
 
       <div class="flex items-center gap-3" data-auth-when="anonymous">
         <Button href={DASHBOARD_LINKS.login} variant="ghost" size="sm">{t.nav.login}</Button>
-        <Button href={DASHBOARD_LINKS.register} size="sm">{t.nav.connectExtension}</Button>
+        <Button href={DASHBOARD_LINKS.register} size="sm">
+          <Plug className="h-4 w-4" aria-hidden="true" />
+          {t.nav.connectExtension}
+        </Button>
       </div>
     </div>
 
@@ -74,23 +135,45 @@ const links = primaryNav();
     </button>
   </nav>
 
-  <div id="mobile-navigation" data-mobile-nav hidden class="border-t border-hairline bg-void/95 backdrop-blur-xl lg:hidden">
+  <div id="mobile-navigation" data-mobile-nav hidden class="max-h-[calc(100vh-4.5rem)] overflow-y-auto border-t border-hairline bg-void/95 backdrop-blur-xl lg:hidden">
     <div class="shell space-y-6 py-6">
-      <ul class="space-y-1">
+      <ul class="space-y-6">
         {
-          links.map((link) => (
-            <li>
-              <a
-                href={link.href}
-                class="block rounded-control px-3 py-2.5 text-base text-ink-muted transition-colors duration-200 hover:bg-white/5 hover:text-ink"
-              >
-                {link.label}
-              </a>
-            </li>
-          ))
+          entries.map((entry) =>
+            entry.kind === 'link' ? (
+              <li>
+                <a
+                  href={entry.href}
+                  class="block rounded-control px-3 py-2.5 text-base font-medium text-ink transition-colors duration-200 hover:bg-white/5"
+                >
+                  {entry.label}
+                </a>
+              </li>
+            ) : (
+              <li>
+                <p class="px-3 text-sm font-medium text-ink-faint">{entry.label}</p>
+                <ul class="mt-2 space-y-1">
+                  {entry.items.map((item) => {
+                    const Icon = ICONS[item.icon];
+
+                    return (
+                      <li>
+                        <a href={item.href} class="flex items-start gap-3.5 rounded-control px-3 py-2.5 transition-colors duration-200 hover:bg-white/5">
+                          <Icon className={cn('mt-0.5 h-5 w-5 shrink-0', TONES[item.tone])} aria-hidden="true" />
+                          <span>
+                            <span class="block text-base text-ink">{item.title}</span>
+                            <span class="block text-sm text-ink-muted">{item.description}</span>
+                          </span>
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </li>
+            ),
+          )
         }
       </ul>
-
 
       <div class="flex flex-col gap-3 border-t border-hairline pt-6">
         <div class="flex flex-col gap-3" data-auth-when="authenticated" hidden>
@@ -101,7 +184,10 @@ const links = primaryNav();
 
         <div class="flex flex-col gap-3" data-auth-when="anonymous">
           <Button href={DASHBOARD_LINKS.login} variant="secondary">{t.nav.login}</Button>
-          <Button href={DASHBOARD_LINKS.register}>{t.nav.register}</Button>
+          <Button href={DASHBOARD_LINKS.register}>
+            <Plug className="h-4 w-4" aria-hidden="true" />
+            {t.nav.connectExtension}
+          </Button>
         </div>
       </div>
     </div>
@@ -117,6 +203,8 @@ const links = primaryNav();
 
   const SCROLLED = ['border-hairline', 'bg-void/70', 'backdrop-blur-xl'];
 
+  let closeMenus: () => void = () => {};
+
   if (header && toggle && sheet && iconClosed && iconOpen) {
     let isMenuOpen = false;
 
@@ -126,9 +214,10 @@ const links = primaryNav();
     const labelClose = toggle.dataset.labelClose ?? 'Close menu';
 
     const paintSurface = () => {
-      // The header only grows a border once the page has moved, or while the
-      // mobile sheet is open and needs to read as a solid panel.
-      const isLifted = window.scrollY > 12 || isMenuOpen;
+      // The header only grows a border once the page has moved, or while a
+      // dropdown or the mobile sheet is open and needs a solid backdrop.
+      const dropdownOpen = Boolean(header.querySelector('[data-nav-group][data-open="true"]'));
+      const isLifted = window.scrollY > 12 || isMenuOpen || dropdownOpen;
 
       header.classList.toggle('border-transparent', !isLifted);
       SCROLLED.forEach((token) => header.classList.toggle(token, isLifted));
@@ -146,10 +235,56 @@ const links = primaryNav();
 
     toggle.addEventListener('click', () => setMenu(!isMenuOpen));
 
+    // Desktop dropdowns.
+    const groups = Array.from(header.querySelectorAll<HTMLElement>('[data-nav-group]'));
+    const timers = new WeakMap<HTMLElement, number>();
+
+    const setGroup = (group: HTMLElement, open: boolean) => {
+      window.clearTimeout(timers.get(group));
+      group.dataset.open = String(open);
+      group.querySelector('[data-nav-trigger]')?.setAttribute('aria-expanded', String(open));
+      paintSurface();
+    };
+
+    closeMenus = () => groups.forEach((group) => setGroup(group, false));
+
+    groups.forEach((group) => {
+      const trigger = group.querySelector<HTMLButtonElement>('[data-nav-trigger]')!;
+
+      const openNow = () => {
+        groups.forEach((other) => other !== group && setGroup(other, false));
+        setGroup(group, true);
+      };
+      const closeSoon = () => {
+        timers.set(group, window.setTimeout(() => setGroup(group, false), 140));
+      };
+
+      group.addEventListener('mouseenter', openNow);
+      group.addEventListener('mouseleave', closeSoon);
+      group.addEventListener('focusin', openNow);
+      group.addEventListener('focusout', (event) => {
+        if (!group.contains(event.relatedTarget as Node | null)) closeSoon();
+      });
+      // Touch and keyboard: the trigger toggles as well.
+      trigger.addEventListener('click', () => {
+        if (group.dataset.open === 'true' && document.activeElement !== trigger) return;
+        setGroup(group, group.dataset.open !== 'true');
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!(event.target as HTMLElement).closest('[data-nav-group]')) closeMenus();
+    });
+
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && isMenuOpen) {
-        setMenu(false);
+      if (event.key !== 'Escape') return;
+
+      const open = groups.find((group) => group.dataset.open === 'true');
+      if (open) {
+        closeMenus();
+        open.querySelector<HTMLButtonElement>('[data-nav-trigger]')?.focus();
       }
+      if (isMenuOpen) setMenu(false);
     });
 
     window.addEventListener('scroll', paintSurface, { passive: true });

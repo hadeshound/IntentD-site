@@ -4,33 +4,71 @@ import { ArrowRight } from 'lucide-react';
 import Button from '@/components/ui/Button.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
 import { getDictionary } from '@/i18n';
+import type { Plan } from '@/lib/api/plans';
 import { DASHBOARD_LINKS } from '@/lib/config/urls';
 import { EARNINGS } from '@/lib/content/earnings';
+import { PLAN_ORDER } from '@/lib/content/pricing';
 
 interface Props {
+  /** Subscription catalogue: the tiers buyers pay for. */
+  plans: Plan[];
   /** The /calculator page renders its own h1, so it can suppress this heading. */
   showHeading?: boolean;
 }
 
-const { showHeading = true } = Astro.props;
+const { plans, showHeading = true } = Astro.props;
 
 const t = getDictionary().calculator;
+
+// The subscriptions that exist: price and allowance come from the live
+// catalogue, so the calculator can never drift from what buyers are billed.
+const tiers = [...plans]
+  .filter((plan) => !plan.is_custom_priced && plan.users_limit)
+  .sort((a, b) => PLAN_ORDER.indexOf(a.code) - PLAN_ORDER.indexOf(b.code))
+  .map((plan) => {
+    const monthly = plan.price_cents / 100;
+    const allowance = plan.users_limit as number;
+
+    return { code: plan.code, name: plan.name, monthly, allowance, perUser: monthly / allowance };
+  });
+
+const defaultTier = tiers.find((tier) => tier.code === 'growth') ?? tiers[0];
 ---
 
-{/* Estimate only: the payout rate is an editable assumption, never a promise. */}
-<section id="calculator" class={showHeading ? "relative border-t border-hairline py-20 lg:py-32" : "relative pb-20 lg:pb-32"}>
+{/* Estimate only: earnings follow from the buyer subscription tiers and a revenue
+    share that is an editable assumption, never a promise. */}
+<section id="calculator" class={showHeading ? 'relative border-t border-hairline py-20 lg:py-32' : 'relative pb-20 lg:pb-32'}>
   {showHeading ? <SectionHeading class="shell" title={t.title} description={t.description} /> : null}
 
   <div
     class={showHeading ? 'shell mt-14 lg:mt-16' : 'shell'}
     data-calculator
+    data-tiers={JSON.stringify(tiers)}
     data-min-users={EARNINGS.MIN_USERS}
     data-max-users={EARNINGS.MAX_USERS}
     data-default-users={EARNINGS.DEFAULT_USERS}
   >
     <div class="grid gap-5 lg:grid-cols-12 lg:gap-6">
       <div class="surface-card p-7 lg:col-span-7 lg:p-9">
-        <div class="space-y-9">
+        <fieldset>
+          <legend class="font-medium text-ink">{t.plan}</legend>
+          <div class="mt-4 grid grid-cols-3 gap-3">
+            {
+              tiers.map((tier) => (
+                <label class="cursor-pointer">
+                  <input type="radio" name="plan" value={tier.code} checked={tier.code === defaultTier?.code} class="peer sr-only" />
+                  <span class="flex h-full flex-col rounded-control border border-hairline-strong bg-white/[0.03] px-4 py-3 transition-colors duration-200 hover:border-white/30 peer-checked:border-mint-500/60 peer-checked:bg-mint-500/10 peer-focus-visible:ring-2 peer-focus-visible:ring-mint-400">
+                    <span class="font-medium text-ink">{tier.name}</span>
+                    <span class="mt-0.5 text-sm text-ink-muted tabular">${tier.monthly.toLocaleString('en-US')}/mo</span>
+                  </span>
+                </label>
+              ))
+            }
+          </div>
+          <p class="mt-3 text-sm text-ink-muted">{t.planHint}</p>
+        </fieldset>
+
+        <div class="mt-10 space-y-9 border-t border-hairline pt-9">
           <div>
             <div class="flex items-baseline justify-between gap-4">
               <label for="calc-users" class="font-medium text-ink">{t.users}</label>
@@ -61,36 +99,26 @@ const t = getDictionary().calculator;
           </div>
 
           <div>
-            <label for="calc-rate" class="font-medium text-ink">{t.rate}</label>
-            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-3">
-              <div class="calc-stepper inline-flex items-center rounded-control border border-hairline-strong bg-white/[0.03]">
-                <button type="button" data-step="-0.5" aria-label="Decrease rate" class="calc-step-btn">
-                  <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3 8h10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" /></svg>
-                </button>
-                <div class="flex items-center gap-1 px-2">
-                  <span class="text-ink-muted">$</span>
-                  <input
-                    id="calc-rate"
-                    type="text"
-                    inputmode="decimal"
-                    autocomplete="off"
-                    value={EARNINGS.RATE_PER_1000.toFixed(2)}
-                    data-in-rate
-                    class="w-16 bg-transparent py-2.5 text-center text-ink tabular focus:outline-none"
-                  />
-                </div>
-                <button type="button" data-step="0.5" aria-label="Increase rate" class="calc-step-btn">
-                  <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3 8h10M8 3v10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" /></svg>
-                </button>
-              </div>
-              <span class="text-sm text-ink-muted">{t.rateUnit}</span>
+            <div class="flex items-baseline justify-between gap-4">
+              <label for="calc-share" class="font-medium text-ink">{t.share}</label>
+              <output data-out-share class="font-display text-xl font-semibold text-ink tabular"></output>
             </div>
-            <p class="mt-3 text-sm text-ink-faint">{t.rateNote}</p>
+            <input
+              id="calc-share"
+              type="range"
+              min={EARNINGS.MIN_SHARE}
+              max={EARNINGS.MAX_SHARE}
+              step="5"
+              value={EARNINGS.DEFAULT_SHARE}
+              data-in-share
+              class="calc-range mt-4 w-full"
+            />
+            <p class="mt-3 text-sm text-ink-faint">{t.shareHint}</p>
           </div>
         </div>
       </div>
 
-      <div class="calc-result flex flex-col rounded-card border border-mint-500/30 p-7 lg:col-span-5 lg:p-9">
+      <div class="calc-result flex flex-col rounded-card border border-mint-500/30 p-7 lg:sticky lg:top-24 lg:col-span-5 lg:self-start lg:p-9">
         <p class="text-sm font-medium text-mint-300">{t.resultLabel}</p>
         <p class="mt-3 font-display text-5xl font-semibold tracking-tight text-ink tabular lg:text-6xl" data-out-month>$0</p>
         <p class="mt-1 text-ink-muted">{t.perMonth}</p>
@@ -106,7 +134,14 @@ const t = getDictionary().calculator;
           </div>
         </dl>
 
-        <p class="mt-6 text-sm text-ink-muted">{t.disclaimer}</p>
+        <p class="mt-6 border-t border-white/10 pt-6 text-sm text-ink-muted" data-out-basis></p>
+
+        <div class="mt-6 border-t border-white/10 pt-6">
+          <p class="text-sm font-medium text-ink">{t.compareTitle}</p>
+          <ul class="mt-3 space-y-2 text-sm" data-out-compare></ul>
+        </div>
+
+        <p class="mt-6 text-sm text-ink-faint">{t.disclaimer}</p>
 
         <div class="mt-auto pt-8">
           <Button href={`${DASHBOARD_LINKS.register}?role=publisher`} size="lg" class="w-full">
@@ -120,38 +155,6 @@ const t = getDictionary().calculator;
 </section>
 
 <style is:global>
-  .calc-stepper:focus-within {
-    border-color: rgba(82, 205, 178, 0.6);
-    box-shadow: 0 0 0 3px rgba(82, 205, 178, 0.18);
-  }
-
-  .calc-step-btn {
-    display: inline-flex;
-    height: 2.75rem;
-    width: 2.75rem;
-    align-items: center;
-    justify-content: center;
-    color: #98a2b3;
-    transition: color 150ms, background-color 150ms;
-  }
-
-  .calc-step-btn:first-child {
-    border-radius: 9px 0 0 9px;
-  }
-
-  .calc-step-btn:last-child {
-    border-radius: 0 9px 9px 0;
-  }
-
-  .calc-step-btn:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.07);
-  }
-
-  .calc-step-btn:active {
-    background: rgba(255, 255, 255, 0.12);
-  }
-
   .calc-result {
     background:
       radial-gradient(120% 90% at 0% 0%, rgba(53, 196, 166, 0.16), transparent 60%),
@@ -193,18 +196,28 @@ const t = getDictionary().calculator;
 </style>
 
 <script>
+  interface Tier {
+    code: string;
+    name: string;
+    monthly: number;
+    allowance: number;
+    perUser: number;
+  }
+
   const root = document.querySelector<HTMLElement>('[data-calculator]');
 
   if (root) {
+    const tiers = JSON.parse(root.dataset.tiers ?? '[]') as Tier[];
     const minUsers = Number(root.dataset.minUsers);
     const maxUsers = Number(root.dataset.maxUsers);
     const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
 
     const usersIn = q<HTMLInputElement>('[data-in-users]');
     const consentIn = q<HTMLInputElement>('[data-in-consent]');
-    const rateIn = q<HTMLInputElement>('[data-in-rate]');
+    const shareIn = q<HTMLInputElement>('[data-in-share]');
 
     const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+    const usd3 = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 3, maximumFractionDigits: 3 });
     const int = new Intl.NumberFormat('en-US');
 
     // The slider is logarithmic: 1K to 1M reads evenly, and values snap to
@@ -221,39 +234,53 @@ const t = getDictionary().calculator;
       el.style.setProperty('--fill', `${pct}%`);
     };
 
-    const compact = (n: number) => (n >= 1_000_000 ? '1M' : n >= 1000 ? `${n / 1000}K` : String(n));
+    const selected = (): Tier => {
+      const code = root.querySelector<HTMLInputElement>('input[name="plan"]:checked')?.value;
+      return tiers.find((tier) => tier.code === code) ?? tiers[0]!;
+    };
 
     const render = () => {
+      const tier = selected();
       const users = toUsers(Number(usersIn.value));
       const consent = Number(consentIn.value);
-      const rate = Math.max(0, parseFloat(rateIn.value.replace(',', '.')) || 0);
+      const share = Number(shareIn.value);
       const consenting = Math.round((users * consent) / 100);
-      const month = (consenting / 1000) * rate;
+      const earn = (t: Tier) => consenting * t.perUser * (share / 100);
+      const month = earn(tier);
 
       q('[data-out-users]').textContent = int.format(users);
       q('[data-out-consent]').textContent = `${consent}%`;
+      q('[data-out-share]').textContent = `${share}%`;
       q('[data-out-month]').textContent = usd.format(month);
       q('[data-out-year]').textContent = usd.format(month * 12);
       q('[data-out-consenting]').textContent = int.format(consenting);
+      q('[data-out-basis]').textContent =
+        `${tier.name} costs buyers ${usd.format(tier.monthly)} a month for up to ${int.format(tier.allowance)} active users, ` +
+        `which is ${usd3.format(tier.perUser)} per user. You earn ${share}% of that for every user who consents.`;
+
+      const list = q('[data-out-compare]');
+      list.innerHTML = '';
+      tiers.forEach((t) => {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between gap-3 ' + (t.code === tier.code ? 'text-ink' : 'text-ink-muted');
+        const name = document.createElement('span');
+        name.textContent = t.name;
+        const value = document.createElement('span');
+        value.className = 'tabular font-medium';
+        value.textContent = `${usd.format(earn(t))} / mo`;
+        li.append(name, value);
+        list.append(li);
+      });
+
       fill(usersIn);
       fill(consentIn);
-      usersIn.setAttribute('aria-valuetext', `${compact(users)} users`);
+      fill(shareIn);
+      usersIn.setAttribute('aria-valuetext', `${int.format(users)} users`);
     };
 
     usersIn.value = String(toPos(Number(root.dataset.defaultUsers) || 50_000));
-    [usersIn, consentIn, rateIn].forEach((el) => el.addEventListener('input', render));
-
-    const readRate = () => Math.max(0, parseFloat(rateIn.value.replace(',', '.')) || 0);
-    root.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const next = Math.max(0, Math.round((readRate() + Number(btn.dataset.step)) * 100) / 100);
-        rateIn.value = next.toFixed(2);
-        render();
-      });
-    });
-    rateIn.addEventListener('blur', () => {
-      rateIn.value = readRate().toFixed(2);
-    });
+    [usersIn, consentIn, shareIn].forEach((el) => el.addEventListener('input', render));
+    root.querySelectorAll('input[name="plan"]').forEach((el) => el.addEventListener('change', render));
     render();
   }
 </script>

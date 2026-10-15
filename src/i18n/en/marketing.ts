@@ -24,12 +24,12 @@ export const marketing = {
       {
         question: 'Where does the income come from?',
         answer:
-          'From the anonymised, PII-free signals of users who accept the consent prompt. Users who decline send nothing and earn you nothing.',
+          'From the subscriptions data buyers pay for access to the stream. You earn a share for every user of yours who accepts the consent prompt; users who decline send nothing and earn you nothing.',
       },
       {
         question: 'Is this figure guaranteed?',
         answer:
-          'No. It is a planning estimate. The payout rate shown is an example you can change, and the final rate is confirmed when you connect an extension.',
+          'No. It is a planning estimate built from the current subscription prices. The revenue share shown is an example you can change, and the final share is confirmed when you connect an extension.',
       },
       {
         question: 'What share of users usually accept?',
@@ -43,9 +43,11 @@ export const marketing = {
     users: 'Monthly active users',
     consent: 'Users who accept the consent prompt',
     consentHint: 'Most extensions see between a third and a half of users opt in.',
-    rate: 'Payout rate',
-    rateUnit: 'per 1,000 consenting users per month',
-    rateNote: 'Example rate: edit it to match your agreement. Your final rate is confirmed when you connect an extension.',
+    plan: 'Data buyer subscription',
+    planHint: 'Buyers pay for access by subscription. Smaller plans cost more per user, so the same audience earns more on them.',
+    share: 'Your revenue share',
+    shareHint: 'Example share: move it to match your agreement. The final share is confirmed when you connect an extension.',
+    compareTitle: 'The same audience on each plan',
     resultLabel: 'Estimated earnings',
     perMonth: 'per month',
     perYear: 'Per year',

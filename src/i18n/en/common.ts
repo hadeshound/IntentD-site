@@ -31,6 +31,16 @@ export const common = {
   },
 
   nav: {
+    menu: {
+      solutions: 'Solutions',
+      docs: 'Docs',
+      developers: { title: 'For developers', description: 'Monetize your extension without ads' },
+      buyers: { title: 'For data buyers', description: 'A PII-free intent data stream' },
+      calculator: { title: 'Earnings calculator', description: 'Estimate what your users can earn' },
+      api: { title: 'API and data format', description: 'Ingest API, event schema and delivery' },
+      sdk: { title: 'SDK and consent', description: 'Integrate the SDK and the consent prompt' },
+      bucket: { title: 'Bucket format v1', description: 'The open binary bucket specification' },
+    },
     pricing: 'Pricing',
     docs: 'Documentation',
     forPublishers: 'For developers',

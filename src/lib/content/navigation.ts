@@ -13,15 +13,51 @@ export interface NavLink {
   external?: boolean;
 }
 
-export function primaryNav(): NavLink[] {
+export type NavIcon = 'puzzle' | 'database' | 'calculator' | 'code' | 'package' | 'file';
+export type NavTone = 'teal' | 'blue' | 'amber' | 'cyan';
+
+export interface NavMenuItem {
+  title: string;
+  description: string;
+  href: string;
+  icon: NavIcon;
+  tone: NavTone;
+}
+
+export type NavEntry =
+  | { kind: 'link'; label: string; href: string }
+  | { kind: 'group'; id: string; label: string; items: NavMenuItem[] };
+
+/**
+ * The header: two menus that group the pages the footer used to hide
+ * (Solutions, Docs) and two direct links. Contact stays one click away.
+ */
+export function primaryNav(): NavEntry[] {
   const t = getDictionary().nav;
 
   return [
-    { label: t.pricing, href: '/pricing' },
-    { label: t.docs, href: '/docs/api' },
-    { label: t.forPublishers, href: '/developers' },
-    { label: t.forBuyers, href: '/data-buyers' },
-    { label: t.contact, href: '/contact' },
+    {
+      kind: 'group',
+      id: 'solutions',
+      label: t.menu.solutions,
+      items: [
+        { title: t.menu.developers.title, description: t.menu.developers.description, href: '/developers', icon: 'puzzle', tone: 'teal' },
+        { title: t.menu.buyers.title, description: t.menu.buyers.description, href: '/data-buyers', icon: 'database', tone: 'blue' },
+        { title: t.menu.calculator.title, description: t.menu.calculator.description, href: '/calculator', icon: 'calculator', tone: 'amber' },
+      ],
+    },
+    { kind: 'link', label: t.pricing, href: '/pricing' },
+    {
+      kind: 'group',
+      id: 'docs',
+      label: t.menu.docs,
+      items: [
+        { title: t.menu.api.title, description: t.menu.api.description, href: '/docs/api', icon: 'code', tone: 'cyan' },
+        { title: t.menu.sdk.title, description: t.menu.sdk.description, href: '/docs/sdk', icon: 'package', tone: 'teal' },
+        { title: t.menu.bucket.title, description: t.menu.bucket.description, href: '/docs/bucket-format-v1', icon: 'file', tone: 'blue' },
+      ],
+    },
+    { kind: 'link', label: t.contact, href: '/contact' },
   ];
 }
 

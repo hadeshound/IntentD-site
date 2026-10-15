@@ -1,5 +1,5 @@
 ---
-import { ArrowRight } from 'lucide-react';
+import { Plug } from 'lucide-react';
 
 import AdvertisingIsDead from '@/components/marketing/AdvertisingIsDead.astro';
 import ContactSection from '@/components/marketing/ContactSection.astro';
@@ -34,8 +34,8 @@ import './intentd.min.js';`;
 
         <div class="mt-10 flex flex-col gap-3 sm:flex-row">
           <Button href={`${DASHBOARD_LINKS.register}?role=publisher`} size="lg" class="sm:min-w-[15rem]">
+            <Plug className="h-[1.125rem] w-[1.125rem]" aria-hidden="true" />
             {t.ctaPrimary}
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Button>
           <Button href="/calculator" variant="secondary" size="lg">{t.ctaSecondary}</Button>
         </div>
@@ -66,7 +66,7 @@ import './intentd.min.js';`;
   <ContactSection
     title={t.closing.title}
     body={t.closing.body}
-    primary={{ label: t.closing.primary, href: `${DASHBOARD_LINKS.register}?role=publisher` }}
+    primary={{ label: t.closing.primary, href: `${DASHBOARD_LINKS.register}?role=publisher`, plug: true }}
     secondary={{ label: t.closing.secondary, href: '/contact?topic=monetize_extension' }}
   />
 </MarketingLayout>

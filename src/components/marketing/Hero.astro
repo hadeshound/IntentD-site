@@ -1,5 +1,5 @@
 ---
-import { ArrowRight } from 'lucide-react';
+import { Plug } from 'lucide-react';
 
 import Button from '@/components/ui/Button.astro';
 import { getDictionary } from '@/i18n';
@@ -24,8 +24,8 @@ const t = getDictionary().hero;
 
       <div class="mt-10 flex flex-col gap-3 sm:flex-row">
         <Button href={`${DASHBOARD_LINKS.register}?role=publisher`} size="lg" class="sm:min-w-[15rem]">
+          <Plug className="h-[1.125rem] w-[1.125rem]" aria-hidden="true" />
           {t.ctaPrimary}
-          <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Button>
 
         <Button href="/contact?topic=buy_data" variant="secondary" size="lg">{t.ctaSecondary}</Button>
