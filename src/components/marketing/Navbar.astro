@@ -141,7 +141,7 @@ const isActive = (href: string) => pathname === href;
     hidden
     class="fixed inset-x-0 top-[calc(4.5rem+1px)] flex h-[calc(100dvh-4.5rem-1px)] flex-col bg-void lg:hidden"
   >
-    {/* The list scrolls by itself; the page behind it does not. */}
+    {/* The whole sheet scrolls by itself, buttons included; the page behind it does not. */}
     <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
       <ul class="shell divide-y divide-hairline py-2">
         {
@@ -191,11 +191,8 @@ const isActive = (href: string) => pathname === href;
           )
         }
       </ul>
-    </div>
 
-    {/* The two account buttons stay pinned to the bottom of the sheet. */}
-    <div class="shrink-0 border-t border-hairline bg-void">
-      <div class="shell pb-[max(1rem,env(safe-area-inset-bottom))] pt-4">
+      <div class="shell border-t border-hairline pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6">
         <div class="flex flex-col gap-3" data-auth-when="authenticated" hidden>
           <p class="truncate text-sm text-ink-faint" data-auth-email></p>
           <Button href={DASHBOARD_LINKS.home}>{t.nav.dashboard}</Button>
@@ -211,6 +208,7 @@ const isActive = (href: string) => pathname === href;
         </div>
       </div>
     </div>
+
   </div>
 </header>
 
@@ -278,7 +276,7 @@ const isActive = (href: string) => pathname === href;
     });
 
     // Growing past the phone layout closes the sheet and frees the page.
-    window.matchMedia('(min-width: 900px)').addEventListener('change', (event) => {
+    window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
       if (event.matches) setMenu(false);
     });
 
