@@ -15,7 +15,7 @@ interface CheckoutViewProps {
  *
  * The heading is inside the guard rather than beside it, which is where the Next
  * page had it: an anonymous visitor on their way to the login screen should not
- * see a page about reserving a bucket for half a second.
+ * see a page about activating a plan for half a second.
  */
 export function CheckoutView({ planCode, loginHref }: CheckoutViewProps) {
   const t = getDictionary().checkout;

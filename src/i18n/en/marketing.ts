@@ -381,7 +381,7 @@ export const marketing = {
         buy_data: 'Buy data',
         monetize_extension: 'Monetize an extension',
         support: 'Technical support',
-        enterprise: 'Enterprise Data Pipeline',
+        enterprise: 'Enterprise plan',
       },
       errors: {
         nameMin: 'What should we call you?',

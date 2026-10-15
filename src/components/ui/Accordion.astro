@@ -42,18 +42,14 @@ const uid = `faq-${Math.random().toString(36).slice(2, 8)}`;
                 {item.question}
               </span>
 
-              <span
+              <ChevronDown
                 aria-hidden="true"
                 data-marker
-                class={cn(
-                  'flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-[transform,border-color,background-color,color] duration-300 ease-surface',
-                  isOpen
-                    ? 'rotate-180 border-mint-500/50 bg-mint-500/10 text-mint-400'
-                    : 'border-hairline-strong text-ink-muted group-hover:border-white/30 group-hover:text-ink',
+                className={cn(
+                  'h-6 w-6 shrink-0 transition-[transform,color] duration-300 ease-surface',
+                  isOpen ? 'rotate-180 text-mint-400' : 'text-ink-muted group-hover:text-ink',
                 )}
-              >
-                <ChevronDown className="h-4 w-4" />
-              </span>
+              />
             </button>
           </h3>
 
@@ -76,8 +72,8 @@ const uid = `faq-${Math.random().toString(36).slice(2, 8)}`;
 </div>
 
 <script>
-  const OPEN = ['rotate-180', 'border-mint-500/50', 'bg-mint-500/10', 'text-mint-400'];
-  const CLOSED = ['border-hairline-strong', 'text-ink-muted'];
+  const OPEN = ['rotate-180', 'text-mint-400'];
+  const CLOSED = ['text-ink-muted'];
 
   document.querySelectorAll<HTMLElement>('[data-accordion]').forEach((root) => {
     const triggers = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-accordion-trigger]'));

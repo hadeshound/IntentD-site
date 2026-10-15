@@ -79,16 +79,6 @@ export function formatEventsCompact(limit: number): string {
   return String(limit);
 }
 
-/**
- * The delivery cadence as a phrase rather than the raw enum the API sends.
- * An unknown value falls through to the code itself: loud enough to be caught
- * in review, and the card still renders.
- */
-export function formatDelivery(frequency: string): string {
-  const labels: Record<string, string> = getDictionary().pricing.deliveryLabels;
-  return labels[frequency] ?? frequency;
-}
-
 /** The SLA figure as published: a percentage, or the best-effort phrase. */
 export function formatSla(sla: string): string {
   if (!sla || sla === 'best_effort') {

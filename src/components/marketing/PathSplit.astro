@@ -8,8 +8,8 @@ import { getDictionary } from '@/i18n';
 const t = getDictionary().pathSplit;
 
 const PATHS = [
-  { data: t.developers, icon: Puzzle, tone: 'bg-mint-500/20 text-mint-300', href: '/developers', secondaryHref: '/pricing', accent: true },
-  { data: t.buyers, icon: Database, tone: 'bg-violet-500/25 text-violet-400', href: '/data-buyers', secondaryHref: '/docs/api', accent: false },
+  { data: t.developers, icon: Puzzle, tone: 'text-mint-400', href: '/developers', secondaryHref: '/pricing', accent: true },
+  { data: t.buyers, icon: Database, tone: 'text-violet-400', href: '/data-buyers', secondaryHref: '/docs/api', accent: false },
 ] as const;
 ---
 
@@ -27,9 +27,7 @@ const PATHS = [
           return (
             <Reveal delay={index * 90} class="flex">
               <article class={`surface-card flex w-full flex-col p-7 lg:p-10 ${path.accent ? 'surface-card-accent' : ''}`}>
-                <span class={`inline-flex h-12 w-12 items-center justify-center rounded-control ${path.tone}`}>
-                  <Icon className="h-6 w-6" aria-hidden="true" />
-                </span>
+                <Icon className={`h-8 w-8 ${path.tone}`} aria-hidden="true" />
 
                 <h3 class="mt-7 text-[1.625rem] leading-tight tracking-tight">{path.data.title}</h3>
                 <p class="mt-3.5 max-w-[46ch] text-ink-muted">{path.data.body}</p>

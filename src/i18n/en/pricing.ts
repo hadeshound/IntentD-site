@@ -1,19 +1,20 @@
 /**
- * Pricing copy. Prices, user allowances and delivery cadence are NOT here:
- * they come from GET /public/plans, so the page cannot advertise a number the
- * backend would not honour.
+ * Pricing copy. The plans are paid by extension developers and are priced by the
+ * number of monthly active users of the extension. Prices and user allowances
+ * are NOT here: they come from GET /public/plans, so the page cannot advertise
+ * a number the backend would not honour.
  */
 export const pricing = {
   pricing: {
-    metaTitle: 'Intent data stream pricing',
+    metaTitle: 'Plans for extension developers',
     metaDescription:
-      'Transparent pricing for the IntentD PII-free intent data stream: Starter, Growth, Scale and Enterprise plans. Compare user allowances, delivery cadence and field coverage, or talk to sales for a sample.',
+      'Starter, Growth, Scale and Enterprise plans for browser extension developers, priced by monthly active users. Compare user and event limits, support and SLA, or check whether a plan pays off in the calculator.',
     eyebrow: 'Pricing',
-    titleBefore: 'Transparent pricing for access to the',
-    titleAccent: 'data stream',
-    subtitle: 'Choose the volume of signals your analytics systems need.',
+    titleBefore: 'Plans priced by the size of your',
+    titleAccent: 'extension',
+    subtitle: 'Pick a plan by the number of monthly active users your extension has.',
     subtitleLong:
-      'Choose the volume of signals your analytics systems need. You pay for the stream, not for space in an interface.',
+      'Pick a plan by the number of monthly active users your extension has. Setup is a one-off fee, and the profit calculator shows whether a plan pays off for you.',
     compareAll: 'Compare every feature',
     teaserTitle: 'Plans for your extension',
     teaserBody: 'Pick a plan by the number of monthly active users your extension has.',
@@ -30,12 +31,6 @@ export const pricing = {
     customPrice: 'Custom',
 
     /** API enum values, spelled out for a reader. */
-    deliveryLabels: {
-      daily: 'Once a day',
-      hourly: 'Once an hour',
-      hourly_direct: 'Hourly + direct S3/GCS access',
-      realtime: 'Real-time Firehose',
-    },
     slaBestEffort: 'Best effort',
     supportLabels: {
       email: 'Email (24 h)',
@@ -46,7 +41,7 @@ export const pricing = {
 
     custom: {
       title: 'Need a non-standard volume?',
-      body: 'Raw Firehose, your own filtering rules and direct bucket access are discussed separately — together with the SLA and the legal side.',
+      body: 'Very large extensions, custom event volumes and the SLA are discussed separately, together with the legal side.',
       cta: 'Discuss Enterprise',
     },
 
@@ -57,42 +52,42 @@ export const pricing = {
 
     plans: {
       starter: {
-        audience: 'Startups and local marketing agencies',
+        audience: 'For small extensions',
         features: [
           'Up to 10,000 active users',
-          'Daily S3 export (Parquet)',
-          'Basic fields and PII cleaning',
-          'Email support',
+          'Up to 5 million events a month',
+          'Email support (24 h)',
+          'Best-effort availability',
         ],
         highlightLabel: '',
       },
       growth: {
-        audience: 'AdTech platforms and mid-size E-commerce',
+        audience: 'For growing extensions',
         features: [
           'Up to 100,000 active users',
-          'Hourly S3 sync',
-          'Extended fields (geo, device, lang)',
+          'Up to 30 million events a month',
           '24/7 priority support',
+          '99.5% availability SLA',
         ],
         highlightLabel: 'Most popular',
       },
       scale: {
-        audience: 'Large AdTech, DSP, DMP, CDP platforms',
+        audience: 'For large extensions',
         features: [
           'Up to 500,000 active users',
-          'Hourly + direct S3/GCS',
-          'Custom filters',
+          'Up to 150 million events a month',
           'Dedicated manager',
+          '99.7% availability SLA',
         ],
         highlightLabel: '',
       },
       enterprise: {
-        audience: 'Funds, research institutes, data brokers',
+        audience: 'For publishers with custom needs',
         features: [
-          'Unlimited event stream (Raw Firehose)',
-          'Custom filtering rules',
-          'Dedicated S3/GCS channel',
-          '99.9% SLA',
+          'Unlimited active users',
+          'Event volume agreed individually',
+          'Dedicated team',
+          '99.9% availability SLA',
         ],
         highlightLabel: '',
       },
@@ -105,7 +100,7 @@ export const pricing = {
       featureColumn: 'Feature',
       groups: [
         {
-          title: 'Volume and delivery',
+          title: 'Volume',
           rows: [
             {
               label: 'Active users per month',
@@ -117,60 +112,13 @@ export const pricing = {
               },
             },
             {
-              label: 'Delivery frequency',
+              label: 'Events per month',
               values: {
-                starter: 'Once a day',
-                growth: 'Once an hour',
-                scale: 'Hourly + direct access',
-                enterprise: 'Real-time Firehose',
+                starter: '5 million',
+                growth: '30 million',
+                scale: '150 million',
+                enterprise: 'Agreed individually',
               },
-            },
-            {
-              label: 'Format',
-              values: {
-                starter: 'Parquet + LZ4',
-                growth: 'Parquet + LZ4',
-                scale: 'Parquet + LZ4',
-                enterprise: 'Parquet + LZ4 / Raw JSONL',
-              },
-            },
-            {
-              label: 'Delivery into your own bucket',
-              values: { starter: false, growth: true, scale: true, enterprise: true },
-            },
-            {
-              label: 'S3 / GCS direct access',
-              values: { starter: false, growth: false, scale: true, enterprise: true },
-            },
-          ],
-        },
-        {
-          title: 'What the data contains',
-          rows: [
-            {
-              label: 'Cleaned URL and domain',
-              values: { starter: true, growth: true, scale: true, enterprise: true },
-            },
-            {
-              label: 'Search intents',
-              values: {
-                starter: 'Basic',
-                growth: 'Full + categories',
-                scale: 'Full + categories',
-                enterprise: 'Full + custom',
-              },
-            },
-            {
-              label: 'Geo and device type',
-              values: { starter: false, growth: true, scale: true, enterprise: true },
-            },
-            {
-              label: 'Custom filtering rules',
-              values: { starter: false, growth: false, scale: true, enterprise: true },
-            },
-            {
-              label: 'Schema extension',
-              values: { starter: false, growth: false, scale: true, enterprise: true },
             },
           ],
         },
@@ -215,59 +163,58 @@ export const pricing = {
       {
         question: 'How are active users counted?',
         answer:
-          'An active user is one installation that sent at least one cleaned event during the billing month. Installations that never sent anything are not counted.',
+          'An active user is one installation of your extension that sent at least one cleaned event during the billing month. Installations that never sent anything are not counted.',
       },
       {
         question: 'What happens if we go over the limit?',
         answer:
-          'The stream is not cut off. We record the overage and discuss moving to the next plan — nothing is charged retroactively.',
+          'The SDK keeps working. We record the overage and discuss moving to the next plan — nothing is charged retroactively.',
       },
       {
         question: 'Can we change plan mid-month?',
         answer:
-          'Yes. The change takes effect from the next delivery cycle, and access to the current volume is kept until the end of the paid period.',
+          'Yes. The change takes effect from the next billing cycle, and the current plan stays active until the end of the paid period.',
       },
       {
         question: 'What is the setup fee for?',
         answer:
-          'It covers one-off provisioning: a dedicated bucket, keys, delivery configuration and filtering rules. It is charged once, when the stream is opened.',
+          'It covers the one-off setup of your account and the SDK configuration for your extension. It is charged once, when the plan is activated.',
       },
       {
         question: 'How is the contract signed?',
         answer:
-          'After your request a manager sends the terms and the DPA. Enterprise contracts are agreed individually, including the SLA and the filtering rules.',
+          'After your request a manager sends the terms and the DPA. Enterprise contracts are agreed individually, including the SLA.',
       },
     ],
   },
 
   checkout: {
-    metaTitle: 'Access checkout',
-    metaDescription: 'Request access to the IntentD Data Stream.',
+    metaTitle: 'Activate a plan',
+    metaDescription: 'Request activation of an IntentD plan for your extension.',
     eyebrow: 'Checkout',
-    title: 'Request access to the IntentD Data Stream',
+    title: 'Request activation of your plan',
     intro:
-      'Once the request is confirmed, a dedicated S3 bucket of data will be reserved for your account.',
+      'Send the request and a manager will contact you to confirm the terms and activate the plan for your extension.',
     selectedPlan: 'Selected plan',
     loading: 'Loading the plan terms…',
     volume: 'Active users',
     usersPerMonth: 'users / mo',
     unlimited: 'Unlimited',
-    delivery: 'Delivery',
     audience: 'Built for',
     setupFee: 'Setup fee (one-off)',
     monthlyFee: 'Monthly fee',
     sla: 'SLA',
     support: 'Support',
     noCharge:
-      'Nothing is charged at this step. We record the request and get in touch to issue test keys.',
+      'Nothing is charged at this step. We record the request and get in touch to confirm the terms.',
     changePlan: 'Change plan',
     formTitle: 'Activation details',
     formIntroPrefix: 'The request will be attached to account',
     companyLabel: 'Company name',
     companyHintExisting: 'Saved in your profile — adjust it if needed.',
-    companyHintNew: 'A separate S3 bucket is reserved per company, so this field is required.',
+    companyHintNew: 'We need the company name to prepare the agreement, so this field is required.',
     notesLabel: 'Note for the manager',
-    notesPlaceholder: 'Verticals of interest, preferred start date, filtering requirements.',
+    notesPlaceholder: 'Your extension, its number of active users, preferred start date.',
     submit: 'Request activation',
     submitting: 'Sending the request…',
     guarantees: [
@@ -276,12 +223,12 @@ export const pricing = {
     ],
     enterprise: {
       title: 'Enterprise is arranged separately',
-      body: 'Raw Firehose, custom filters and the SLA are agreed individually, so this plan does not go through self-service checkout.',
+      body: 'Custom volumes and the SLA are agreed individually, so this plan does not go through self-service checkout.',
       cta: 'Contact sales',
     },
     noPlan: {
       title: 'No plan selected',
-      body: 'Go back to pricing and pick the stream volume you need.',
+      body: 'Go back to pricing and pick the plan for your extension.',
       cta: 'Go to pricing',
     },
     planError: {
@@ -293,7 +240,7 @@ export const pricing = {
     modal: {
       title: 'Request received',
       description:
-        'Thank you! Our manager will contact you at the email you gave to issue test API keys and configure delivery.',
+        'Thank you! Our manager will contact you at the email you gave to confirm the terms and activate your plan.',
       planLabel: 'Plan',
       contactLabel: 'Contact',
       home: 'Back to home',

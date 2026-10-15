@@ -17,7 +17,6 @@ import { useAuth } from '@/lib/hooks/useAuth';
 import { useZodForm } from '@/lib/hooks/useZodForm';
 import { checkoutSchema } from '@/lib/schemas/checkout';
 import {
-  formatDelivery,
   formatPrice,
   formatSla,
   formatSupport,
@@ -179,13 +178,6 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
                   </dd>
                 </div>
               )}
-
-              <div className="flex items-start justify-between gap-6">
-                <dt className="text-ink-muted">{t.delivery}</dt>
-                <dd className="max-w-[16rem] text-right text-ink">
-                  {formatDelivery(plan.delivery_frequency)}
-                </dd>
-              </div>
 
               <div className="flex items-start justify-between gap-6">
                 <dt className="text-ink-muted">{t.sla}</dt>
