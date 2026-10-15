@@ -30,7 +30,7 @@ npm run typecheck  # astro check без сборки
 
 | Переменная | Назначение |
 |---|---|
-| `PUBLIC_API_BASE_URL` | база API портала, например `https://api.intentd.io/v1` |
+| `PUBLIC_API_BASE_URL` | база API портала, например `https://api.intentd.net/v1` |
 | `PUBLIC_SITE_URL` | канонический origin сайта: метаданные, sitemap, robots |
 | `PUBLIC_DASHBOARD_URL` | origin кабинета: ссылки «Войти» и «Кабинет» |
 

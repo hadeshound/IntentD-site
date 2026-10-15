@@ -6,7 +6,7 @@
  * code. See .env.example for the local defaults.
  */
 interface ImportMetaEnv {
-  /** Base URL of the Go portal API, e.g. https://api.intentd.io/v1. */
+  /** Base URL of the Go portal API, e.g. https://api.intentd.net/v1. */
   readonly PUBLIC_API_BASE_URL?: string;
   /** Canonical origin of this site. */
   readonly PUBLIC_SITE_URL?: string;

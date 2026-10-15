@@ -155,7 +155,7 @@ import './intentd.min.js';
 // const status = await IntentD.status();
 // await IntentD.flush();`,
         request: `POST /v1/telemetry/bucket HTTP/1.1
-Host: api.intentd.io
+Host: api.intentd.net
 Content-Type: application/json
 X-API-Key: ext_...
 X-Timestamp: 1758000000
@@ -246,7 +246,7 @@ intentd-consent.js    that page's script (MV3 forbids inline scripts)`,
   "background": { "service_worker": "background.js", "type": "module" },
   "action": { "default_popup": "popup.html" },
   "permissions": ["storage", "webNavigation", "tabs", "alarms", "unlimitedStorage"],
-  "host_permissions": ["https://api.intentd.io/*"]
+  "host_permissions": ["https://api.intentd.net/*"]
 }`,
         background: `// background.js — first line, at the top level
 import './intentd.min.js';`,

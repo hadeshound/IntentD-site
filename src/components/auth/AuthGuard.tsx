@@ -19,7 +19,7 @@ interface AuthGuardProps {
  * after hydration. The page renders a waiting state until the silent refresh
  * resolves, then either shows the content or replaces the history entry with the
  * login screen. (An SSR cookie check was the other option, but the cookie is set
- * by api.intentd.io and never reaches this origin.)
+ * by api.intentd.net and never reaches this origin.)
  */
 export function AuthGuard({ children, loginHref }: AuthGuardProps) {
   const { status } = useAuth();

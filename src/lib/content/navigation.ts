@@ -102,6 +102,6 @@ export function footerColumns(): FooterColumn[] {
 }
 
 /** Single source for the support address used across pages. */
-export const SUPPORT_EMAIL = 'support@intentd.io';
-export const SALES_EMAIL = 'sales@intentd.io';
-export const PRIVACY_EMAIL = 'privacy@intentd.io';
+export const SUPPORT_EMAIL = 'support@intentd.net';
+export const SALES_EMAIL = 'sales@intentd.net';
+export const PRIVACY_EMAIL = 'privacy@intentd.net';
