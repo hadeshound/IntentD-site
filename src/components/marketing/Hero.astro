@@ -13,8 +13,8 @@ const t = getDictionary().hero;
 {/* First viewport: the promise and its two actions on the left, the actual
     path a signal takes on the right. The diagram is the proof, so it holds half
     the width and aligns to the headline instead of floating below it. */}
-<section class="relative overflow-hidden pb-16 pt-12 lg:pb-32 lg:pt-24">
-  <div class="shell grid items-center gap-14 lg:grid-cols-12 lg:gap-12">
+<section class="relative overflow-hidden pb-16 pt-12 lg:pb-28 lg:pt-20">
+  <div class="shell grid items-start gap-14 lg:grid-cols-12 lg:gap-12">
     <div class="lg:col-span-7">
       <h1 class="text-hero">
         {t.titleBefore} <span class="text-mint-400">{t.titleAccent}</span> {t.titleAfter}
@@ -33,7 +33,7 @@ const t = getDictionary().hero;
 
     </div>
 
-    <div class="lg:col-span-5">
+    <div class="lg:col-span-5 lg:mt-2">
       <DataFlowDiagram />
     </div>
   </div>

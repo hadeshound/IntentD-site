@@ -1,9 +1,9 @@
 /** Landing page, FAQ, contact page and the 404 screen. */
 export const marketing = {
   home: {
-    metaTitle: 'IntentD — intent data infrastructure for extensions and analytics teams',
+    metaTitle: 'IntentD — ad-free extension monetization, clean PII-free data for analytics',
     metaDescription:
-      'IntentD connects browser extension developers and analytics teams: a safe SDK that earns without ads, and a PII-free intent data stream delivered as Parquet.',
+      'IntentD connects browser extension developers and analytics teams: ad-free monetization through a safe SDK, and a clean, PII-free intent data stream delivered as Parquet.',
     keywords: [
       'intent data',
       'extension monetization',
@@ -62,11 +62,11 @@ export const marketing = {
 
   hero: {
     eyebrow: 'Infrastructure for intent data',
-    titleBefore: 'Intent data infrastructure',
-    titleAccent: 'for extension developers',
-    titleAfter: 'and analytics teams',
+    titleBefore: 'Ad-free extension monetization,',
+    titleAccent: 'clean PII-free data',
+    titleAfter: 'for analytics',
     subtitle:
-      'IntentD connects both sides of the market: an SDK that lets extension developers earn without ads, and a clean, PII-free data stream for analytics teams.',
+      'IntentD connects extension developers and analytics teams: ad-free monetization on one side and a clean, PII-free data stream on the other.',
     ctaPrimary: 'Connect your extension',
     ctaSecondary: 'Talk to sales',
     trust: ['Five-minute integration', 'Manifest V3', 'Chrome Web Store safe'],

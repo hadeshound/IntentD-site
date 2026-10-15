@@ -1,4 +1,6 @@
 ---
+import { Database, Puzzle, ShieldCheck } from 'lucide-react';
+
 import { getDictionary } from '@/i18n';
 import { cn } from '@/lib/utils/cn';
 
@@ -16,118 +18,124 @@ const SOURCE = t.nodes[0];
 const FILTER = t.nodes[2];
 const TARGET = t.nodes[3];
 
-// Geometry. Six sessions enter on the left, pass through the filter bar and the
-// surviving lines converge on a single point, which is the logo mark as a map of
-// the product: many sources, one clean stream.
-const SOURCE_X = 32;
-const BAR_X = 214;
-const BAR_W = 8;
-const HUB_X = 452;
-const HUB_Y = 232;
-const HUB_R = 16;
-const COUNT = 6;
-// Sessions whose payload carries something the edge removes: their packet stops
-// at the filter and never reaches the other side.
-const BLOCKED = new Set([1, 4]);
+// One straight flow, left to right, symmetric around the filter:
+// extension -> filter -> storage. Before the filter the line is dim (raw events);
+// after it carries the brand gradient (clean stream).
+const W = 600;
+const H = 222;
+const CY = 70;
+const ICON = 54;
+const GAP = 38;
+const STROKE = 5;
+
+const X1 = 104;
+const X2 = 300;
+const X3 = 496;
+
+const rawLine = `M${X1 + GAP} ${CY} H${X2 - GAP}`;
+const cleanLine = `M${X2 + GAP} ${CY} H${X3 - GAP}`;
+const wholeLine = `M${X1 + GAP} ${CY} H${X3 - GAP}`;
+
 const PERIOD = 4.4;
 
-const lines = Array.from({ length: COUNT }, (_, i) => {
-  const y = 112 + i * 48;
-  const gateY = HUB_Y + (i - (COUNT - 1) / 2) * 28;
-  const hubY = HUB_Y + (i - (COUNT - 1) / 2) * 4.5;
-  const into = `M${SOURCE_X} ${y} C${SOURCE_X + 96} ${y} ${BAR_X - 96} ${gateY} ${BAR_X} ${gateY}`;
-  const out = `M${BAR_X + BAR_W} ${gateY} C${BAR_X + BAR_W + 112} ${gateY} ${HUB_X - HUB_R - 112} ${hubY} ${HUB_X - HUB_R} ${hubY}`;
-  const blocked = BLOCKED.has(i);
-
-  return {
-    i,
-    y,
-    gateY,
-    blocked,
-    into,
-    out,
-    // One path per packet: in through the filter, and on if it is let through.
-    travel: blocked ? into : `${into} L${BAR_X + BAR_W} ${gateY} ${out.replace(/^M[^C]+/, '')}`.replace(/^/, ''),
-    begin: `${(i * 0.62).toFixed(2)}s`,
-  };
-});
-
-const barTop = HUB_Y - 112;
-const barHeight = 224;
+// Packets cross the whole line. Some carry something the edge removes, so they
+// stop at the filter and never appear on the other side.
+const packets = [
+  { begin: 0, blocked: false },
+  { begin: 1.1, blocked: true },
+  { begin: 2.2, blocked: false },
+  { begin: 3.3, blocked: true },
+  { begin: 3.9, blocked: false },
+];
 ---
 
-{/* The hero visual. Packets travel along the lines with SMIL, so it costs no
+{/* The hero visual. Packets travel along the line with SMIL, so it costs no
     JavaScript; they are hidden entirely when the visitor asks for reduced motion. */}
-<figure class={cn('relative m-0', className)}>
-  <div class="glass-panel overflow-hidden rounded-card p-4 sm:p-6">
-    <svg viewBox="0 0 520 460" class="h-auto w-full" role="img" aria-label={t.alt}>
-      <defs>
-        <linearGradient id="flow-out" x1={BAR_X + BAR_W} y1="0" x2={HUB_X - HUB_R} y2="0" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stop-color="#35C4A6" stop-opacity="0.55" />
-          <stop offset="1" stop-color="#3A8FCB" stop-opacity="0.85" />
-        </linearGradient>
-      </defs>
+<figure class={cn('flow-figure relative m-0', className)}>
+  <svg viewBox={`0 0 ${W} ${H}`} class="h-auto w-full" role="img" aria-label={t.alt}>
+    <defs>
+      <linearGradient id="flow-grad" x1={X2 + GAP} y1="0" x2={X3 - GAP} y2="0" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#35C4A6" />
+        <stop offset="1" stop-color="#3A8FCB" />
+      </linearGradient>
+    </defs>
 
-      {/* Stage labels, set once along the top. */}
-      <g font-family="var(--font-geist), system-ui, sans-serif">
-        <text x={SOURCE_X} y="34" font-size="15" font-weight="500" fill="#F5F7FA">{SOURCE?.title}</text>
-        <text x={SOURCE_X} y="54" font-size="12.5" fill="#98A2B3">{SOURCE?.subtitle}</text>
+    {/* The flow: dim before the filter, in the brand gradient after it. */}
+    <path d={rawLine} fill="none" stroke="rgba(199,208,219,0.38)" stroke-width={STROKE} stroke-linecap="round" />
+    <path d={cleanLine} fill="none" stroke="url(#flow-grad)" stroke-width={STROKE} stroke-linecap="round" />
 
-        <text x={BAR_X - 18} y="34" font-size="15" font-weight="500" fill="#F5F7FA">{FILTER?.title}</text>
-        <text x={BAR_X - 18} y="54" font-size="12.5" fill="#98A2B3">{FILTER?.subtitle}</text>
+    {/* The three stages, as bare icons on the line. */}
+    <Puzzle x={X1 - ICON / 2} y={CY - ICON / 2} size={ICON} strokeWidth={1.5} color="#C7D0DB" aria-hidden="true" />
+    <ShieldCheck x={X2 - ICON / 2} y={CY - ICON / 2} size={ICON} strokeWidth={1.5} color="#52CDB2" aria-hidden="true" />
+    <Database x={X3 - ICON / 2} y={CY - ICON / 2} size={ICON} strokeWidth={1.5} color="#6BAEE3" aria-hidden="true" />
 
-        <text x={HUB_X + HUB_R + 12} y="34" text-anchor="end" font-size="15" font-weight="500" fill="#F5F7FA">{TARGET?.title}</text>
-        <text x={HUB_X + HUB_R + 12} y="54" text-anchor="end" font-size="12.5" fill="#98A2B3">{TARGET?.subtitle}</text>
-      </g>
+    {/* Packets. */}
+    <g class="flow-packets">
+      {
+        packets.map((packet) => (
+          <circle r="4.5" fill="#E3EAF2" opacity="0">
+            <animateMotion dur={`${PERIOD}s`} repeatCount="indefinite" begin={`${packet.begin}s`} path={wholeLine} />
+            {packet.blocked ? (
+              <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.06;0.44;0.48;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={`${packet.begin}s`} />
+            ) : (
+              <>
+                <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.06;0.9;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={`${packet.begin}s`} />
+                <animate attributeName="fill" values="#E3EAF2;#E3EAF2;#7DF0D8;#7DF0D8" keyTimes="0;0.46;0.52;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={`${packet.begin}s`} />
+              </>
+            )}
+          </circle>
+        ))
+      }
+    </g>
 
-      {/* Lines in: raw sessions, neutral. */}
-      {lines.map((line) => <path d={line.into} fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="1.5" stroke-linecap="round" />)}
+    {/* Labels, centred under each stage. */}
+    <g font-family="var(--font-geist), system-ui, sans-serif" text-anchor="middle">
+      <text x={X1} y={CY + 64} class="flow-title" font-size="17" font-weight="500" fill="#F5F7FA">{SOURCE?.title}</text>
+      <text x={X1} y={CY + 84} class="flow-sub" font-size="14" fill="#98A2B3">{SOURCE?.subtitle}</text>
 
-      {/* Lines out: only what the filter lets through, in the brand gradient. */}
-      {lines.filter((line) => !line.blocked).map((line) => <path d={line.out} fill="none" stroke="url(#flow-out)" stroke-width="1.5" stroke-linecap="round" />)}
+      <text x={X2} y={CY + 64} class="flow-title" font-size="17" font-weight="500" fill="#F5F7FA">{FILTER?.title}</text>
+      <text x={X2} y={CY + 84} class="flow-sub" font-size="14" fill="#98A2B3">{FILTER?.subtitle}</text>
 
-      {/* Sources. */}
-      {lines.map((line) => <circle cx={SOURCE_X} cy={line.y} r="4" fill="#0E1218" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" />)}
+      <text x={X3} y={CY + 64} class="flow-title" font-size="17" font-weight="500" fill="#F5F7FA">{TARGET?.title}</text>
+      <text x={X3} y={CY + 84} class="flow-sub" font-size="14" fill="#98A2B3">{TARGET?.subtitle}</text>
+    </g>
 
-      {/* The filter bar. */}
-      <rect x={BAR_X} y={barTop} width={BAR_W} height={barHeight} rx="4" fill="#0E1218" stroke="rgba(255,255,255,0.22)" />
-      {lines.map((line) => <rect x={BAR_X + 1.5} y={line.gateY - 5} width={BAR_W - 3} height="10" rx="2" fill={line.blocked ? 'rgba(255,255,255,0.1)' : 'rgba(53,196,166,0.75)'} />)}
-
-      {/* The hub: the single point the stream resolves into. */}
-      <circle cx={HUB_X} cy={HUB_Y} r={HUB_R} fill="#0E1218" stroke="url(#flow-out)" stroke-width="1.5" />
-      <circle cx={HUB_X} cy={HUB_Y} r="5.5" fill="#52CDB2" />
-
-      {/* Packets. */}
-      <g class="flow-packets">
-        {
-          lines.map((line) => (
-            <circle r="3.4" fill="#98A2B3" opacity="0">
-              <animateMotion dur={`${PERIOD}s`} repeatCount="indefinite" begin={line.begin} path={line.travel} />
-              {line.blocked ? (
-                <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.06;0.46;0.5;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={line.begin} />
-              ) : (
-                <>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.06;0.94;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={line.begin} />
-                  <animate attributeName="fill" values="#98A2B3;#98A2B3;#52CDB2;#52CDB2" keyTimes="0;0.44;0.5;1" dur={`${PERIOD}s`} repeatCount="indefinite" begin={line.begin} />
-                </>
-              )}
-            </circle>
-          ))
-        }
-      </g>
-
-      {/* Legend. */}
-      <g font-family="var(--font-geist), system-ui, sans-serif" font-size="12.5" fill="#98A2B3">
-        <circle cx={SOURCE_X + 4} cy="424" r="3.4" fill="#98A2B3" />
-        <text x={SOURCE_X + 16} y="428.5">Raw events</text>
-        <circle cx={SOURCE_X + 120} cy="424" r="3.4" fill="#52CDB2" />
-        <text x={SOURCE_X + 132} y="428.5">Clean stream</text>
-      </g>
-    </svg>
-  </div>
+    {/* Legend, centred under the whole picture. */}
+    <g class="flow-legend" font-family="var(--font-geist), system-ui, sans-serif" font-size="14" fill="#98A2B3">
+      <circle cx={X2 - 108} cy="196" r="4" fill="#E3EAF2" />
+      <text x={X2 - 96} y="201">Raw events</text>
+      <circle cx={X2 + 20} cy="196" r="4" fill="#52CDB2" />
+      <text x={X2 + 32} y="201">Clean stream</text>
+    </g>
+  </svg>
 </figure>
 
 <style>
+  /* The drawing keeps its left edge and grows to the right, into the free space
+     beside the shell, as far as the screen allows (never past the viewport). */
+  @media (min-width: 1024px) {
+    .flow-figure {
+      width: calc(100% * 600 / 560);
+      max-width: calc(100% + (100vw - min(84rem, 100vw)) / 2 + var(--shell-padding) - 1rem);
+    }
+  }
+
+  /* On a phone the whole drawing is shown at about 58 percent, so the labels are
+     set larger there, and the second line of each label is dropped. */
+  @media (max-width: 639px) {
+    .flow-title {
+      font-size: 22px;
+    }
+
+    .flow-sub {
+      display: none;
+    }
+
+    .flow-legend {
+      font-size: 20px;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .flow-packets {
       display: none;
