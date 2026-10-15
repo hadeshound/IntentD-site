@@ -46,6 +46,8 @@ const config: Config = {
         mono: ['var(--font-geist-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       fontSize: {
+        // Never below 13px at full size, so the laptop scaling still leaves 11.5px+.
+        xs: ['0.8125rem', { lineHeight: '1.25rem' }],
         // Role scale (Geist, one family). Display is capped at 5rem; every
         // role scales with the viewport between a phone and a wide desktop.
         hero: ['clamp(2.5rem, 1rem + 4.4vw, 4.5rem)', { lineHeight: '1.02', letterSpacing: '-0.035em' }],

@@ -103,12 +103,12 @@ const errors = ingestErrors();
 
     <dl class="mt-8 grid gap-4 sm:grid-cols-2">
       <div class="surface-card p-5">
-        <dt class="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-ink-faint">{t.ingest.baseUrl}</dt>
+        <dt class="font-mono text-[0.8125rem] uppercase tracking-[0.16em] text-ink-faint">{t.ingest.baseUrl}</dt>
         <dd class="mt-2 break-all font-mono text-sm text-mint-300">https://api.intentd.io/v1</dd>
       </div>
 
       <div class="surface-card p-5">
-        <dt class="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-ink-faint">{t.ingest.auth}</dt>
+        <dt class="font-mono text-[0.8125rem] uppercase tracking-[0.16em] text-ink-faint">{t.ingest.auth}</dt>
         <dd class="mt-2 font-mono text-sm text-ink-muted">{t.ingest.authValue}</dd>
       </div>
     </dl>
@@ -204,7 +204,7 @@ const errors = ingestErrors();
                   {field.description}
                   {
                     field.tier ? (
-                      <span class="ml-2 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-violet-400">
+                      <span class="ml-2 font-mono text-[0.8125rem] uppercase tracking-[0.14em] text-violet-400">
                         {field.tier}+
                       </span>
                     ) : null
@@ -237,7 +237,7 @@ const errors = ingestErrors();
       {
         DELIVERY_FACTS.map((item) => (
           <div class="surface-card p-5">
-            <dt class="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-ink-faint">{item.term}</dt>
+            <dt class="font-mono text-[0.8125rem] uppercase tracking-[0.16em] text-ink-faint">{item.term}</dt>
             <dd class="mt-2 font-display text-lg text-ink">{item.value}</dd>
           </div>
         ))

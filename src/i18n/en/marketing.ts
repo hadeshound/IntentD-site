@@ -62,11 +62,11 @@ export const marketing = {
 
   hero: {
     eyebrow: 'Infrastructure for intent data',
-    titleBefore: 'Ad-free extension monetization,',
-    titleAccent: 'clean PII-free data',
+    titleBefore: 'Ad‑free extension monetization,',
+    titleAccent: 'clean PII‑free data',
     titleAfter: 'for analytics',
     subtitle:
-      'IntentD connects extension developers and analytics teams: ad-free monetization on one side and a clean, PII-free data stream on the other.',
+      'IntentD connects extension developers and analytics teams: ad‑free monetization on one side and a clean, PII‑free data stream on the other.',
     ctaPrimary: 'Connect your extension',
     ctaSecondary: 'Talk to sales',
     trust: ['Five-minute integration', 'Manifest V3', 'Chrome Web Store safe'],

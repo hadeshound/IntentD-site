@@ -40,7 +40,7 @@ const {
     <div class="hairline-grid-overlay"></div>
     <AmbientGlow class="-left-24 top-0 h-96 w-96" drift />
 
-    <div class="shell grid gap-10 lg:grid-cols-12">
+    <div class="shell grid grid-cols-1 gap-10 lg:grid-cols-12">
       <div class="lg:col-span-8">
         <p class="flex items-center gap-3">
           <span class="eyebrow">{eyebrow}</span>
@@ -56,12 +56,12 @@ const {
     </div>
   </section>
 
-  <div class="shell grid gap-12 pb-24 lg:grid-cols-12 lg:gap-10 lg:pb-32">
+  <div class="shell grid grid-cols-1 gap-12 pb-24 lg:grid-cols-12 lg:gap-10 lg:pb-32">
     {/* Sticky table of contents. Real anchors, so the page is usable with
         JavaScript disabled and each section is linkable. */}
     <nav aria-label={t.a11y.docsContents} class="lg:col-span-3">
       <div class="lg:sticky lg:top-28">
-        <p class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">
+        <p class="font-mono text-[0.8125rem] uppercase tracking-[0.18em] text-ink-faint">
           {t.docs.layout.contents}
         </p>
 
@@ -76,7 +76,7 @@ const {
                   <span class="font-mono text-xs text-ink-faint">{String(index + 1).padStart(2, '0')}</span>
                   <span>
                     {section.label}
-                    <span class="mt-0.5 block font-mono text-[0.625rem] uppercase tracking-[0.14em] text-ink-faint">
+                    <span class="mt-0.5 block font-mono text-[0.8125rem] uppercase tracking-[0.14em] text-ink-faint">
                       {section.audience}
                     </span>
                   </span>
@@ -88,7 +88,7 @@ const {
       </div>
     </nav>
 
-    <div class="space-y-20 lg:col-span-8 lg:col-start-5">
+    <div class="min-w-0 space-y-20 lg:col-span-8 lg:col-start-5">
       <slot />
     </div>
   </div>

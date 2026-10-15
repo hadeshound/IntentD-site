@@ -42,7 +42,7 @@ const isActive = (href: string) => pathname === href;
   class="fixed inset-x-0 top-0 z-50 border-b border-transparent transition-[background-color,border-color,backdrop-filter] duration-300"
 >
   <nav class="shell flex h-18 items-center justify-between gap-6" aria-label={t.a11y.primaryNav}>
-    <a href="/" class="rounded-control" aria-label={t.a11y.homeLink}>
+    <a href="/" class="inline-flex min-h-11 items-center rounded-control" aria-label={t.a11y.homeLink}>
       <Logo />
     </a>
 
@@ -128,14 +128,14 @@ const isActive = (href: string) => pathname === href;
       aria-label={t.a11y.openMenu}
       data-label-open={t.a11y.openMenu}
       data-label-close={t.a11y.closeMenu}
-      class="rounded-control p-2 text-ink transition-colors duration-200 hover:bg-white/5 lg:hidden"
+      class="inline-flex h-11 w-11 items-center justify-center rounded-control text-ink transition-colors duration-200 hover:bg-white/5 lg:hidden"
     >
       <span data-icon-closed class="contents"><Menu className="h-5 w-5" aria-hidden="true" /></span>
       <span data-icon-open class="contents" hidden><X className="h-5 w-5" aria-hidden="true" /></span>
     </button>
   </nav>
 
-  <div id="mobile-navigation" data-mobile-nav hidden class="max-h-[calc(100vh-4.5rem)] overflow-y-auto border-t border-hairline bg-void/95 backdrop-blur-xl lg:hidden">
+  <div id="mobile-navigation" data-mobile-nav hidden class="max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-hairline bg-void/95 backdrop-blur-xl lg:hidden">
     <div class="shell space-y-6 py-6">
       <ul class="space-y-6">
         {
@@ -238,10 +238,12 @@ const isActive = (href: string) => pathname === href;
     // Desktop dropdowns.
     const groups = Array.from(header.querySelectorAll<HTMLElement>('[data-nav-group]'));
     const timers = new WeakMap<HTMLElement, number>();
+    const openedAt = new WeakMap<HTMLElement, number>();
 
     const setGroup = (group: HTMLElement, open: boolean) => {
       window.clearTimeout(timers.get(group));
       group.dataset.open = String(open);
+      if (open) openedAt.set(group, Date.now());
       group.querySelector('[data-nav-trigger]')?.setAttribute('aria-expanded', String(open));
       paintSurface();
     };
@@ -267,7 +269,9 @@ const isActive = (href: string) => pathname === href;
       });
       // Touch and keyboard: the trigger toggles as well.
       trigger.addEventListener('click', () => {
-        if (group.dataset.open === 'true' && document.activeElement !== trigger) return;
+        // A tap fires mouseenter, then focus, then click: the click must not close
+        // the menu the same tap just opened.
+        if (group.dataset.open === 'true' && Date.now() - (openedAt.get(group) ?? 0) < 450) return;
         setGroup(group, group.dataset.open !== 'true');
       });
     });

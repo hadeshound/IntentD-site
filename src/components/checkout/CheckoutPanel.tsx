@@ -138,7 +138,7 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
 
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-mint-400">
+                <p className="font-mono text-[0.8125rem] uppercase tracking-[0.16em] text-mint-400">
                   {t.selectedPlan}
                 </p>
                 <h2 className="mt-3 font-display text-2xl text-ink">{plan.name}</h2>

@@ -66,7 +66,7 @@ const t = getDictionary();
 <div class="shell grid gap-12 pb-24 lg:grid-cols-12 lg:gap-10 lg:pb-32">
   <nav aria-label={t.a11y.legalSections} class="lg:col-span-3">
     <div class="lg:sticky lg:top-28">
-      <p class="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-faint">{t.legal.contents}</p>
+      <p class="font-mono text-[0.8125rem] uppercase tracking-[0.18em] text-ink-faint">{t.legal.contents}</p>
 
       <ol class="mt-5 space-y-1">
         {
@@ -74,7 +74,7 @@ const t = getDictionary();
             <li>
               <a
                 href={`#${section.id}`}
-                class="flex gap-3 rounded-control px-2.5 py-2 text-sm text-ink-muted transition-colors duration-200 hover:bg-white/5 hover:text-ink"
+                class="flex gap-3 rounded-control px-2.5 py-2.5 text-sm text-ink-muted transition-colors duration-200 hover:bg-white/5 hover:text-ink"
               >
                 <span class="font-mono text-xs text-ink-faint">{String(index + 1).padStart(2, '0')}</span>
                 <span>{section.title}</span>

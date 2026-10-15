@@ -13,6 +13,9 @@
   }
 
   html {
+    /* Phones in landscape must not inflate the type on their own. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     scroll-behavior: smooth;
     /* The sticky header would otherwise cover the top of an anchored section. */
     scroll-padding-top: 6.5rem;
@@ -21,10 +24,10 @@
   /* Small laptops: the interface scales with the screen instead of showing a
      desktop layout at a laptop's size. Everything is rem-based, so one rule
      resizes type and spacing together: 16px from 1920x1080 down to ~14.4px at
-     1213x555, never below 87.5%. Phones and tablets keep 16px. */
+     1213x555, never below 90%. Phones and tablets keep 16px. */
   @media (min-width: 1024px) {
     html {
-      font-size: clamp(87.5%, min(calc(72.9% + 0.226vw), 2.6vh), 100%);
+      font-size: clamp(90%, min(calc(72.9% + 0.226vw), 2.6vh), 100%);
     }
   }
 
