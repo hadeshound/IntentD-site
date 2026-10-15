@@ -5,12 +5,33 @@ import AmbientGlow from '@/components/ui/AmbientGlow.astro';
 import Button from '@/components/ui/Button.astro';
 import { getDictionary } from '@/i18n';
 
+interface Link {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  id?: string;
+  title?: string;
+  body?: string;
+  primary?: Link;
+  secondary?: Link | null;
+}
+
 const t = getDictionary().contact.section;
+
+const {
+  id = 'contact',
+  title = t.title,
+  body = t.body,
+  primary = { label: t.cta, href: '/contact?topic=buy_data' },
+  secondary = { label: t.ctaSupport, href: '/contact?topic=support' },
+} = Astro.props;
 ---
 
 {/* Closing call to action of the landing page. The form itself lives only on
     /contact, so there is one place to write to us and no repeated copy here. */}
-<section id="contact" class="relative py-20 lg:py-32">
+<section id={id} class="relative py-20 lg:py-32">
   <AmbientGlow tone="violet" class="-left-24 top-10 h-80 w-80" />
 
   <div class="shell">
@@ -21,17 +42,17 @@ const t = getDictionary().contact.section;
           <span class="h-px w-12 bg-hairline-strong"></span>
         </p>
 
-        <h2 class="mt-6 text-section-title">{t.title}</h2>
+        <h2 class="mt-6 text-section-title">{title}</h2>
 
-        <p class="mt-5 text-lg leading-relaxed text-ink-muted text-pretty">{t.body}</p>
+        <p class="mt-5 text-lg leading-relaxed text-ink-muted text-pretty">{body}</p>
       </div>
 
       <div class="flex flex-col gap-3 sm:flex-row lg:shrink-0">
-        <Button href="/contact?topic=buy_data" size="lg">
-          {t.cta}
+        <Button href={primary.href} size="lg">
+          {primary.label}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Button>
-        <Button href="/contact?topic=support" variant="secondary" size="lg">{t.ctaSupport}</Button>
+        {secondary ? <Button href={secondary.href} variant="secondary" size="lg">{secondary.label}</Button> : null}
       </div>
     </div>
   </div>

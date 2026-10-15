@@ -1,9 +1,9 @@
 /** Landing page, FAQ, contact page and the 404 screen. */
 export const marketing = {
   home: {
-    metaTitle: 'IntentD — monetize browser extensions without ads',
+    metaTitle: 'IntentD — intent data infrastructure for extensions and analytics teams',
     metaDescription:
-      'IntentD turns anonymous clickstream into steady revenue. A safe SDK for extension developers and a PII-free intent data stream for analytics teams.',
+      'IntentD connects browser extension developers and analytics teams: a safe SDK that earns without ads, and a PII-free intent data stream delivered as Parquet.',
     keywords: [
       'intent data',
       'extension monetization',
@@ -19,6 +19,7 @@ export const marketing = {
     metaDescription:
       'Estimate how much a browser extension can earn from consented, PII-free data: set your monthly active users, the consent rate and the payout rate, and get a monthly and yearly figure.',
     pageTitle: 'How much can your extension earn?',
+    faqTitle: 'About the estimate',
     faq: [
       {
         question: 'Where does the income come from?',
@@ -55,11 +56,11 @@ export const marketing = {
 
   hero: {
     eyebrow: 'Infrastructure for intent data',
-    titleBefore: 'Monetize browser extensions',
-    titleAccent: 'without ads',
-    titleAfter: 'and without losing users',
+    titleBefore: 'Intent data infrastructure',
+    titleAccent: 'for extension developers',
+    titleAfter: 'and analytics teams',
     subtitle:
-      'IntentD turns anonymous clickstream into steady revenue. A safe SDK, full privacy (PII-free) and a ready market for the data — in a single integration.',
+      'IntentD connects both sides of the market: an SDK that lets extension developers earn without ads, and a clean, PII-free data stream for analytics teams.',
     ctaPrimary: 'Connect your extension',
     ctaSecondary: 'Talk to sales',
     trust: ['Five-minute integration', 'Manifest V3', 'Chrome Web Store safe'],
@@ -111,7 +112,77 @@ export const marketing = {
     ],
   },
 
+  pathSplit: {
+    title: 'Two ways to work with IntentD',
+    developers: {
+      title: 'For extension developers',
+      body: 'Earn from your users without banners. Add the lightweight SDK, collect consented signals in the background and get regular payouts.',
+      cta: 'Explore the developer path',
+      secondary: 'Calculate earnings',
+    },
+    buyers: {
+      title: 'For data buyers',
+      body: 'A PII-free stream of intent signals delivered as Parquet to your own bucket. Ask for a sample extract before you commit.',
+      cta: 'Explore the data stream',
+      secondary: 'See pricing',
+    },
+  },
+
+  developersPage: {
+    metaTitle: 'Monetize browser extensions without ads',
+    metaDescription:
+      'Earn from your browser extension without banners: add the IntentD SDK, collect consented, PII-free signals in the background and get regular payouts. Estimate your earnings.',
+    titleBefore: 'Monetize browser extensions',
+    titleAccent: 'without ads',
+    titleAfter: 'and without losing users',
+    subtitle:
+      'Add a lightweight, privacy-safe SDK to your extension and earn from anonymous, consented intent data. No banners, no impact on your users.',
+    ctaPrimary: 'Connect your extension',
+    ctaSecondary: 'Calculate your earnings',
+    snippetLabel: 'background.js',
+    howTitle: 'How it works for developers',
+    faqTitle: 'Questions from extension developers',
+    band: {
+      title: 'See what your users could earn',
+      body: 'Estimate monthly revenue from your active users and the share who accept the consent prompt.',
+      cta: 'Open the calculator',
+    },
+    closing: {
+      title: 'Ready to connect your extension?',
+      body: 'Create an account, download the SDK built for your extension and start collecting consented signals.',
+      primary: 'Connect your extension',
+      secondary: 'Talk to us',
+    },
+  },
+
+  buyersPage: {
+    metaTitle: 'Intent data stream for analytics teams',
+    metaDescription:
+      'A PII-free stream of anonymous intent signals from browser extensions, delivered as Parquet to your S3 or GCS bucket. See the use cases, plans and request a sample extract.',
+    subtitle:
+      'Anonymous, aggregated intent signals from consented extension users, cleaned at the edge and delivered as Parquet to your own bucket.',
+    ctaPrimary: 'Request a sample',
+    ctaSecondary: 'See the data schema',
+    deliveryTitle: 'What you receive',
+    delivery: [
+      { label: 'Format', value: 'Parquet + LZ4' },
+      { label: 'Destination', value: 'AWS S3, or your own bucket' },
+      { label: 'Cleaning', value: 'HMAC hashing and a PII filter at the edge' },
+    ],
+    fieldsLabel: 'Fields in the stream',
+    howTitle: 'How the data reaches you',
+    faqTitle: 'Questions from data buyers',
+    closing: {
+      title: 'Want to see the data first?',
+      body: 'Tell us which verticals and what volume you care about, and we will prepare a sample Parquet file with the production structure.',
+      primary: 'Request a sample',
+      secondary: 'Discuss Enterprise',
+    },
+  },
+
   howItWorks: {
+    titleDevelopers: 'How it works for developers',
+    titleBuyers: 'How the data reaches you',
     calculatorCta: 'Calculate your earnings',
     eyebrow: 'How it works',
     title: 'One integration, two sides of the market',
@@ -156,6 +227,7 @@ export const marketing = {
   },
 
   useCases: {
+    heading: 'What teams build with the stream',
     eyebrow: 'For data buyers',
     title: 'Top-quality intent signals for your business',
     cta: 'See the data schema',

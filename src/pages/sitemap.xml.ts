@@ -19,6 +19,8 @@ const PUBLIC_ROUTES: Array<{
   changeFrequency: 'weekly' | 'monthly';
 }> = [
   { path: '/', priority: 1, changeFrequency: 'weekly' },
+  { path: '/developers', priority: 0.9, changeFrequency: 'monthly' },
+  { path: '/data-buyers', priority: 0.9, changeFrequency: 'monthly' },
   { path: '/pricing', priority: 0.9, changeFrequency: 'weekly' },
   { path: '/docs/api', priority: 0.8, changeFrequency: 'weekly' },
   { path: '/docs/sdk', priority: 0.7, changeFrequency: 'monthly' },

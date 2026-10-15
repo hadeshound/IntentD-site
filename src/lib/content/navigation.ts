@@ -19,8 +19,8 @@ export function primaryNav(): NavLink[] {
   return [
     { label: t.pricing, href: '/pricing' },
     { label: t.docs, href: '/docs/api' },
-    { label: t.forPublishers, href: '/#publishers' },
-    { label: t.forBuyers, href: '/#data-buyers' },
+    { label: t.forPublishers, href: '/developers' },
+    { label: t.forBuyers, href: '/data-buyers' },
     { label: t.contact, href: '/contact' },
   ];
 }
@@ -41,9 +41,9 @@ export function footerColumns(): FooterColumn[] {
         { label: t.product.pricing, href: path('/pricing') },
         { label: t.product.api, href: path('/docs/api') },
         { label: t.product.sdk, href: path('/docs/sdk') },
-        { label: t.product.howItWorks, href: path('/#how-it-works') },
+        { label: t.product.developers, href: path('/developers') },
+        { label: t.product.buyers, href: path('/data-buyers') },
         { label: t.product.calculator, href: path('/calculator') },
-        { label: t.product.faq, href: path('/#faq') },
       ],
     },
     {

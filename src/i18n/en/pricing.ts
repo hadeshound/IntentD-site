@@ -15,6 +15,7 @@ export const pricing = {
     subtitleLong:
       'Choose the volume of signals your analytics systems need. You pay for the stream, not for space in an interface.',
     compareAll: 'Compare every feature',
+    teaserTitle: 'Plans for every volume',
     fallbackNote:
       'The catalogue is being served from a local copy right now — a manager will confirm the current terms.',
 
