@@ -31,7 +31,7 @@ export const legal = {
           body: `<p><strong>Platform</strong> — the IntentD service, comprising the edge SDK, the event intake and cleaning infrastructure, and the delivery channels.</p>
 <p><strong>Publisher</strong> — a browser extension developer who has integrated the SDK.</p>
 <p><strong>Data Buyer</strong> — an organisation granted access to the deliveries under one of the plans.</p>
-<p><strong>Event</strong> — one anonymised record after filtering, whose structure is described in the <a href="{{schema}}">data schema</a>.</p>`,
+<p><strong>Event</strong> — one pseudonymised record after filtering, whose structure is described in the <a href="{{schema}}">data schema</a>.</p>`,
         },
         account: {
           title: 'Account and access',
@@ -44,7 +44,7 @@ export const legal = {
           body: `<p>By integrating the SDK you confirm that you:</p>
 <ul>
 <li>have the right to distribute the extension and to change its code;</li>
-<li>have disclosed the collection of anonymised telemetry in the extension privacy policy and in the store listing, as the Chrome Web Store and Mozilla Add-ons rules require;</li>
+<li>have disclosed the collection of pseudonymised telemetry in the extension privacy policy and in the store listing, as the Chrome Web Store and Mozilla Add-ons rules require;</li>
 <li>will not modify the SDK to bypass the privacy filters, and will not feed it data obtained by other means;</li>
 <li>will not use the platform in extensions aimed at children, or in extensions on medical, financial or otherwise sensitive subjects, without separate agreement.</li>
 </ul>
@@ -54,7 +54,7 @@ export const legal = {
           title: 'Data buyer obligations',
           body: `<p>By taking access to the deliveries you undertake:</p>
 <ul>
-<li>not to attempt de-anonymisation — matching <code class="font-mono">anon_uid</code> to a person, a device or an account in another system;</li>
+<li>not to attempt re-identification — matching <code class="font-mono">anon_uid</code> to a person, a device or an account in another system;</li>
 <li>not to resell or pass on raw deliveries to third parties without a separate written agreement;</li>
 <li>to use the data in accordance with the applicable data protection law of your jurisdiction;</li>
 <li>to protect the files you receive at least to the standard your organisation applies to confidential information.</li>
@@ -111,7 +111,7 @@ export const legal = {
           body: `<p>This document describes two independent data flows:</p>
 <ul>
 <li><strong>Account data</strong> — what you tell us yourself: email, the password as a hash, company name, the contents of contact forms.</li>
-<li><strong>Extension telemetry</strong> — the anonymised signals the edge SDK collects in the browsers of users of connected extensions.</li>
+<li><strong>Extension telemetry</strong> — the pseudonymised signals the edge SDK collects in the browsers of users of connected extensions.</li>
 </ul>
 <p>Separate rules, described below, apply to the second flow: it is designed so that personal data does not enter it.</p>`,
         },
@@ -143,7 +143,7 @@ export const legal = {
           title: 'Legal bases',
           body: `<p>Account data is processed to perform the contract with you, and on the basis of our legitimate interest in keeping the service secure.</p>
 <p>Extension telemetry is processed solely on the basis of the user's explicit consent (GDPR art. 6(1)(a); for storage on the device, ePrivacy art. 5(3)). The SDK shows the consent prompt when the extension is installed or in its popup, and collects, stores and sends nothing until the user presses “Allow”. Declining does not limit how the extension itself works.</p>
-<p><strong>Withdrawing consent.</strong> Consent can be withdrawn at any time in the extension settings. After withdrawal collection stops, and unsent events and the installation identifier are deleted from the device. Withdrawal does not affect the lawfulness of processing carried out before it. Anonymised data already transferred is deleted once the retention periods below expire; a request can be sent to <a href="mailto:{{privacy}}">{{privacy}}</a>.</p>
+<p><strong>Withdrawing consent.</strong> Consent can be withdrawn at any time in the extension settings. After withdrawal collection stops, and unsent events and the installation identifier are deleted from the device. Withdrawal does not affect the lawfulness of processing carried out before it. Pseudonymised data already transferred is deleted once the retention periods below expire; a request can be sent to <a href="mailto:{{privacy}}">{{privacy}}</a>.</p>
 <p>The user's decision is stored only in their browser. When the consent text changes — because new data categories appear, for example — consent is requested again.</p>
 <p>The extension publisher is responsible for invoking the consent prompt in their interface and for disclosing the collection in the store listing.</p>
 <p><span class="font-mono">[LEGAL REVIEW NEEDED]</span></p>`,
@@ -153,13 +153,13 @@ export const legal = {
           body: `<ul>
 <li>Account data — while the account is active, and 12 months after it is deleted.</li>
 <li>Action log — 12 months.</li>
-<li>Anonymised deliveries — 30 days in hot storage, up to 90 days in the archive.</li>
+<li>Pseudonymised deliveries — 30 days in hot storage, up to 90 days in the archive.</li>
 <li>Contact form messages — 24 months.</li>
 </ul>`,
         },
         sharing: {
           title: 'Sharing with third parties',
-          body: `<p>Anonymised deliveries are passed to data buyers under the <a href="{{terms}}">terms of use</a>, which include an outright ban on de-anonymisation.</p>
+          body: `<p>Pseudonymised deliveries are passed to data buyers under the <a href="{{terms}}">terms of use</a>, which include an outright ban on re-identification.</p>
 <p>We do not sell your account data and do not pass it on for advertising. Transfer is possible only to infrastructure processors (hosting, storage) and on a justified request from an authorised body.</p>
 <p>Sub-processor list: <span class="font-mono">[PLACEHOLDER]</span>.</p>`,
         },

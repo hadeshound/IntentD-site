@@ -13,7 +13,7 @@ export interface NavLink {
   external?: boolean;
 }
 
-export type NavIcon = 'puzzle' | 'database' | 'calculator' | 'code' | 'package' | 'file';
+export type NavIcon = 'puzzle' | 'database' | 'code' | 'package' | 'file';
 export type NavTone = 'teal' | 'blue' | 'amber' | 'cyan';
 
 export interface NavMenuItem {
@@ -42,8 +42,7 @@ export function primaryNav(): NavEntry[] {
       label: t.menu.solutions,
       items: [
         { title: t.menu.developers.title, description: t.menu.developers.description, href: '/developers', icon: 'puzzle', tone: 'teal' },
-        { title: t.menu.buyers.title, description: t.menu.buyers.description, href: '/data-buyers', icon: 'database', tone: 'blue' },
-        { title: t.menu.calculator.title, description: t.menu.calculator.description, href: '/calculator', icon: 'calculator', tone: 'amber' },
+        // The data buyer and profit-estimate entries are parked in src/_unused/lib/i18n-removed.ts.
       ],
     },
     { kind: 'link', label: t.pricing, href: '/pricing' },
@@ -78,8 +77,6 @@ export function footerColumns(): FooterColumn[] {
         { label: t.product.api, href: path('/docs/api') },
         { label: t.product.sdk, href: path('/docs/sdk') },
         { label: t.product.developers, href: path('/developers') },
-        { label: t.product.buyers, href: path('/data-buyers') },
-        { label: t.product.calculator, href: path('/calculator') },
       ],
     },
     {

@@ -4,15 +4,15 @@ import SectionHeading from '@/components/ui/SectionHeading.astro';
 import { getDictionary } from '@/i18n';
 
 interface Props {
-  /** Which audience's steps to show. */
-  track: 'publishers' | 'buyers';
+  /** Which audience's steps to show. The data buyer track is parked in src/_unused/. */
+  track: 'publishers';
 }
 
 const { track } = Astro.props;
 
 const t = getDictionary().howItWorks;
 const steps = t[track].steps;
-const title = track === 'publishers' ? t.titleDevelopers : t.titleBuyers;
+const title = t.titleDevelopers;
 ---
 
 {/* One audience, three steps. Each page shows only its own track, so the two

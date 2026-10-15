@@ -4,7 +4,7 @@ import type { Plan, PlanCode } from '@/lib/api/plans';
 /**
  * Presentation layer for the catalogue.
  *
- * Prices, user allowances and delivery cadence are NOT here: they come from
+ * Prices, event allowances and delivery cadence are NOT here: they come from
  * GET /public/plans so the page can never advertise a number the backend would
  * not honour. The words around those numbers come from the dictionaries, which
  * is why this file is a set of lookups rather than a table of copy.
@@ -61,7 +61,7 @@ export function featureMatrix(): MatrixGroup[] {
 }
 
 /**
- * Mirror of the catalogue after portal migration 000015_update_plans.up.sql.
+ * Mirror of the catalogue after portal migration 000019_update_events_limits.up.sql.
  * Used only when the catalogue endpoint is unreachable at render time, so the
  * pricing page degrades to our own published figures rather than to an empty
  * section. Update both files together.
@@ -73,7 +73,7 @@ export const FALLBACK_PLANS: Plan[] = [
     price_cents: 49900,
     setup_price_cents: 49900,
     currency: 'USD',
-    events_limit: 5_000_000,
+    events_limit: 100_000,
     users_limit: 10_000,
     delivery_frequency: 'daily',
     sla: 'best_effort',
@@ -88,7 +88,7 @@ export const FALLBACK_PLANS: Plan[] = [
     price_cents: 199900,
     setup_price_cents: 99900,
     currency: 'USD',
-    events_limit: 30_000_000,
+    events_limit: 1_000_000,
     users_limit: 100_000,
     delivery_frequency: 'hourly',
     sla: '99.5',
@@ -103,7 +103,7 @@ export const FALLBACK_PLANS: Plan[] = [
     price_cents: 499900,
     setup_price_cents: 149900,
     currency: 'USD',
-    events_limit: 150_000_000,
+    events_limit: 10_000_000,
     users_limit: 500_000,
     delivery_frequency: 'hourly_direct',
     sla: '99.7',

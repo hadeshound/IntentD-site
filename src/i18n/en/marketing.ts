@@ -14,52 +14,6 @@ export const marketing = {
     ],
   },
 
-  calculator: {
-    metaTitle: 'Earnings calculator for browser extensions',
-    metaDescription:
-      'Estimate how much a browser extension can earn from consented, PII-free data: set your monthly active users, the consent rate and the payout rate, and get a monthly and yearly figure.',
-    pageTitle: 'How much can your extension earn?',
-    faqTitle: 'About the estimate',
-    faq: [
-      {
-        question: 'Where does the income come from?',
-        answer:
-          'From the anonymised, consented signals your extension collects. The calculator asks for the income you expect per consenting user, because the final figure depends on your agreement. Users who decline send nothing.',
-      },
-      {
-        question: 'Is this figure guaranteed?',
-        answer:
-          'No. It is a planning tool. The plan prices are the current ones; the income per consenting user is your own assumption, and with a large plan and few users the result can be a loss.',
-      },
-      {
-        question: 'What share of users usually accept?',
-        answer:
-          'It depends on how the consent prompt is presented. The calculator starts at 40 percent and lets you test lower and higher values.',
-      },
-    ],
-    title: 'Estimate what your users can earn you',
-    description:
-      'Pick a plan, set your active users, the consent rate and what a consenting user is worth to you, and see whether your extension makes a profit or a loss each month.',
-    users: 'Monthly active users',
-    consent: 'Users who accept the consent prompt',
-    consentHint: 'Most extensions see between a third and a half of users opt in.',
-    plan: 'Your plan',
-    revenue: 'Income per consenting user',
-    revenueHint: 'Per month. An example figure: set what a consenting user is worth to you under your agreement.',
-    income: 'Income',
-    planCost: 'Plan',
-    firstYear: 'First year, after setup',
-    breakEven: 'Break-even',
-    payback: 'Setup pays back in',
-    compareTitle: 'Net result on each plan',
-    resultLabel: 'Estimated net result',
-    perMonth: 'per month',
-    perYear: 'Per year',
-    consenting: 'Consenting users',
-    disclaimer: 'An estimate for planning, not a guarantee. Plan prices are current; the income per user is your own assumption, so the result can be a loss.',
-    cta: 'Get your SDK key',
-  },
-
   hero: {
     eyebrow: 'Infrastructure for intent data',
     titleBefore: 'Ad‑free extension monetization,',
@@ -68,13 +22,13 @@ export const marketing = {
     subtitle:
       'IntentD connects extension developers and analytics teams: ad‑free monetization on one side and a clean, PII‑free data stream on the other.',
     ctaPrimary: 'Connect your extension',
-    ctaSecondary: 'Talk to sales',
+    ctaSecondary: 'See pricing',
     trust: ['Five-minute integration', 'Manifest V3', 'Chrome Web Store safe'],
     strip: [
       { label: 'PII-free and GDPR-safe', tone: 'teal', icon: 'shield' },
       { label: 'Manifest V3 ready', tone: 'amber', icon: 'chrome' },
       { label: 'Chrome Web Store safe', tone: 'blue', icon: 'store' },
-      { label: '< 15 KB SDK', tone: 'cyan', icon: 'zap' },
+      { label: '< 300 KB SDK', tone: 'cyan', icon: 'zap' },
       { label: 'Five-minute integration', tone: 'violet', icon: 'timer' },
     ],
   },
@@ -84,17 +38,18 @@ export const marketing = {
     live: 'live',
     nodes: [
       { title: 'Browser extension', subtitle: 'background script' },
-      { title: '@intentd/edge-sdk', subtitle: '< 15 KB · Manifest V3' },
-      { title: 'IntentD Edge', subtitle: 'HMAC hash · PII filter' },
+      { title: '@intentd/edge-sdk', subtitle: '< 300 KB · Manifest V3' },
+      { title: 'IntentD Edge', subtitle: 'HMAC signing · PII filter' },
       { title: 'AWS S3', subtitle: 'Parquet + LZ4' },
     ],
     edges: ['events', 'cleaning', 'delivery'],
+    note: 'Clean events pass through IntentD Ingest before they reach storage.',
     stats: [
       { label: 'PII in the stream', value: '0' },
-      { label: 'SDK size', value: '< 15 KB' },
+      { label: 'SDK size', value: '< 300 KB' },
       { label: 'Format', value: 'Parquet' },
     ],
-    alt: 'Flow diagram: the browser extension sends events to the SDK, the SDK passes them to IntentD Edge, where identifiers are hashed and personal data is stripped, and the cleaned events are then delivered to AWS S3 in Parquet format.',
+    alt: 'Flow diagram: the browser extension sends events to the SDK, the SDK passes them to IntentD Edge, where requests are HMAC-signed and personal data is stripped, the clean events pass through IntentD Ingest, and are then delivered to AWS S3 in Parquet format.',
   },
 
   advertising: {
@@ -113,46 +68,35 @@ export const marketing = {
       },
       {
         title: 'The IntentD answer',
-        body: 'We collect anonymised, aggregated signals in the background. Your extension UI stays 100% clean.',
+        body: 'We collect pseudonymised, aggregated signals in the background. Your extension UI stays 100% clean.',
       },
     ],
   },
 
   pathSplit: {
-    title: 'Two ways to work with IntentD',
+    title: 'Work with IntentD',
     developers: {
       title: 'For extension developers',
-      body: 'Earn from your users without banners. Add the lightweight SDK, collect consented signals in the background and get regular payouts.',
+      body: 'Monetize your extension without banners. Add the lightweight SDK, collect consented signals in the background, and turn them into revenue — with full user consent.',
       cta: 'Explore the developer path',
       secondary: 'See plans',
-    },
-    buyers: {
-      title: 'For data buyers',
-      body: 'A PII-free stream of intent signals delivered as Parquet to your own bucket. Ask for a sample extract before you commit.',
-      cta: 'Explore the data stream',
-      secondary: 'See the data schema',
     },
   },
 
   developersPage: {
     metaTitle: 'Monetize browser extensions without ads',
     metaDescription:
-      'Earn from your browser extension without banners: add the IntentD SDK, collect consented, PII-free signals in the background and get regular payouts. Estimate your earnings.',
+      'Monetize your browser extension without banners: add the IntentD SDK, collect consented, PII-free signals in the background and turn them into revenue. Plans are priced by the clean events you send.',
     titleBefore: 'Monetize browser extensions',
     titleAccent: 'without ads',
     titleAfter: 'and without losing users',
     subtitle:
-      'Add a lightweight, privacy-safe SDK to your extension and earn from anonymous, consented intent data. No banners, no impact on your users.',
+      'Add a lightweight, privacy-safe SDK and monetize your extension with pseudonymised, consented intent data. No banners, no impact on your users.',
     ctaPrimary: 'Connect your extension',
-    ctaSecondary: 'Calculate your earnings',
+    ctaSecondary: 'See pricing',
     snippetLabel: 'background.js',
     howTitle: 'How it works for developers',
     faqTitle: 'Questions from extension developers',
-    band: {
-      title: 'Will a plan pay off for you?',
-      body: 'Pick a plan, set your active users and the consent rate, and see your monthly profit or loss.',
-      cta: 'Open the calculator',
-    },
     closing: {
       title: 'Ready to connect your extension?',
       body: 'Create an account, download the SDK built for your extension and start collecting consented signals.',
@@ -161,46 +105,19 @@ export const marketing = {
     },
   },
 
-  buyersPage: {
-    metaTitle: 'Intent data stream for analytics teams',
-    metaDescription:
-      'A PII-free stream of anonymous intent signals from browser extensions, delivered as Parquet to your S3 or GCS bucket. See the use cases, plans and request a sample extract.',
-    subtitle:
-      'Anonymous, aggregated intent signals from consented extension users, cleaned at the edge and delivered as Parquet to your own bucket. Data access is arranged individually with our team, not sold in fixed packages.',
-    ctaPrimary: 'Request a sample',
-    ctaSecondary: 'See the data schema',
-    deliveryTitle: 'What you receive',
-    delivery: [
-      { label: 'Format', value: 'Parquet + LZ4' },
-      { label: 'Destination', value: 'AWS S3, or your own bucket' },
-      { label: 'Cleaning', value: 'HMAC hashing and a PII filter at the edge' },
-    ],
-    fieldsLabel: 'Fields in the stream',
-    howTitle: 'How the data reaches you',
-    faqTitle: 'Questions from data buyers',
-    closing: {
-      title: 'Want to see the data first?',
-      body: 'Tell us which verticals and what volume you care about, and we will prepare a sample Parquet file with the production structure.',
-      primary: 'Request a sample',
-      secondary: 'Talk to a manager',
-    },
-  },
-
   howItWorks: {
     titleDevelopers: 'How it works for developers',
-    titleBuyers: 'How the data reaches you',
-    calculatorCta: 'Calculate your earnings',
     eyebrow: 'How it works',
     title: 'One integration, two sides of the market',
     description:
-      'Developers add the SDK and earn. Analytics teams get a ready-made stream. Our cleaning infrastructure sits between them.',
+      'Developers add the SDK and monetize their extension. Our cleaning infrastructure turns raw signals into a clean, consented stream.',
     publishers: {
       label: 'Publishers',
       audience: 'For extension developers',
       steps: [
         {
           title: 'Five-minute integration',
-          body: 'Drop the lightweight SDK (< 15 KB) into your extension background script.',
+          body: 'Drop the lightweight SDK (< 300 KB) into your extension background script.',
         },
         {
           title: 'Background signal collection',
@@ -208,53 +125,10 @@ export const marketing = {
         },
         {
           title: 'Passive revenue',
-          body: 'Get regular payouts for the volume of data you generate.',
+          body: 'Earn a share of the revenue from the data your extension sends.',
         },
       ],
     },
-    buyers: {
-      label: 'Data Buyers',
-      audience: 'For data buyers',
-      steps: [
-        {
-          title: 'Fresh signals',
-          body: 'Access commercial behaviour patterns in real time.',
-        },
-        {
-          title: 'Clean data',
-          body: 'Banking, password, email and identifier traffic is filtered out at the edge.',
-        },
-        {
-          title: 'A format you can use',
-          body: 'Parquet + LZ4 in AWS S3, or synced into your own bucket.',
-        },
-      ],
-    },
-  },
-
-  useCases: {
-    heading: 'What teams build with the stream',
-    eyebrow: 'For data buyers',
-    title: 'Top-quality intent signals for your business',
-    cta: 'See the data schema',
-    ctaSample: 'Request a sample',
-    items: [
-      {
-        segment: 'E-commerce & Retail',
-        title: 'See demand before your competitor does',
-        body: 'Track which products and categories people are searching for right now — before they buy somewhere else.',
-      },
-      {
-        segment: 'AdTech & Programmatic',
-        title: 'Segments without third-party cookies',
-        body: 'Enrich audience segments with precise commercial intent, without depending on third-party cookies.',
-      },
-      {
-        segment: 'Market Research & Analytics',
-        title: 'Interest shifts across large samples',
-        body: 'Analyse traffic trends and shifting interests across samples of millions of sessions.',
-      },
-    ],
   },
 
   why: {
@@ -265,7 +139,7 @@ export const marketing = {
     items: [
       {
         title: 'Zero-PII and privacy first',
-        body: 'HMAC hashing and built-in filters. Passwords, tokens, personal data and banking domains never leave the browser.',
+        body: 'HMAC signing and built-in filters. Passwords, tokens, personal data and banking domains never leave the browser.',
         footnote: 'Filtering runs on the device, before the bucket is sent.',
       },
       {
@@ -275,7 +149,7 @@ export const marketing = {
       },
       {
         title: 'Chrome Web Store safe',
-        body: 'The SDK uses no eval and loads no remote code. It passes the automated checks at Google and Mozilla in full.',
+        body: 'The SDK uses no eval and loads no remote code. It follows the current Chrome Web Store and Firefox Add-ons policies.',
         footnote: '',
       },
       {
@@ -299,9 +173,9 @@ export const marketing = {
           'Yes. The SDK follows the Developer Program Policies strictly. We show no ads, we do not alter page content, and we collect only technical metadata with no link to a person.',
       },
       {
-        question: 'How do you keep users anonymous?',
+        question: 'How do you protect user identities?',
         answer:
-          'Every personal identifier — emails, tokens in URLs, private parameters — is stripped while the bucket is built, inside the browser. Only a hashed session ID and a cleaned URL reach the database.',
+          'Every personal identifier — emails, tokens in URLs, private parameters — is stripped while the bucket is built, inside the browser. Only a pseudonymised session ID and a cleaned URL reach our servers.',
       },
       {
         question: 'What format is the data delivered in?',
@@ -309,9 +183,9 @@ export const marketing = {
           'The primary format is Parquet with LZ4 compression, partitioned by time interval and category. You can pull it straight from our AWS S3, or have it synced into your own bucket.',
       },
       {
-        question: 'How soon do I start earning as a developer?',
+        question: 'How soon do I start collecting data?',
         answer:
-          'As soon as the SDK is in place and the API key is active in your dashboard. Revenue accrues from the first active user sessions.',
+          'As soon as the SDK is in place and the API key is active in your dashboard, clean events start flowing into your account. What you do with them — sell through our marketplace partners, export and sell yourself, or analyse internally — is your choice.',
       },
     ],
   },

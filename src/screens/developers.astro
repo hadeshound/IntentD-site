@@ -18,7 +18,7 @@ const dictionary = getDictionary();
 const t = dictionary.developersPage;
 const faq = dictionary.faq.landing;
 
-// The questions an extension developer asks: ranking, privacy, when payouts start.
+// The questions an extension developer asks: ranking, privacy, when data starts flowing.
 const questions = [faq[0], faq[1], faq[3]].filter((item): item is NonNullable<typeof item> => Boolean(item));
 
 const SNIPPET = `// background.js — first line, top level.
@@ -41,7 +41,7 @@ import './intentd.min.js';`;
             <Plug className="h-[1.125rem] w-[1.125rem]" aria-hidden="true" />
             {t.ctaPrimary}
           </Button>
-          <Button href="/calculator" variant="secondary" size="lg">{t.ctaSecondary}</Button>
+          <Button href="/pricing" variant="secondary" size="lg">{t.ctaSecondary}</Button>
         </div>
       </div>
 
@@ -57,14 +57,6 @@ import './intentd.min.js';`;
   <AdvertisingIsDead />
   <HowItWorks track="publishers" />
   <PricingTeaser plans={plans} />
-
-  <ContactSection
-    id="calculator-cta"
-    title={t.band.title}
-    body={t.band.body}
-    primary={{ label: t.band.cta, href: '/calculator' }}
-    secondary={null}
-  />
 
   <FaqSection items={questions} id="faq" title={t.faqTitle} />
 

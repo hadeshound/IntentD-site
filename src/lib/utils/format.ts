@@ -26,35 +26,28 @@ export function formatPrice(cents: number, currency = 'USD'): string {
 }
 
 /**
- * The monthly active-user allowance, ready to render.
+ * The monthly clean-event allowance, ready to render. Plans are priced by
+ * ingested (clean) events; users_limit stays in the catalogue for internal use.
  *
  * Three outcomes rather than one string, because they are three different
  * claims: a number, "unlimited", and "we do not know". The last one happens
- * when the frontend is deployed ahead of portal migration 000015 and the
- * catalogue response has no users_limit at all -- printing a figure there
- * would be inventing one, so the caller omits the line instead.
+ * when the catalogue response carries no events_limit at all -- printing a
+ * figure there would be inventing one, so the caller omits the line instead.
+ * Zero means unmetered, as in the portal's plans table.
  */
-export type UsersAllowance =
+export type EventsAllowance =
   | { kind: 'limited'; text: string }
   | { kind: 'unlimited'; text: string }
   | { kind: 'unknown' };
 
-export function usersAllowance(limit: number | null | undefined): UsersAllowance {
-  if (limit === null) {
-    return { kind: 'unlimited', text: getDictionary().pricing.unlimitedUsers };
-  }
+export function eventsAllowance(limit: number | null | undefined): EventsAllowance {
   if (typeof limit !== 'number' || !Number.isFinite(limit)) {
     return { kind: 'unknown' };
   }
   if (limit <= 0) {
-    return { kind: 'unlimited', text: getDictionary().pricing.unlimitedUsers };
+    return { kind: 'unlimited', text: getDictionary().pricing.unlimitedEvents };
   }
-  return { kind: 'limited', text: formatUsersLimit(limit) };
-}
-
-/** Just the number, with thousands separators. */
-export function formatUsersLimit(limit: number): string {
-  return new Intl.NumberFormat('en').format(limit);
+  return { kind: 'limited', text: new Intl.NumberFormat('en').format(limit) };
 }
 
 /** Formats the monthly event allowance; zero means an unmetered firehose. */

@@ -1,6 +1,7 @@
 ---
-// The page body lives in @/screens/calculator.astro.
-import Screen from '@/screens/calculator.astro';
----
+// The profit-estimate page is parked in src/_unused/ until the pricing model
+// settles. Rendered on request (not prerendered) so the 301 is a real one.
+export const prerender = false;
 
-<Screen />
+return Astro.redirect('/pricing', 301);
+---

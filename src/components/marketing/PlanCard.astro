@@ -7,7 +7,7 @@ import { getDictionary } from '@/i18n';
 import type { Plan } from '@/lib/api/plans';
 import { planPresentation } from '@/lib/content/pricing';
 import { cn } from '@/lib/utils/cn';
-import { formatPrice, usersAllowance } from '@/lib/utils/format';
+import { eventsAllowance, formatPrice } from '@/lib/utils/format';
 import { buildRegisterRedirect } from '@/lib/utils/redirect';
 
 interface Props {
@@ -41,14 +41,14 @@ const ctaLabel = plan.is_custom_priced ? t.cta.contactSales : t.cta.subscribe;
 // The grid holds four cards; the last one keeps the staggered rhythm.
 const offsetClass = undefined;
 
-// A plan quoted per deal has no published allowance; a catalogue that predates
-// migration 000015 has none either, and that line is simply left out rather
-// than filled with a number nobody promised.
-const allowance = usersAllowance(plan.users_limit);
+// Plans are priced by clean (ingested) events. A plan quoted per deal has no
+// published allowance; a catalogue without events_limit has none either, and
+// that line is simply left out rather than filled with a number nobody promised.
+const allowance = eventsAllowance(plan.events_limit);
 const volumeLabel = plan.is_custom_priced
   ? t.customVolume
   : allowance.kind === 'limited'
-    ? `${allowance.text} ${t.activeUsers}`
+    ? t.eventsAllowance.replace('{events}', allowance.text)
     : allowance.kind === 'unlimited'
       ? allowance.text
       : null;

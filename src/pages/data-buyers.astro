@@ -1,6 +1,7 @@
 ---
-// The page body lives in @/screens/data-buyers.astro.
-import Screen from '@/screens/data-buyers.astro';
----
+// The data buyer page is parked in src/_unused/. Rendered on request (not
+// prerendered) so the 302 is a real one.
+export const prerender = false;
 
-<Screen />
+return Astro.redirect('/', 302);
+---

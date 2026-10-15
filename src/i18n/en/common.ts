@@ -27,7 +27,6 @@ export const common = {
     notIncluded: 'Not included',
     docsContents: 'Documentation contents',
     legalSections: 'Document sections',
-    useCasesScroller: 'Data use cases, horizontal scroll',
   },
 
   nav: {
@@ -35,8 +34,6 @@ export const common = {
       solutions: 'Solutions',
       docs: 'Docs',
       developers: { title: 'For developers', description: 'Monetize your extension without ads' },
-      buyers: { title: 'For data buyers', description: 'A PII-free intent data stream' },
-      calculator: { title: 'Profit calculator', description: 'Check whether a plan pays off' },
       api: { title: 'API and data format', description: 'Ingest API, event schema and delivery' },
       sdk: { title: 'SDK and consent', description: 'Integrate the SDK and the consent prompt' },
       bucket: { title: 'Bucket format v1', description: 'The open binary bucket specification' },
@@ -44,7 +41,6 @@ export const common = {
     pricing: 'Pricing',
     docs: 'Documentation',
     forPublishers: 'For developers',
-    forBuyers: 'For data buyers',
     contact: 'Contact',
     talkToSales: 'Talk to sales',
     talkToUs: 'Talk to us',
@@ -66,8 +62,6 @@ export const common = {
       api: 'API and data format',
       sdk: 'SDK and consent',
       developers: 'For developers',
-      buyers: 'For data buyers',
-      calculator: 'Earnings calculator',
     },
     company: {
       title: 'Company',

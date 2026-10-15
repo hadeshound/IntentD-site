@@ -20,7 +20,7 @@ import {
   formatPrice,
   formatSla,
   formatSupport,
-  usersAllowance,
+  eventsAllowance,
 } from '@/lib/utils/format';
 
 interface CheckoutPanelProps {
@@ -127,7 +127,7 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
 
   // --- main view ----------------------------------------------------------
 
-  const allowance = usersAllowance(plan.users_limit);
+  const allowance = eventsAllowance(plan.events_limit);
 
   return (
     <>
@@ -166,15 +166,15 @@ export function CheckoutPanel({ planCode }: CheckoutPanelProps) {
                 </div>
               ) : null}
 
-              {/* Omitted, rather than guessed at, when the catalogue predates
-                  portal migration 000015 and carries no allowance. */}
+              {/* Omitted, rather than guessed at, when the catalogue carries
+                  no event allowance. */}
               {allowance.kind === 'unknown' ? null : (
                 <div className="flex items-start justify-between gap-6">
                   <dt className="text-ink-muted">{t.volume}</dt>
                   <dd className="text-right font-mono text-ink">
                     {allowance.kind === 'unlimited'
                       ? t.unlimited
-                      : `${allowance.text} ${t.usersPerMonth}`}
+                      : `${allowance.text} ${t.eventsPerMonth}`}
                   </dd>
                 </div>
               )}

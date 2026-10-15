@@ -1,32 +1,32 @@
 /**
  * Pricing copy. The plans are paid by extension developers and are priced by the
- * number of monthly active users of the extension. Prices and user allowances
- * are NOT here: they come from GET /public/plans, so the page cannot advertise
+ * number of clean events the extension sends each month. Prices and event
+ * allowances are NOT here: they come from GET /public/plans, so the page cannot advertise
  * a number the backend would not honour.
  */
 export const pricing = {
   pricing: {
     metaTitle: 'Plans for extension developers',
     metaDescription:
-      'Starter, Growth, Scale and Enterprise plans for browser extension developers, priced by monthly active users. Compare user and event limits, support and SLA, or check whether a plan pays off in the calculator.',
+      'Starter, Growth, Scale and Enterprise plans for browser extension developers, priced by the number of clean events your extension sends. Compare event limits, support and SLA.',
     eyebrow: 'Pricing',
-    titleBefore: 'Plans priced by the size of your',
-    titleAccent: 'extension',
-    subtitle: 'Pick a plan by the number of monthly active users your extension has.',
+    titleBefore: 'Plans priced by the volume of clean events',
+    titleAccent: 'your extension sends',
+    subtitle: 'Pick a plan by the number of clean events your extension sends us each month.',
     subtitleLong:
-      'Pick a plan by the number of monthly active users your extension has. Setup is a one-off fee, and the profit calculator shows whether a plan pays off for you.',
+      'Pick a plan by the number of clean events your extension sends us each month. Setup is a one-off fee, then you pay for the volume you use.',
     compareAll: 'Compare every feature',
     teaserTitle: 'Plans for your extension',
-    teaserBody: 'Pick a plan by the number of monthly active users your extension has.',
-    teaserAllowance: 'Up to {users} monthly active users',
+    teaserBody: 'Pick a plan by the number of clean events your extension sends us each month.',
+    teaserAllowance: 'Up to {events} clean events / mo',
     fallbackNote:
       'The catalogue is being served from a local copy right now — a manager will confirm the current terms.',
 
     /** Unit labels on a plan card. */
     setupFee: 'setup, one-off',
     perMonth: '/ mo',
-    activeUsers: 'active users',
-    unlimitedUsers: 'Unlimited active users',
+    eventsAllowance: 'Up to {events} clean events / mo',
+    unlimitedEvents: 'Unlimited clean events',
     customVolume: 'Volume agreed individually',
     customPrice: 'Custom',
 
@@ -52,10 +52,8 @@ export const pricing = {
 
     plans: {
       starter: {
-        audience: 'For small extensions',
+        audience: 'For extensions getting started',
         features: [
-          'Up to 10,000 active users',
-          'Up to 5 million events a month',
           'Email support (24 h)',
           'Best-effort availability',
         ],
@@ -64,18 +62,14 @@ export const pricing = {
       growth: {
         audience: 'For growing extensions',
         features: [
-          'Up to 100,000 active users',
-          'Up to 30 million events a month',
           '24/7 priority support',
           '99.5% availability SLA',
         ],
         highlightLabel: 'Most popular',
       },
       scale: {
-        audience: 'For large extensions',
+        audience: 'For large-scale extensions',
         features: [
-          'Up to 500,000 active users',
-          'Up to 150 million events a month',
           'Dedicated manager',
           '99.7% availability SLA',
         ],
@@ -84,8 +78,6 @@ export const pricing = {
       enterprise: {
         audience: 'For publishers with custom needs',
         features: [
-          'Unlimited active users',
-          'Event volume agreed individually',
           'Dedicated team',
           '99.9% availability SLA',
         ],
@@ -103,20 +95,20 @@ export const pricing = {
           title: 'Volume',
           rows: [
             {
-              label: 'Active users per month',
+              label: 'Clean events per month',
               values: {
-                starter: '10,000',
-                growth: '100,000',
-                scale: '500,000',
-                enterprise: 'Unlimited',
+                starter: '100,000',
+                growth: '1,000,000',
+                scale: '10,000,000',
+                enterprise: 'Agreed individually',
               },
             },
             {
-              label: 'Events per month',
+              label: 'Approx. commercial intents',
               values: {
-                starter: '5 million',
-                growth: '30 million',
-                scale: '150 million',
+                starter: '~25,000',
+                growth: '~250,000',
+                scale: '~2,500,000',
                 enterprise: 'Agreed individually',
               },
             },
@@ -161,9 +153,9 @@ export const pricing = {
     faqTitle: 'Pricing questions',
     faq: [
       {
-        question: 'How are active users counted?',
+        question: 'How are clean events counted?',
         answer:
-          'An active user is one installation of your extension that sent at least one cleaned event during the billing month. Installations that never sent anything are not counted.',
+          'A clean event is one record that passed the SDK filters and reached our ingest service during the billing month. Events that are stripped entirely (banking domains, passwords, tokens) are not counted against your plan.',
       },
       {
         question: 'What happens if we go over the limit?',
@@ -173,7 +165,12 @@ export const pricing = {
       {
         question: 'Can we change plan mid-month?',
         answer:
-          'Yes. The change takes effect from the next billing cycle, and the current plan stays active until the end of the paid period.',
+          'Yes. The change takes effect from the next billing cycle, and the current plan and its event volume stay active until the end of the paid period.',
+      },
+      {
+        question: 'Do you guarantee that my data will be sold?',
+        answer:
+          'No. IntentD charges for collecting, cleaning and delivering your data. What you do with it is up to you: sell through our marketplace partners, export it and sell it yourself, or analyse it internally. Actual sales depend on category, geography and demand.',
       },
       {
         question: 'What is the setup fee for?',
@@ -197,8 +194,8 @@ export const pricing = {
       'Send the request and a manager will contact you to confirm the terms and activate the plan for your extension.',
     selectedPlan: 'Selected plan',
     loading: 'Loading the plan terms…',
-    volume: 'Active users',
-    usersPerMonth: 'users / mo',
+    volume: 'Clean events',
+    eventsPerMonth: 'events / mo',
     unlimited: 'Unlimited',
     audience: 'Built for',
     setupFee: 'Setup fee (one-off)',
@@ -214,7 +211,7 @@ export const pricing = {
     companyHintExisting: 'Saved in your profile — adjust it if needed.',
     companyHintNew: 'We need the company name to prepare the agreement, so this field is required.',
     notesLabel: 'Note for the manager',
-    notesPlaceholder: 'Your extension, its number of active users, preferred start date.',
+    notesPlaceholder: 'Your extension, its expected monthly event volume, preferred start date.',
     submit: 'Request activation',
     submitting: 'Sending the request…',
     guarantees: [

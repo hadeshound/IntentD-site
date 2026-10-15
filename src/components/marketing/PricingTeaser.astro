@@ -47,7 +47,7 @@ const ordered = [...plans].sort((a, b) => PLAN_ORDER.indexOf(a.code) - PLAN_ORDE
               >
                 <h3 class="text-card-title">{plan.name}</h3>
                 <p class="mt-2 text-sm text-ink-muted">
-                  {plan.users_limit ? t.teaserAllowance.replace('{users}', plan.users_limit.toLocaleString('en-US')) : null}
+                  {plan.is_custom_priced ? t.customVolume : plan.events_limit > 0 ? t.teaserAllowance.replace('{events}', plan.events_limit.toLocaleString('en-US')) : null}
                 </p>
 
                 <p class="mt-8 flex items-baseline gap-2">

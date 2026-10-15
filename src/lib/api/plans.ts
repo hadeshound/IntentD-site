@@ -30,7 +30,7 @@ export interface Plan {
   setup_price_cents: number;
   currency: string;
   events_limit: number;
-  /** Monthly active users included. Null means unlimited, which is not zero. */
+  /** Monthly user allowance, kept for internal accounting: plans are sold on events_limit. Null means unlimited. */
   users_limit: number | null;
   delivery_frequency: string;
   sla: string;
