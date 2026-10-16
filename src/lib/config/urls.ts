@@ -20,6 +20,13 @@ export const API_BASE_URL = IS_PROD
   : 'http://localhost:8080/api/v1';
 
 /**
+ * Where the contact form is sent in production: the ops-watchdog Worker stores the message in Cloudflare D1
+ * first and then hands it to the portal (with retries), so a message is never lost while the portal or the server
+ * is down. Empty in dev: the form then talks to the local portal directly.
+ */
+export const CONTACT_INTAKE_URL = IS_PROD ? 'https://hadeshound-watchdog.hadeshound-team.workers.dev/intake/intentd' : '';
+
+/**
  * The dashboard, which lives on its own origin so its code never mixes with
  * the marketing site's. Sign-in and account links point here.
  */
