@@ -145,7 +145,12 @@ export function SelectField({
           onBlur={onBlur}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
-          className={controlStyles(Boolean(error), 'h-11 appearance-none pr-10')}
+          // The open list is drawn by the browser: without explicit colours its options
+          // inherit the white text of the control onto the system's light list.
+          className={controlStyles(
+            Boolean(error),
+            'h-11 appearance-none pr-10 [color-scheme:dark] [&>option]:bg-carbon-800 [&>option]:text-ink',
+          )}
         >
           {placeholder ? (
             <option value="" disabled>
