@@ -4,33 +4,24 @@ import { useEffect, useMemo } from 'react';
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { CheckboxField, TextField } from '@/components/ui/Field';
-import { RadioCardGroup } from '@/components/ui/RadioCardGroup';
 import { getDictionary } from '@/i18n';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useZodForm } from '@/lib/hooks/useZodForm';
 import { registerSchema } from '@/lib/schemas/auth';
 
-type Role = 'buyer' | 'publisher';
-
 interface RegisterFormProps {
   redirectTo: string;
-  /** Pre-selected from ?role= on the pricing and hero CTAs. */
-  defaultRole?: Role;
 }
 
-export function RegisterForm({ redirectTo, defaultRole }: RegisterFormProps) {
+/**
+ * Every new account is a publisher: Data Buyer access is closed, so the
+ * "what brings you here" choice is gone until it reopens.
+ */
+export function RegisterForm({ redirectTo }: RegisterFormProps) {
   const { register, status } = useAuth();
   const t = getDictionary().auth.register.form;
 
   const schema = useMemo(() => registerSchema(), []);
-
-  const roleOptions = useMemo(
-    () => [
-      { value: 'buyer' as const, label: t.roleBuyer, description: t.roleBuyerHint },
-      { value: 'publisher' as const, label: t.rolePublisher, description: t.rolePublisherHint },
-    ],
-    [t],
-  );
 
   const form = useZodForm({
     schema,
@@ -38,7 +29,6 @@ export function RegisterForm({ redirectTo, defaultRole }: RegisterFormProps) {
       email: '',
       password: '',
       company_name: '',
-      role: (defaultRole ?? 'buyer') as Role,
       accept_terms: false,
     },
     onSubmit: async (values) => {
@@ -46,7 +36,7 @@ export function RegisterForm({ redirectTo, defaultRole }: RegisterFormProps) {
         email: values.email,
         password: values.password,
         company_name: values.company_name || undefined,
-        role: values.role,
+        role: 'publisher',
         accept_terms: true,
       });
       window.location.replace(redirectTo);
@@ -61,15 +51,6 @@ export function RegisterForm({ redirectTo, defaultRole }: RegisterFormProps) {
 
   return (
     <form onSubmit={form.handleSubmit} noValidate className="space-y-6">
-      <RadioCardGroup<Role>
-        name="role"
-        legend={t.roleLegend}
-        value={form.values.role}
-        onChange={(value) => form.setValue('role', value)}
-        options={roleOptions}
-        error={form.errorFor('role')}
-      />
-
       <TextField
         label={t.email}
         name="email"

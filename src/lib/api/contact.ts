@@ -3,7 +3,7 @@ import { getDictionary } from '@/i18n';
 
 import { apiRequest, ApiError, type ApiEnvelope } from './client';
 
-export type ContactTopic = 'buy_data' | 'monetize_extension' | 'support' | 'enterprise';
+export type ContactTopic = 'monetize_extension' | 'support' | 'enterprise';
 
 export interface ContactPayload {
   name: string;

@@ -70,6 +70,12 @@ const t = getDictionary().docs.sdk;
         <DocsTable head={[...t.api.head]} rows={t.api.rows.map((row) => [...row])} mono />
         <p class="mt-5 prose-body">{t.api.storageNote}</p>
       </section>
+
+      <section id="plan-limit" class="mt-16 scroll-mt-28">
+        <h2 class="font-display text-3xl text-ink">{t.limit.title}</h2>
+        <p class="mt-5 prose-body">{t.limit.body}</p>
+        <CodeBlock class="mt-5" label="popup.js" code={t.limit.snippet} />
+      </section>
     </div>
   </div>
 </MarketingLayout>

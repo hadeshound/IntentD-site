@@ -16,10 +16,15 @@ export const legal = {
     contents: 'Sections',
     draftLabel: 'Draft.',
 
+    // LEGAL REVIEW PENDING (not a blocker): the party formerly called "Data
+    // Buyer" is now "Data Partner", defined as an organisation with a separate
+    // written agreement, and the privacy policy no longer lists a buyer role
+    // among registration data. Show both texts to a lawyer before relying on
+    // them.
     terms: {
       metaTitle: 'Terms of use',
       metaDescription:
-        'Terms of use of the IntentD platform: rules for extension developers, rules for data buyers, billing, liability and termination of access.',
+        'Terms of use of the IntentD platform: rules for extension developers, rules for data partners, billing, liability and termination of access.',
       title: 'Terms of use',
       intro:
         'These terms govern access to the IntentD platform, both for extension developers integrating the SDK and for organisations receiving intent data deliveries.',
@@ -30,7 +35,7 @@ export const legal = {
           title: 'Definitions',
           body: `<p><strong>Platform</strong> — the IntentD service, comprising the edge SDK, the event intake and cleaning infrastructure, and the delivery channels.</p>
 <p><strong>Publisher</strong> — a browser extension developer who has integrated the SDK.</p>
-<p><strong>Data Buyer</strong> — an organisation granted access to the deliveries under one of the plans.</p>
+<p><strong>Data Partner</strong> — an organisation granted access to the deliveries under a separate written agreement with IntentD.</p>
 <p><strong>Event</strong> — one pseudonymised record after filtering, whose structure is described in the <a href="{{schema}}">data schema</a>.</p>`,
         },
         account: {
@@ -51,7 +56,7 @@ export const legal = {
 <p>Breaking any of these points is grounds for disabling the key and withholding unpaid remuneration for the period of the breach.</p>`,
         },
         buyers: {
-          title: 'Data buyer obligations',
+          title: 'Data partner obligations',
           body: `<p>By taking access to the deliveries you undertake:</p>
 <ul>
 <li>not to attempt re-identification — matching <code class="font-mono">anon_uid</code> to a person, a device or an account in another system;</li>
@@ -80,7 +85,7 @@ export const legal = {
         termination: {
           title: 'Termination of access',
           body: `<p>You may stop using the platform at any time by removing the SDK from your extension or by not renewing the subscription.</p>
-<p>We may end access on a material breach of these terms, notifying you at the email address on the account. Data already delivered stays with the buyer under the terms in force at the time of delivery.</p>`,
+<p>We may end access on a material breach of these terms, notifying you at the email address on the account. Data already delivered stays with the recipient under the terms in force at the time of delivery.</p>`,
         },
         changes: {
           title: 'Changes to these terms',
@@ -121,7 +126,7 @@ export const legal = {
 <ul>
 <li>the email address — the account identifier and the contact channel;</li>
 <li>the password hash (bcrypt) — the original password is not available to us and cannot be recovered;</li>
-<li>the company name and the role you chose — data buyer or publisher;</li>
+<li>the company name;</li>
 <li>a technical action log: sign-in, sign-out, password change, plan request, with the IP address and user agent — for investigating security incidents;</li>
 <li>the contents of the contact forms you send.</li>
 </ul>
@@ -159,7 +164,7 @@ export const legal = {
         },
         sharing: {
           title: 'Sharing with third parties',
-          body: `<p>Pseudonymised deliveries are passed to data buyers under the <a href="{{terms}}">terms of use</a>, which include an outright ban on re-identification.</p>
+          body: `<p>Pseudonymised deliveries are passed to data partners under the <a href="{{terms}}">terms of use</a>, which include an outright ban on re-identification.</p>
 <p>We do not sell your account data and do not pass it on for advertising. Transfer is possible only to infrastructure processors (hosting, storage) and on a justified request from an authorised body.</p>
 <p>Sub-processor list: <span class="font-mono">[PLACEHOLDER]</span>.</p>`,
         },

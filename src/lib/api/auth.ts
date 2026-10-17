@@ -23,7 +23,8 @@ export interface RegisterPayload {
   email: string;
   password: string;
   company_name?: string;
-  role: 'buyer' | 'publisher';
+  /** Only publishers can register while Data Buyer access is closed. */
+  role: 'publisher';
   accept_terms: boolean;
 }
 

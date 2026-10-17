@@ -9,7 +9,7 @@ import { submitContactMessage } from '@/lib/api/contact';
 import { useZodForm } from '@/lib/hooks/useZodForm';
 import { contactSchema, contactTopics, type ContactValues } from '@/lib/schemas/contact';
 
-const VALID_TOPICS = ['buy_data', 'monetize_extension', 'support', 'enterprise'] as const;
+const VALID_TOPICS = ['monetize_extension', 'support', 'enterprise'] as const;
 
 /**
  * Reads ?topic= from the address bar.
@@ -47,7 +47,7 @@ export function ContactForm({ defaultTopic, showCompanyField = true }: ContactFo
       name: '',
       email: '',
       company: '',
-      topic: defaultTopic ?? ('buy_data' as ContactValues['topic']),
+      topic: defaultTopic ?? ('monetize_extension' as ContactValues['topic']),
       message: '',
       website: '',
     },

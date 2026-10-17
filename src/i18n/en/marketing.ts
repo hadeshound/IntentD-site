@@ -1,9 +1,9 @@
 /** Landing page, FAQ, contact page and the 404 screen. */
 export const marketing = {
   home: {
-    metaTitle: 'IntentD — ad-free extension monetization, clean PII-free data for analytics',
+    metaTitle: 'IntentD — monetize browser extensions with consented, PII-free data',
     metaDescription:
-      'IntentD connects browser extension developers and analytics teams: ad-free monetization through a safe SDK, and a clean, PII-free intent data stream delivered as Parquet.',
+      'Add a lightweight SDK to your extension, collect consented, PII-free signals in the background, and turn them into revenue. Parquet delivery to your own bucket.',
     keywords: [
       'intent data',
       'extension monetization',
@@ -124,8 +124,8 @@ export const marketing = {
           body: 'The SDK aggregates visit patterns and search intents, leaving PII out.',
         },
         {
-          title: 'Passive revenue',
-          body: 'Earn a share of the revenue from the data your extension sends.',
+          title: 'The data is yours',
+          body: 'Collect consented events. Sell them through our marketplace partners, export them and sell them yourself, or analyse them internally.',
         },
       ],
     },
@@ -135,7 +135,7 @@ export const marketing = {
     eyebrow: 'Why IntentD',
     title: 'Infrastructure, not one more ad script',
     description:
-      'Four engineering decisions that keep an extension from losing users, and keep a data buyer from spending weeks on cleaning.',
+      'Four engineering decisions that keep an extension from losing users, and keep its data clean enough to use without weeks of cleaning.',
     items: [
       {
         title: 'Zero-PII and privacy first',
@@ -193,16 +193,16 @@ export const marketing = {
   contact: {
     metaTitle: 'Contact sales and support',
     metaDescription:
-      'Talk to the IntentD team: request a sample Parquet extract, get data stream access, connect your browser extension or ask a technical question. Replies within one business day.',
+      'Talk to the IntentD team: connect your browser extension, discuss an Enterprise volume or ask a technical question. Replies within one business day.',
     eyebrow: 'Contact',
     heading: 'Write to us',
     intro:
-      'Describe the task as concretely as you can: which data segment you need, what volume, on what timeline. That way the first reply is already useful.',
+      'Describe the task as concretely as you can: your extension, its monthly event volume, your timeline. That way the first reply is already useful.',
     responseTitle: 'Response time',
     responseBody:
-      'Data access requests: within one business day. Technical requests from connected publishers: by plan priority.',
+      'New requests: within one business day. Technical requests from connected publishers: by plan priority.',
     directChannels: {
-      sales: 'Sales and data access',
+      sales: 'Sales',
       privacy: 'Privacy and DPA',
       support: 'Technical support',
     },
@@ -214,12 +214,12 @@ export const marketing = {
       {
         question: 'How long until you reply?',
         answer:
-          'A manager answers data access requests within one business day. Technical requests from connected publishers are handled in the order of your plan priority.',
+          'A manager answers new requests within one business day. Technical requests from connected publishers are handled in the order of your plan priority.',
       },
       {
-        question: 'Can we get a test extract before paying?',
+        question: 'Can we see the data format before paying?',
         answer:
-          'Yes. Tell us which verticals and what volume you care about, and we will prepare a sample Parquet file with exactly the production structure.',
+          'Yes. The event schema and the Parquet layout are documented openly, and on request we send a sample file with exactly the production structure.',
       },
       {
         question: 'We operate in the EU. What about GDPR?',
@@ -230,7 +230,7 @@ export const marketing = {
     section: {
       eyebrow: 'Contact',
       title: 'Let us talk through your scenario',
-      body: 'Tell us what you need: connecting an extension, getting a sample extract, or discussing Enterprise volumes. We will answer on the substance.',
+      body: 'Tell us what you need: connecting an extension, a technical question, or an Enterprise volume. We will answer on the substance.',
       cta: 'Talk to sales',
       ctaSupport: 'Technical support',
     },
@@ -241,7 +241,7 @@ export const marketing = {
       company: 'Company',
       topic: 'Request type',
       message: 'Message',
-      messagePlaceholder: 'Describe the task: verticals of interest, volume, timeline.',
+      messagePlaceholder: 'Describe the task: your extension, its monthly event volume, timeline.',
       honeypotLabel: 'Leave this field empty',
       submit: 'Send request',
       submitting: 'Sending…',
@@ -249,10 +249,9 @@ export const marketing = {
         'By sending this form you agree to the processing of your contact details in line with our privacy policy.',
       successTitle: 'Request sent',
       successBody:
-        'We have your message and will reply to the email you gave. For data access requests a manager gets in touch within one business day.',
+        'We have your message and will reply to the email you gave. A manager gets in touch within one business day.',
       sendAnother: 'Send another message',
       topics: {
-        buy_data: 'Buy data',
         monetize_extension: 'Monetize an extension',
         support: 'Technical support',
         enterprise: 'Enterprise plan',

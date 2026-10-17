@@ -15,7 +15,7 @@ export function contactSchema() {
       .max(255, e.emailMax)
       .email(e.emailInvalid),
     company: z.string().trim().max(255, e.max255).optional(),
-    topic: z.enum(['buy_data', 'monetize_extension', 'support', 'enterprise'], {
+    topic: z.enum(['monetize_extension', 'support', 'enterprise'], {
       errorMap: () => ({ message: e.topicRequired }),
     }),
     message: z.string().trim().min(1, e.messageMin).max(5000, e.messageMax),
@@ -33,7 +33,6 @@ export function contactTopics(): ReadonlyArray<{ value: ContactTopic; label: str
   const t = getDictionary().contact.form.topics;
 
   return [
-    { value: 'buy_data', label: t.buy_data },
     { value: 'monetize_extension', label: t.monetize_extension },
     { value: 'support', label: t.support },
     { value: 'enterprise', label: t.enterprise },

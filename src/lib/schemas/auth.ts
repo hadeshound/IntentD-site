@@ -51,9 +51,6 @@ export function registerSchema() {
     email: emailField(e),
     password: passwordField(e),
     company_name: z.string().trim().max(255, e.max255).optional(),
-    role: z.enum(['buyer', 'publisher'], {
-      errorMap: () => ({ message: e.roleRequired }),
-    }),
     // A refined boolean rather than z.literal(true): the checkbox starts as
     // false, and the literal form would make the initial state a type error.
     accept_terms: z.boolean().refine((accepted) => accepted, e.termsRequired),

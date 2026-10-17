@@ -19,6 +19,7 @@ const path = (route: string) => route;
 const SECTIONS: DocsSection[] = [
   { id: 'quickstart', ...t.sections.quickstart },
   { id: 'ingest-api', ...t.sections.ingest },
+  { id: 'limits', ...t.sections.limits },
   { id: 'data-schema', ...t.sections.schema },
   { id: 'provenance', ...t.sections.provenance },
   { id: 'delivery', ...t.sections.delivery },
@@ -52,6 +53,13 @@ const errors = ingestErrors();
     <Badge>Parquet + LZ4</Badge>
     <Badge tone="violet">PII-free</Badge>
   </Fragment>
+
+  <aside class="surface-card border-violet-400/30 p-5 text-sm leading-relaxed text-ink-muted" role="note">
+    <strong class="text-ink">{t.partnerBanner.title}</strong>
+    {t.partnerBanner.bodyBefore}
+    <a href={path('/contact?topic=enterprise')} class="text-mint-300 underline underline-offset-4">{t.partnerBanner.link}</a>
+    {t.partnerBanner.bodyAfter}
+  </aside>
 
   <!-- 1. SDK Quickstart -->
   <section id="quickstart" class="scroll-mt-28">
@@ -175,6 +183,39 @@ const errors = ingestErrors();
     </p>
   </section>
 
+  <!-- Rate limits and quotas -->
+  <section id="limits" class="scroll-mt-28">
+    <p class="eyebrow">{t.sections.limits.audience}</p>
+    <h2 class="mt-4 font-display text-3xl text-ink sm:text-4xl">{t.limits.title}</h2>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+      {
+        [
+          { title: t.limits.perInstallTitle, rows: t.limits.perInstall },
+          { title: t.limits.perPlanTitle, rows: t.limits.perPlan },
+        ].map((table) => (
+          <div class="overflow-x-auto rounded-card border border-hairline">
+            <table class="w-full border-collapse text-left text-sm">
+              <caption class="border-b border-hairline bg-white/[0.02] px-5 py-3.5 text-left font-medium text-ink">
+                {table.title}
+              </caption>
+              <tbody>
+                {table.rows.map(([label, value]) => (
+                  <tr class="border-b border-hairline last:border-b-0">
+                    <th scope="row" class="px-5 py-3.5 text-left font-mono font-normal text-ink">{label}</th>
+                    <td class="px-5 py-3.5 text-ink-muted">{value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="mt-6 max-w-2xl text-sm leading-relaxed text-ink-faint">{t.limits.note}</p>
+  </section>
+
   <!-- 3. Data schema -->
   <section id="data-schema" class="scroll-mt-28">
     <p class="eyebrow">03 · {t.sections.schema.audience}</p>
@@ -200,16 +241,7 @@ const errors = ingestErrors();
                   {field.name}
                 </th>
                 <td class="px-5 py-3.5 font-mono text-ink-faint">{field.type}</td>
-                <td class="px-5 py-3.5 text-ink-muted">
-                  {field.description}
-                  {
-                    field.tier ? (
-                      <span class="ml-2 font-mono text-[0.8125rem] uppercase tracking-[0.14em] text-violet-400">
-                        {field.tier}+
-                      </span>
-                    ) : null
-                  }
-                </td>
+                <td class="px-5 py-3.5 text-ink-muted">{field.description}</td>
               </tr>
             ))
           }

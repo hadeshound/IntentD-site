@@ -12,14 +12,23 @@ export const docs = {
         'IntentD technical specifications: connecting the edge SDK, the Ingest API with HMAC signing, the event schema, the Parquet + LZ4 format and the structure of S3 deliveries.',
       heading: 'IntentD integration and data format',
       intro:
-        'Technical specifications for extension developers and for data engineers on the buyer side. Everything needed to start sending events or reading deliveries.',
+        'Technical specifications for extension developers: connecting the SDK, the Ingest API, limits and the delivery format your data arrives in.',
       sections: {
         quickstart: { label: 'SDK Quickstart', audience: 'Publishers' },
         ingest: { label: 'Ingest API', audience: 'Publishers' },
-        schema: { label: 'Data schema', audience: 'Data Buyers' },
-        provenance: { label: 'Data Provenance', audience: 'Data Buyers' },
-        delivery: { label: 'Storage and delivery', audience: 'Data Buyers' },
-        examples: { label: 'Reading examples', audience: 'Data Buyers' },
+        limits: { label: 'Rate limits and quotas', audience: 'Publishers' },
+        schema: { label: 'Data schema', audience: 'Data partners' },
+        provenance: { label: 'Data Provenance', audience: 'Data partners' },
+        delivery: { label: 'Storage and delivery', audience: 'Data partners' },
+        examples: { label: 'Reading examples', audience: 'Data partners' },
+      },
+
+      partnerBanner: {
+        title: 'Data Buyer access is in development.',
+        bodyBefore:
+          'The technical specs below describe the delivery format we are building. Access is not yet available —',
+        link: 'talk to us',
+        bodyAfter: 'if you need a sample.',
       },
 
       quickstart: {
@@ -53,7 +62,7 @@ export const docs = {
         tableCode: 'Code',
         tableMeaning: 'Meaning',
         retryNote:
-          'On network errors, 429 and 503 the SDK keeps the queue and retries once an hour. The binary bucket format and the encryption scheme are documented openly —',
+          'On network errors, 402, 429 and 503 the SDK keeps the queue and retries once an hour. The binary bucket format and the encryption scheme are documented openly —',
         specLink: 'the INTD v1 specification',
         endpoints: {
           register: {
@@ -80,7 +89,27 @@ export const docs = {
           BUCKET_ALREADY_RECEIVED: 'This bucket has already been accepted',
           BUCKET_TOO_LARGE: 'More than 10,000 events or 10 MB — the SDK splits the bucket',
           RATE_LIMITED: 'The request rate or the daily bucket limit was exceeded',
+          SUBSCRIPTION_LIMIT_REACHED:
+            'The plan limit for the current month is exhausted. Events stay queued on the client until the plan is upgraded.',
         },
+      },
+
+      limits: {
+        title: 'Rate limits and quotas',
+        perInstallTitle: 'Per installation',
+        perInstall: [
+          ['POST /sdk/register', '120 requests / min per IP'],
+          ['POST /telemetry/bucket', '48 buckets / day per installation, 120 requests / min per IP'],
+          ['POST /sdk/report-tamper', '30 requests / min per IP'],
+        ],
+        perPlanTitle: 'Per plan (clean events ingested per calendar month, UTC)',
+        perPlan: [
+          ['Starter', '100,000'],
+          ['Growth', '1,000,000'],
+          ['Scale', '10,000,000'],
+          ['Enterprise', 'Custom'],
+        ],
+        note: 'Once the monthly limit is reached, new buckets are refused with 402 SUBSCRIPTION_LIMIT_REACHED and stay queued on the client. Sending resumes after an upgrade, or on the first day of the next month. The bucket that crosses the limit is still accepted.',
       },
 
       schema: {
@@ -106,6 +135,7 @@ export const docs = {
       provenance: {
         title: 'Data Provenance',
         items: [
+          'Data Buyer access is in development. The technical specs describe the delivery format we are building. Access is not yet available.',
           'Every event comes only from users who explicitly pressed “Allow” in the consent prompt (GDPR art. 6(1)(a)). Before consent the SDK creates no identifier and stores no events.',
           'Each accepted bucket carries the version of the consent text; the server rejects buckets without it and records the version in the intake log. When the text changes, consent is asked again.',
           'When consent is withdrawn the SDK stops collecting and deletes unsent events on the device; a later grant creates a new pseudonym unrelated to the previous one.',
@@ -124,7 +154,7 @@ export const docs = {
           archiveValue: '90 days',
         },
         pathsTitle: 'Path structure',
-        body: 'Partitioning by date and tenant lets you read the slice you need without scanning the whole bucket. Growth and above additionally support syncing into your own bucket.',
+        body: 'Partitioning by date and tenant lets you read the slice you need without scanning the whole bucket. Syncing into your own bucket is available on every plan.',
       },
 
       examples: {
@@ -134,9 +164,9 @@ export const docs = {
 
       cta: {
         title: 'Ready to connect?',
-        body: 'Create an account to get the keys and reserve a delivery. If you need a data sample before signing, write to us.',
+        body: 'Create an account to get your keys and download the SDK. If you have a technical question before you start, write to us.',
         primary: 'Create account',
-        secondary: 'Request a sample',
+        secondary: 'Ask a question',
         note: 'The full OpenAPI specification of the portal lives in the repository:',
         noteAfter: 'A public hosted version will arrive with the dashboard —',
         noteLink: 'tell us you need it',
@@ -227,7 +257,7 @@ func ptr(s string) *string { return &s }`,
     sdk: {
       metaTitle: 'SDK: integration and user consent',
       metaDescription:
-        'How to add the IntentD edge SDK to a Manifest V3 extension, and how the user consent prompt works: the popup banner, the consent tab, and withdrawing consent.',
+        'How to add the IntentD edge SDK to a Manifest V3 extension: the single-file download, the consent banner in the popup, withdrawing consent and what happens when the plan limit is reached.',
       backToApi: '← API documentation',
       eyebrow: 'Publishers',
       title: 'SDK integration and user consent',
@@ -236,11 +266,12 @@ func ptr(s string) *string { return &s }`,
 
       install: {
         title: 'Installation',
-        body: 'In the dashboard: Extensions → SDK → “Download”. Unpack the archive into the extension root.',
-        archiveLabel: 'archive',
-        files: `intentd.min.js        the SDK carrying your extension keys — do not rename
-intentd-consent.html  the consent page for extensions without a popup
-intentd-consent.js    that page's script (MV3 forbids inline scripts)`,
+        body: 'In the dashboard: Extensions → SDK → “Download”. Download the single .js file and place it in your extension root as intentd.min.js. The file carries your keys and configuration. Do not rename it.',
+        archiveLabel: 'extension root',
+        files: `manifest.json
+background.js
+popup.html
+intentd.min.js        the SDK carrying your extension keys — do not rename`,
         manifest: `{
   "manifest_version": 3,
   "background": { "service_worker": "background.js", "type": "module" },
@@ -257,7 +288,7 @@ import './intentd.min.js';`,
         withPopupTitle: 'An extension with a popup',
         withPopupBodyBefore: 'Call',
         withPopupBodyAfter:
-          'in your popup. If you do not, the user only ever sees the consent tab shown at install time, and the SDK stays inactive until they choose — making the call is the extension’s responsibility.',
+          'in your popup. Until the user allows collection there, the SDK stays inactive — making the call is the extension’s responsibility.',
         popupHtml: `<div id="consent-root"></div>
 <!-- ... your extension UI ... -->
 <script src="intentd.min.js"></script>
@@ -269,12 +300,10 @@ IntentD.mountConsent(document.getElementById('consent-root'));`,
           'The banner renders in a closed Shadow DOM: your styles do not affect it, its styles do not affect you. The theme (light or dark) is picked from the popup background, and the width ranges from 320 to 800 px. “Decline” and “Allow” are the same size, and nothing is pre-ticked. After consent the banner disappears for good; after a decline it comes back the next time the popup opens.',
         withoutPopupTitle: 'An extension without a popup',
         withoutPopupBody:
-          'The SDK opens the intentd-consent.html tab itself at install time and at browser start, for as long as there is no consent. A second tab is never opened — the existing one is focused instead. The tab closes once the choice is made.',
+          'Not supported yet. The single-file download has no separate consent page, so the consent banner needs a popup to be shown in. Write to us if your extension has no popup.',
         triggersTitle: 'When the prompt appears',
         triggersHead: ['Event', 'Behaviour'],
         triggers: [
-          ['Extension installed or updated', 'The consent tab, when there is no consent for the current text'],
-          ['Browser start', 'The consent tab — only for extensions without a popup'],
           ['Popup opened', 'The banner, if you call mountConsent and there is no consent'],
           ['Any other service worker wake-up', 'Nothing is shown'],
           ['Consent already given', 'The banner is no longer shown'],
@@ -290,9 +319,9 @@ await IntentD.revokeConsent();   // collection stopped, local data deleted
 
 // "Allow collection" button (after a decline, for instance)
 await IntentD.grantConsent();`,
-        warningTitle: 'Do not add the consent page to web_accessible_resources',
+        warningTitle: 'Do not add your popup to web_accessible_resources',
         warningBody:
-          'Extension pages are reachable by the extension itself without that list. If the page becomes web-accessible, any site can frame it and quietly harvest an “Allow” click — and consent obtained that way is not valid.',
+          'Extension pages are reachable by the extension itself without that list. If the page showing the banner becomes web-accessible, any site can frame it and quietly harvest an “Allow” click — and consent obtained that way is not valid.',
       },
 
       api: {
@@ -304,11 +333,20 @@ await IntentD.grantConsent();`,
           ['IntentD.getConsentState()', "'approved' | 'declined' | null."],
           ['IntentD.grantConsent()', 'Record consent (from your own UI).'],
           ['IntentD.revokeConsent()', 'Withdraw: collection stops, the queue and the installation identifier are deleted.'],
-          ['IntentD.openConsentTab()', 'Open the consent tab manually (or focus the open one).'],
-          ['IntentD.status()', 'SDK state, including consent.'],
+          ['IntentD.openConsentTab()', 'Open the consent tab (or focus the open one). Reserved for extensions without a popup, which the single-file download does not support yet.'],
+          ['IntentD.status()', "SDK state, including consent and paused: 'limit_reached' | null."],
         ],
         storageNote:
           'The decision is stored only in chrome.storage.local of that browser profile: every device asks separately, and the server does not record who consented or when. Only the consent text version travels to the server with each bucket.',
+      },
+
+      limit: {
+        title: 'When the plan limit is reached',
+        body: 'If the plan limit is reached (HTTP 402 SUBSCRIPTION_LIMIT_REACHED), the SDK keeps events queued locally and retries every hour. The extension should call IntentD.status() to detect this and prompt the developer to upgrade.',
+        snippet: `const status = await IntentD.status();
+if (status.paused === 'limit_reached') {
+  // Events are held in chrome.storage.local and sent after the upgrade.
+}`,
       },
     },
 

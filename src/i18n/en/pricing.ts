@@ -160,7 +160,7 @@ export const pricing = {
       {
         question: 'What happens if we go over the limit?',
         answer:
-          'The SDK keeps working. We record the overage and discuss moving to the next plan — nothing is charged retroactively.',
+          'New events stop being accepted once the monthly limit is reached (HTTP 402 SUBSCRIPTION_LIMIT_REACHED). Nothing is lost: the SDK keeps them queued in the browser and sends them after you upgrade, or when the next calendar month starts. We e-mail you at 80% and at 100%, and nothing is charged retroactively.',
       },
       {
         question: 'Can we change plan mid-month?',

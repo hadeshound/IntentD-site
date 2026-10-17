@@ -9,16 +9,9 @@ import { resolvePostAuthTarget } from '@/lib/utils/redirect';
 
 const t = getDictionary().auth.register;
 
-function parseRole(raw: string | null): 'buyer' | 'publisher' | undefined {
-  return raw === 'buyer' || raw === 'publisher' ? raw : undefined;
-}
-
 const params = Astro.url.searchParams;
 const plan = params.get('plan');
 const redirectTo = resolvePostAuthTarget(params.get('redirect'), plan);
-
-// A visitor who came from a pricing CTA is a buyer unless they say otherwise.
-const defaultRole = parseRole(params.get('role')) ?? (plan ? 'buyer' : undefined);
 
 const loginBase = '/auth/login';
 const loginHref =
@@ -29,7 +22,7 @@ const loginHref =
 
 <MarketingLayout title={t.metaTitle} description={t.metaDescription} noindex>
   <AuthShell eyebrow={t.eyebrow} title={t.title} description={t.description}>
-    <RegisterForm redirectTo={redirectTo} defaultRole={defaultRole} client:load />
+    <RegisterForm redirectTo={redirectTo} client:load />
 
     <p slot="footer">
       {t.haveAccount}{' '}

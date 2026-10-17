@@ -12,8 +12,6 @@ export interface SchemaField {
   name: string;
   type: string;
   description: string;
-  /** Marks fields that are only present on higher tiers. */
-  tier?: 'growth' | 'enterprise';
 }
 
 export function eventSchema(): SchemaField[] {
@@ -26,8 +24,9 @@ export function eventSchema(): SchemaField[] {
     { name: 'clean_url', type: 'String', description: f.clean_url },
     { name: 'search_query', type: 'String', description: f.search_query },
     { name: 'lang', type: 'String', description: f.lang },
-    { name: 'geo_country', type: 'String', description: f.geo_country, tier: 'growth' },
-    { name: 'device_type', type: 'String', description: f.device_type, tier: 'growth' },
+    // Every field is present on every plan: plans differ by event volume only.
+    { name: 'geo_country', type: 'String', description: f.geo_country },
+    { name: 'device_type', type: 'String', description: f.device_type },
     { name: 'domain', type: 'String', description: f.domain },
   ];
 }
@@ -64,6 +63,7 @@ export function ingestErrors(): ErrorCodeSpec[] {
     { status: 401, code: 'INVALID_SIGNATURE', meaning: m.INVALID_SIGNATURE },
     { status: 401, code: 'CLOCK_SKEW', meaning: m.CLOCK_SKEW },
     { status: 402, code: 'SUBSCRIPTION_INACTIVE', meaning: m.SUBSCRIPTION_INACTIVE },
+    { status: 402, code: 'SUBSCRIPTION_LIMIT_REACHED', meaning: m.SUBSCRIPTION_LIMIT_REACHED },
     { status: 403, code: 'WRONG_EXTENSION', meaning: m.WRONG_EXTENSION },
     { status: 403, code: 'FINGERPRINT_MISMATCH', meaning: m.FINGERPRINT_MISMATCH },
     { status: 409, code: 'BUCKET_ALREADY_RECEIVED', meaning: m.BUCKET_ALREADY_RECEIVED },
